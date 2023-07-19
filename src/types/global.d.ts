@@ -17,6 +17,9 @@ export type Type =
   | 'serverless'
   | 'cf-deluge'
   | 'configuration'
+  | 'bug-fix'
+  | 'call external'
+  | 'call internal'
   | 'others'
 export type Service = 'Zoho' | 'Freshworks' | 'Hubspot' | 'Zendesk' | 'others'
 export type SubService =
@@ -33,20 +36,23 @@ export type SubService =
   | 'others'
 
 export interface Task {
+  [key: string]: any
   id: number
   title: string
   description: string | null
   status: Status
+  createdAt: Date
   updatedAt: Date
   log: string | null
   priority: Priority | null
   deadline: Date | null
   projectID: number | null
-  assignee: User | null
+  assignee: User[] | null
   type: Type | null
 }
 
 export interface User {
+  [key: string]: any
   id: number
   first_name: string
   last_name: string
@@ -61,18 +67,30 @@ export interface User {
     | 'JUNIOR DEVELOPER'
     | 'SENIOR DEVELOPER'
     | 'JUNIOR STAGE DEVELOPER'
+    | 'NONE'
 }
 
 export interface Project {
+  [key: string]: any
   id: number
   name: string
   description: string | null
   createdAt: Date
   updatedAt: Date
-  members: User[]
+  members: User[] | null
   service: Service | null
   subService: SubService | null
   state: 'OPENED' | 'ACTIVE' | 'CLOSED'
 }
 
-export type Store = Project | Task | User
+export type Store = Project | Task | User | System
+
+export type Module = 'project' | 'task' | 'user' | 'system'
+
+export interface System {
+  [key: string]: any
+  id: number
+  userID: number
+  projectID: number
+  taskID: number
+}

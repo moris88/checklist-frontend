@@ -3,6 +3,7 @@ import Wrapper from './components/Wrapper'
 import { Project, Task, User } from './types/global'
 import List from './components/List'
 import New from './components/New'
+import Edit from './components/Edit'
 
 const router = createBrowserRouter([
   {
@@ -10,6 +11,22 @@ const router = createBrowserRouter([
     Component: () => (
       <Wrapper title="Projects">
         <List<Project> module="project" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/project/create',
+    Component: () => (
+      <Wrapper title="New Project">
+        <New module="project" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/project/edit/:id',
+    Component: () => (
+      <Wrapper title="Project Edit">
+        <Edit<Project> module="project" />
       </Wrapper>
     ),
   },
@@ -22,6 +39,22 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/task/create',
+    Component: () => (
+      <Wrapper title="New Task">
+        <New module="task" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/task/edit/:id',
+    Component: () => (
+      <Wrapper title="Task Edit">
+        <Edit<Task> module="task" />
+      </Wrapper>
+    ),
+  },
+  {
     path: '/users',
     Component: () => (
       <Wrapper title="Users">
@@ -30,26 +63,18 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/task/create',
-    Component: () => (
-      <Wrapper title="New Task">
-        <New<Task> module="task" />
-      </Wrapper>
-    ),
-  },
-  {
-    path: '/project/create',
-    Component: () => (
-      <Wrapper title="New Project">
-        <New<Project> module="project" />
-      </Wrapper>
-    ),
-  },
-  {
     path: '/user/create',
     Component: () => (
       <Wrapper title="New User">
-        <New<User> module="user" />
+        <New module="user" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/user/edit/:id',
+    Component: () => (
+      <Wrapper title="User Edit">
+        <Edit<User> module="user" />
       </Wrapper>
     ),
   },

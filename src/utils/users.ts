@@ -13,7 +13,7 @@ export const users: User[] = [
     id: 2,
     first_name: 'Gabriel',
     last_name: 'Alexandru',
-    full_name: 'Gabriel Tolomeo',
+    full_name: 'Gabriel Alexandru',
     email: 'gabriel.alexandru@crmpartners.it',
     role: 'JUNIOR DEVELOPER',
   },

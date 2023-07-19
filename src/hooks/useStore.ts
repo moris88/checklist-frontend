@@ -1,45 +1,58 @@
 import { useEffect, useState } from 'react'
-import { Store } from '../types/global'
+import { Module, Store } from '../types/global'
 
-interface useStoreProps<T extends { [key: string]: any }> {
+interface useStoreProps<T extends Store> {
   defaultValues?: T[]
-  key: string
+  key: Module
 }
 
 const useStore = <T extends Store>({
   defaultValues,
   key,
 }: useStoreProps<T>) => {
-  const [store, setStore] = useState<T[]>([])
+  const [elements, setElements] = useState<T[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    console.log('useStore', key)
     const data = localStorage.getItem(key)
     if (data) {
-      setStore(JSON.parse(data) as T[])
+      setElements(JSON.parse(data) as T[])
       localStorage.setItem(key, data)
     } else {
-      setStore(defaultValues || [])
+      setElements(
+        defaultValues && defaultValues?.length > 0 ? defaultValues : []
+      )
       localStorage.setItem(key, JSON.stringify(defaultValues || []))
     }
-  }, [defaultValues, key])
+    setLoading(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key])
 
-  const saveStore = (newStore: T[]) => {
+  const saveElements = (newStore: T[]) => {
     localStorage.setItem(key, JSON.stringify(newStore))
-    setStore(newStore)
+    setElements(newStore)
   }
 
   const addElement = (element: T) => {
-    const newStore = [...store, element]
-    saveStore(newStore)
+    if (key === 'system') {
+      const newElement = [element]
+      saveElements(newElement)
+    } else {
+      const searchElement = elements.find((e) => e.id === element.id)
+      if (searchElement) return
+      const newElement = [...elements, element]
+      saveElements(newElement)
+    }
   }
 
-  const removeElement = (element: T) => {
-    const newStore = store.filter((e) => e.id !== element.id)
-    saveStore(newStore)
+  const removeElement = (id: number) => {
+    const searchElement = elements.find((e) => e.id === id)
+    if (!searchElement) return
+    const newElement = elements.filter((e) => e.id !== searchElement.id)
+    saveElements(newElement)
   }
 
-  return [store, saveStore, addElement, removeElement]
+  return { elements, saveElements, addElement, removeElement, loading }
 }
 
 export default useStore
