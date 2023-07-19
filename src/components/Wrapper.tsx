@@ -25,7 +25,12 @@ const Wrapper = ({ children, title }: WrapperProps) => {
                     <Navbar.Link
                         href="/projects"
                     >
-                        Home
+                        Projects
+                    </Navbar.Link>
+                    <Navbar.Link
+                        href="/tasks"
+                    >
+                        Tasks
                     </Navbar.Link>
                     <Navbar.Link
 
