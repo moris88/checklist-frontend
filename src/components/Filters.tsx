@@ -1,9 +1,9 @@
-import React from 'react'
+interface FiltersProps {
+  test: string
+}
 
-interface FiltersProps {}
-
-const Filters = (props: FiltersProps) => {
-  return <>Filters</>
+const Filters = ({ test }: FiltersProps) => {
+  return <>Filters {test}</>
 }
 
 export default Filters

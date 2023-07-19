@@ -1,27 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
+import { Store } from '../types/global'
 
 interface useStoreProps<T extends { [key: string]: any }> {
-  defaultValues?: T[];
-  key: string;
-  
+  defaultValues?: T[]
+  key: string
 }
 
-const useStore = <T extends { [key: string]: any }>({ defaultValues, key }: useStoreProps<T>) => {
-  const [store, setStore] = useState<T[]>(defaultValues || []);
+const useStore = <T extends Store>({
+  defaultValues,
+  key,
+}: useStoreProps<T>) => {
+  const [store, setStore] = useState<T[]>([])
 
   useEffect(() => {
-    const data = localStorage.getItem(key);
+    console.log('useStore', key)
+    const data = localStorage.getItem(key)
     if (data) {
-      setStore(JSON.parse(data) as T[]);
+      setStore(JSON.parse(data) as T[])
+      localStorage.setItem(key, data)
+    } else {
+      setStore(defaultValues || [])
+      localStorage.setItem(key, JSON.stringify(defaultValues || []))
     }
-  }, [key]);
+  }, [defaultValues, key])
 
   const saveStore = (newStore: T[]) => {
-    localStorage.setItem(key, JSON.stringify(newStore));
-    setStore(newStore);
-  };
+    localStorage.setItem(key, JSON.stringify(newStore))
+    setStore(newStore)
+  }
 
-  return [store, saveStore];
-};
+  const addElement = (element: T) => {
+    const newStore = [...store, element]
+    saveStore(newStore)
+  }
 
-export default useStore;
+  const removeElement = (element: T) => {
+    const newStore = store.filter((e) => e.id !== element.id)
+    saveStore(newStore)
+  }
+
+  return [store, saveStore, addElement, removeElement]
+}
+
+export default useStore

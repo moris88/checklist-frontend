@@ -1,16 +1,17 @@
-import React from 'react'
 import useStore from '../hooks/useStore'
+import { Store } from '../types/global'
 
 interface NewProps {
-    module: 'project' | 'task' | 'user'
+  module: 'project' | 'task' | 'user'
 }
 
-const New = <T extends { [key: string]: any }>({ module }: NewProps) => {
-    const [records, setRecords] = useStore<T[]>({
-        key: module,
-        defaultValues: [],
-    })
-    return <pre>{JSON.stringify(records, null, 2)}</pre>
+const New = <T extends Store>({ module }: NewProps) => {
+  const [records] = useStore<T>({
+    key: module,
+    defaultValues: [],
+  })
+
+  return <pre>{JSON.stringify(records, null, 2)}</pre>
 }
 
 export default New
