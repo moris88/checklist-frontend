@@ -32,6 +32,12 @@ const Multiselect = ({
   const [isClickedOutside, setIsClickedOutside] = useState(false)
 
   useEffect(() => {
+    if (items.length === 0 && defaultValues && defaultValues.length > 0) {
+      setItems(defaultValues.filter((el) => el !== undefined))
+    }
+  }, [defaultValues, items.length])
+
+  useEffect(() => {
     const handleOutsideClick = (event: { target: any }) => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       if (ref?.current && !ref?.current?.contains(event.target)) {
@@ -72,6 +78,10 @@ const Multiselect = ({
     setItems(myItem)
   }
 
+  const handleDeleteAll = (): void => {
+    setItems([])
+  }
+
   const handleAddElement = (e: string): void => {
     const elementFind = items.find((el) => el === e)
     if (elementFind) return
@@ -84,7 +94,7 @@ const Multiselect = ({
   }
 
   return (
-    <div className="flex justify-start items-center">
+    <div className="flex justify-start items-center relative">
       {showMaxItems && messageMaxItems && (
         <p className="font-bold text-red-400 p-0">{messageMaxItems}</p>
       )}
@@ -92,9 +102,13 @@ const Multiselect = ({
         ref={ref}
         className={twMerge(
           twMerge(
-            `relative rounded-md border-[#4b5563] bg-[#374151] shadow-sm sm:text-sm border focus:ring w-full ${
+            `rounded-md border-[#4b5563] bg-[#374151] shadow-sm sm:text-sm border focus:ring w-full ${
               mandatory ? 'border-l-4 border-l-red-500' : ''
-            } ${options === null || disabled ? 'cursor-not-allowed' : ''}`,
+            } ${
+              options === null || disabled
+                ? 'cursor-not-allowed text-gray-50'
+                : ''
+            }`,
             'focus:border-cyan-500 focus:ring-cyan-500 p-2'
           ),
           className
@@ -105,12 +119,17 @@ const Multiselect = ({
           onClick={() => setShow(true)}
         >
           {items.length === 0 && (
-            <span className="text-gray-400 font-normal">{placeholder}</span>
+            <span className="text-gray-400 font-normal ml-1">
+              {placeholder}
+            </span>
           )}
-          {items.map((el) => {
+          {items.map((el, index) => {
             return (
               <div
-                key={`option-multiselect-${el}`}
+                key={`option-multiselect-${index}-${(el ?? '').replace(
+                  ' ',
+                  '-'
+                )}`}
                 className="inline hover:bg-cyan-500 hover:text-white rounded-lg px-2"
               >
                 {el}
@@ -123,12 +142,15 @@ const Multiselect = ({
           })}
         </div>
         {options && options.length > 0 && show && (
-          <div className="w-full bg-[#374151] border border-[#4b5563] rounded-lg overflow-auto shadow-md max-h-32 absolute -bottom-[130px] left-0 z-50">
+          <div className="w-full bg-[#374151] border border-[#4b5563] rounded-lg overflow-auto shadow-md max-h-32 absolute top-[100%] left-0 z-50">
             <ul className="w-full font-bold list-none p-0 m-0">
-              {options.map((el) => {
+              {options.map((el, index) => {
                 return (
                   <li
-                    key={`option-multiselect-${el}`}
+                    key={`option-multiselect-li-${(el ?? '').replace(
+                      ' ',
+                      '-'
+                    )}-${index}`}
                     className="w-full px-2 cursor-pointer hover:bg-gray-500 hover:text-white rounded"
                     onClick={() => handleAddElement(el)}
                   >
@@ -140,6 +162,14 @@ const Multiselect = ({
           </div>
         )}
       </div>
+      {items.length > 0 && (
+        <span
+          className="absolute right-0 cursor-pointer"
+          onClick={handleDeleteAll}
+        >
+          <XMarkIcon className="w-5 h-5" />
+        </span>
+      )}
     </div>
   )
 }

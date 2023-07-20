@@ -1,0 +1,94 @@
+[
+    {
+        "id": 13,
+        "name": "test 1",
+        "description": null,
+        "createdAt": "2023-07-19T21:50:44.252Z",
+        "updatedAt": "2023-07-19T21:50:44.252Z",
+        "members": [
+            {
+                "id": 3,
+                "first_name": "Antonina",
+                "last_name": "Napoli",
+                "full_name": "Antonina Napoli",
+                "email": "antonina.napoli@crmpartners.it",
+                "role": "JUNIOR DEVELOPER"
+            }
+        ],
+        "service": null,
+        "subService": null,
+        "state": "OPENED"
+    },
+    {
+        "id": 11,
+        "name": "asdasd asdasd",
+        "description": "",
+        "createdAt": "2023-07-20T14:33:30.071Z",
+        "updatedAt": "2023-07-20T14:33:30.071Z",
+        "members": [
+            {
+                "id": 3,
+                "first_name": "Antonina",
+                "last_name": "Napoli",
+                "full_name": "Antonina Napoli",
+                "email": "antonina.napoli@crmpartners.it",
+                "role": "JUNIOR DEVELOPER"
+            },
+            {
+                "id": 4,
+                "first_name": "Francesco",
+                "last_name": "Maiali",
+                "full_name": "Francesco Maiali",
+                "email": "francesco.maiali@crmpartners.it",
+                "role": "JUNIOR DEVELOPER"
+            }
+        ],
+        "service": "Zoho",
+        "subService": "Zoho Analitycs",
+        "state": "ACTIVE"
+    },
+    {
+        "id": 12,
+        "name": "CRMpartners",
+        "description": null,
+        "createdAt": "2023-07-20T14:42:27.892Z",
+        "updatedAt": "2023-07-20T14:42:27.892Z",
+        "members": [
+            {
+                "id": 1,
+                "first_name": "Maurizio",
+                "last_name": "Tolomeo",
+                "full_name": "Maurizio Tolomeo",
+                "email": "maurizio.tolomeo@crmpartners.it",
+                "role": "JUNIOR DEVELOPER"
+            },
+            {
+                "id": 3,
+                "first_name": "Antonina",
+                "last_name": "Napoli",
+                "full_name": "Antonina Napoli",
+                "email": "antonina.napoli@crmpartners.it",
+                "role": "JUNIOR DEVELOPER"
+            },
+            {
+                "id": 4,
+                "first_name": "Francesco",
+                "last_name": "Maiali",
+                "full_name": "Francesco Maiali",
+                "email": "francesco.maiali@crmpartners.it",
+                "role": "JUNIOR DEVELOPER"
+            },
+            {
+                "id": 5,
+                "first_name": "Mattia",
+                "last_name": "Piparo",
+                "full_name": "Mattia Piparo",
+                "email": "mattia.piparo@crmpartners.it",
+                "role": "SENIOR DEVELOPER"
+            }
+        ],
+        "service": null,
+        "subService": null,
+        "state": "OPENED"
+    }
+]

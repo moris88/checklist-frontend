@@ -41,11 +41,10 @@ export interface Task {
   title: string
   description: string | null
   status: Status
-  createdAt: Date
-  updatedAt: Date
-  log: string | null
+  createdAt: string
+  updatedAt: string
   priority: Priority | null
-  deadline: Date | null
+  deadline: string | null
   projectID: number | null
   assignee: User[] | null
   type: Type | null
@@ -75,8 +74,8 @@ export interface Project {
   id: number
   name: string
   description: string | null
-  createdAt: Date
-  updatedAt: Date
+  createdAt: string
+  updatedAt: string
   members: User[] | null
   service: Service | null
   subService: SubService | null

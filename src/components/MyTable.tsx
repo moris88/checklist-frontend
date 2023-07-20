@@ -44,6 +44,27 @@ const MyTable = <T extends Store>({
             className="bg-white dark:border-gray-700 dark:bg-gray-800"
           >
             {columns.map((column) => {
+              if (module === 'project' && column.api === 'id') {
+                return (
+                  <Table.Cell key={`table-body-${column.api}`}>
+                    #P{row[column.api]}
+                  </Table.Cell>
+                )
+              }
+              if (module === 'task' && column.api === 'id') {
+                return (
+                  <Table.Cell key={`table-body-${column.api}`}>
+                    #T{row[column.api]}
+                  </Table.Cell>
+                )
+              }
+              if (module === 'user' && column.api === 'id') {
+                return (
+                  <Table.Cell key={`table-body-${column.api}`}>
+                    #U{row[column.api]}
+                  </Table.Cell>
+                )
+              }
               if (module === 'project' && column.api === 'state') {
                 return (
                   <Table.Cell key={`table-body-${column.api}`}>

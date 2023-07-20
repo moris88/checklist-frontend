@@ -1,9 +1,9 @@
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Wrapper from './components/Wrapper'
 import { Project, Task, User } from './types/global'
 import List from './components/List'
-import New from './components/New'
-import Edit from './components/Edit'
+import Record from './components/Record'
+import Home from './components/Home'
 
 const router = createBrowserRouter([
   {
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
     path: '/project/create',
     Component: () => (
       <Wrapper title="New Project">
-        <New module="project" />
+        <Record module="project" />
       </Wrapper>
     ),
   },
@@ -26,7 +26,7 @@ const router = createBrowserRouter([
     path: '/project/edit/:id',
     Component: () => (
       <Wrapper title="Project Edit">
-        <Edit<Project> module="project" />
+        <Record module="project" edit />
       </Wrapper>
     ),
   },
@@ -42,7 +42,7 @@ const router = createBrowserRouter([
     path: '/task/create',
     Component: () => (
       <Wrapper title="New Task">
-        <New module="task" />
+        <Record module="task" />
       </Wrapper>
     ),
   },
@@ -50,7 +50,7 @@ const router = createBrowserRouter([
     path: '/task/edit/:id',
     Component: () => (
       <Wrapper title="Task Edit">
-        <Edit<Task> module="task" />
+        <Record module="task" edit />
       </Wrapper>
     ),
   },
@@ -66,7 +66,7 @@ const router = createBrowserRouter([
     path: '/user/create',
     Component: () => (
       <Wrapper title="New User">
-        <New module="user" />
+        <Record module="user" />
       </Wrapper>
     ),
   },
@@ -74,13 +74,13 @@ const router = createBrowserRouter([
     path: '/user/edit/:id',
     Component: () => (
       <Wrapper title="User Edit">
-        <Edit<User> module="user" />
+        <Record module="user" edit />
       </Wrapper>
     ),
   },
   {
-    path: '*',
-    Component: () => <Navigate to="/projects" replace />,
+    path: '/',
+    Component: () => <Home />,
   },
 ])
 

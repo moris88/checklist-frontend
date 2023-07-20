@@ -21,5 +21,10 @@ module.exports = {
   rules: {
     "prettier/prettier": 2,
     "no-console": "warn",
+    "@typescript-eslint/no-misused-promises": [2, {
+      "checksVoidReturn": {
+        "attributes": false
+      }
+    }]
   },
 }

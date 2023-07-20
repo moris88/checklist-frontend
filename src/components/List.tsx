@@ -22,9 +22,29 @@ const List = <T extends Store>({ module }: ListProps) => {
   if (elements.length === 0) {
     return (
       <div className="flex justify-center items-center h-5 mt-10">
-        <p className="border bg-red-500 text-white italic font-bold rounded-lg p-4">
-          {`No ${module}s`}
-        </p>
+        <section className="mt-2 flex justify-end items-center px-4">
+          {module === 'user' && (
+            <Button
+              onClick={() => (window.location.href = `/${module}/create`)}
+            >
+              New User
+            </Button>
+          )}
+          {module === 'project' && (
+            <Button
+              onClick={() => (window.location.href = `/${module}/create`)}
+            >
+              New Project
+            </Button>
+          )}
+          {module === 'task' && (
+            <Button
+              onClick={() => (window.location.href = `/${module}/create`)}
+            >
+              New Task
+            </Button>
+          )}
+        </section>
       </div>
     )
   }
