@@ -75,7 +75,6 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
   })
 
   return (
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     <form className="flex flex-col gap-2 p-4" onSubmit={onSubmit}>
       {errors.name?.message && (
         <Label className="font-bold text-red-500">{errors.name?.message}</Label>

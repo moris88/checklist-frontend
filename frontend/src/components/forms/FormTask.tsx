@@ -102,7 +102,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
   }
 
   return (
-    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     <form className="flex flex-col gap-2 p-4" onSubmit={handleSubmit(onSubmit)}>
       {errors.title?.message && (
         <Label className="font-bold text-red-500">
