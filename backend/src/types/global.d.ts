@@ -81,3 +81,16 @@ export interface Project {
   subService: SubService | null
   state: 'OPENED' | 'ACTIVE' | 'CLOSED'
 }
+
+export interface UserToken {
+  [key: string]: any
+  id: number
+  username: string
+  hash: string
+  salt: string
+  role: 'ADMIN' | 'USER'
+  token: string
+  createdAt: string
+  updatedAt: string
+  expiresAt: string
+}
