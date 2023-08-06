@@ -18,6 +18,7 @@ import {
   updateUser,
   deleteUser,
 } from './functions'
+import { register, login, logout } from './functions/auth'
 
 const app = express() // create a new express application instance
 dotenv.config() // load .env file
@@ -92,6 +93,14 @@ app.post('/user', createUser)
 app.put('/user/:id', updateUser)
 // DELETE /user - delete a user
 app.delete('/user/:id', deleteUser)
+
+// PATHS Auth:
+// POST /register
+app.post('/register', register)
+// POST /login
+app.post('/login', login)
+// POST /logout
+app.post('/logout', logout)
 
 // (all other methods) /* - 404
 app.all('*', generalPathMatch)

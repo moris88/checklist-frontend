@@ -6,6 +6,10 @@ dotenv.config() // load .env file
 
 const { PATHDB } = process.env
 const pathDb = PATHDB || ''
+const { PATHTOKEN } = process.env
+const pathToken = PATHTOKEN || ''
+const { PATHUSER } = process.env
+const pathUser = PATHUSER || ''
 
 export const formatResponse = ({
   projects,
@@ -17,6 +21,7 @@ export const formatResponse = ({
   status,
   count,
   id,
+  token,
 }: {
   projects?: Project[] | null
   tasks?: Task[] | null
@@ -27,6 +32,7 @@ export const formatResponse = ({
   status: 200 | 201 | 204 | 400 | 401 | 404 | 500
   count?: number
   id?: string
+  token?: string
 }): {
   projects: Project[] | undefined
   tasks: Task[] | undefined
@@ -37,6 +43,7 @@ export const formatResponse = ({
   status: 200 | 201 | 204 | 400 | 401 | 404 | 500
   count?: number
   id?: string
+  token?: string
 } => {
   return {
     projects: projects ?? undefined,
@@ -48,6 +55,7 @@ export const formatResponse = ({
     status,
     error: error ?? null,
     id: id ?? undefined,
+    token: token ?? undefined,
   }
 }
 
@@ -70,6 +78,45 @@ export const readFile = (key: 'projects' | 'tasks' | 'users'): any[] => {
     console.log('data:', data)
     console.log('data[key]:', data[key])
     return data[key]
+  } catch (error) {
+    console.log('ERROR!', error)
+    return []
+  }
+}
+
+export const writeFileSystem = (
+  data: any[],
+  key: 'tokens' | 'users'
+): boolean => {
+  try {
+    const system = JSON.parse(
+      fs.readFileSync(key === 'tokens' ? pathToken : pathUser, 'utf8')
+    )
+    system[key] = data
+    fs.writeFileSync(
+      key === 'tokens' ? pathToken : pathUser,
+      JSON.stringify(system),
+      'utf8'
+    )
+    return true
+  } catch (error) {
+    console.log('ERROR!', error)
+    return false
+  }
+}
+
+export const readFileSystem = (key: 'tokens' | 'users'): any[] => {
+  try {
+    console.log(
+      'readFile',
+      fs.readFileSync(key === 'tokens' ? pathToken : pathUser, 'utf8')
+    )
+    const system = JSON.parse(
+      fs.readFileSync(key === 'tokens' ? pathToken : pathUser, 'utf8')
+    )
+    console.log('system:', system)
+    console.log('system[key]:', system[key])
+    return system[key]
   } catch (error) {
     console.log('ERROR!', error)
     return []
