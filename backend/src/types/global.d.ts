@@ -96,6 +96,6 @@ export interface Token {
   [key: string]: any
   token: string
   expiresAt: string
-  userID: number
+  userID: string
   createdAt: string
 }

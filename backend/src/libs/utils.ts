@@ -37,7 +37,7 @@ export const formatResponse = ({
   projects: Project[] | undefined
   tasks: Task[] | undefined
   users: User[] | undefined
-  error: string | null
+  error: string | undefined
   message?: string
   statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   status: 200 | 201 | 204 | 400 | 401 | 404 | 500
@@ -53,7 +53,7 @@ export const formatResponse = ({
     count: count ?? undefined,
     statusText,
     status,
-    error: error ?? null,
+    error: error ?? undefined,
     id: id ?? undefined,
     token: token ?? undefined,
   }
@@ -73,10 +73,7 @@ export const writeFile = (data: any[], key: 'projects' | 'tasks' | 'users'): boo
 
 export const readFile = (key: 'projects' | 'tasks' | 'users'): any[] => {
   try {
-    console.log('readFile', fs.readFileSync(pathDb, 'utf8'))
     const data = JSON.parse(fs.readFileSync(pathDb, 'utf8'))
-    console.log('data:', data)
-    console.log('data[key]:', data[key])
     return data[key]
   } catch (error) {
     console.log('ERROR!', error)
@@ -107,15 +104,9 @@ export const writeFileSystem = (
 
 export const readFileSystem = (key: 'tokens' | 'users'): any[] => {
   try {
-    console.log(
-      'readFile',
-      fs.readFileSync(key === 'tokens' ? pathToken : pathUser, 'utf8')
-    )
     const system = JSON.parse(
       fs.readFileSync(key === 'tokens' ? pathToken : pathUser, 'utf8')
     )
-    console.log('system:', system)
-    console.log('system[key]:', system[key])
     return system[key]
   } catch (error) {
     console.log('ERROR!', error)
@@ -127,6 +118,5 @@ export const generateLongId = (): string => {
   const timestamp = Date.now().toString() // Ottieni il timestamp corrente come stringa
   const randomNum = Math.floor(Math.random() * 1000000).toString() // Genera un numero casuale a sei cifre come stringa
   const longId = timestamp + randomNum // Combina timestamp e numero casuale
-
   return longId
 }

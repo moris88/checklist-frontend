@@ -1,25 +1,29 @@
-import { checkPassword, generatePassword, getUsersToken, registrationUser } from '@/libs/token'
-import { formatResponse, generateLongId } from '../../libs/utils';
+import {
+  checkPassword,
+  generatePassword,
+  generateTokenUser,
+  getUsersToken,
+  registrationUser,
+  removeToken,
+} from '../../libs/token'
+import { formatResponse, generateLongId } from '../../libs/utils'
 import { Request, Response } from 'express'
-import { users } from '../../../../frontend/src/utils/users';
 
 export function register(req: Request, res: Response) {
   try {
-    console.log('register', req, res)
+    console.log('-->register')
     const { username, password } = req.body
-    console.log('username:', username)
-    console.log('password:', password)
     const { hash, salt } = generatePassword(password)
-    console.log('hash:', hash)
-    console.log('salt:', salt)
-    if (registrationUser({
-      id: generateLongId(), 
-      username, 
-      hash, 
-      salt,
-      role: 'USER',
-      createdAt: new Date().toISOString(),
-    })) {
+    if (
+      registrationUser({
+        id: generateLongId(),
+        username,
+        hash,
+        salt,
+        role: 'USER',
+        createdAt: new Date().toISOString(),
+      })
+    ) {
       console.log(
         'RESPONSE',
         formatResponse({ statusText: 'SUCCESS', status: 201 })
@@ -34,11 +38,16 @@ export function register(req: Request, res: Response) {
     }
     console.log(
       'RESPONSE',
-      formatResponse({ statusText: 'ERROR', status: 400, error: 'Bad request' })
+      formatResponse({
+        statusText: 'ERROR',
+        status: 400,
+        error: 'User already exists',
+      })
     )
     return res.status(400).json(
       formatResponse({
         statusText: 'ERROR',
+        error: 'User already exists',
         status: 400,
       })
     )
@@ -64,44 +73,45 @@ export function register(req: Request, res: Response) {
 
 export function login(req: Request, res: Response) {
   try {
-    console.log('login', req, res)
+    console.log('-->login')
     const { username, password } = req.body
     console.log('username:', username)
     console.log('password:', password)
     const users = getUsersToken()
-    console.log('users:', users)
     const user = users.find((user) => user.username === username)
-    console.log('user:', user)
     if (user) {
-      const { token } = checkPassword(password, user.hash, user.salt)
-      console.log('token:', token)
-      if (token) {
+      const access = checkPassword(password, user.hash, user.salt)
+      if (access) {
+        const { token } = generateTokenUser(user.id)
         console.log(
           'RESPONSE',
-          formatResponse({ statusText: 'SUCCESS', status: 201 })
+          formatResponse({ statusText: 'SUCCESS', status: 200 })
         )
-        return res.status(200).json(
-          formatResponse({
-            statusText: 'SUCCESS',
-            status: 200,
-          })
-        )
-      } 
+        if (token) {
+          return res.status(200).json(
+            formatResponse({
+              statusText: 'SUCCESS',
+              status: 200,
+              token,
+            })
+          )
+        } else throw new Error('Token not generated')
+      }
       console.log(
         'RESPONSE',
         formatResponse({
           statusText: 'ERROR',
-          status: 400,
-          error: 'Bad request',
+          status: 401,
+          error: 'Unauthorized',
         })
       )
-      return res.status(400).json(
+      return res.status(401).json(
         formatResponse({
           statusText: 'ERROR',
-          status: 400,
+          error: 'Unauthorized',
+          status: 401,
         })
       )
-      
     }
     console.log(
       'RESPONSE',
@@ -139,16 +149,32 @@ export function login(req: Request, res: Response) {
 
 export function logout(req: Request, res: Response) {
   try {
-    console.log('logout', req, res)
-
+    console.log('-->logout')
+    const { username } = req.body
+    if (removeToken(username)) {
+      console.log(
+        'RESPONSE',
+        formatResponse({ statusText: 'SUCCESS', status: 201 })
+      )
+      return res.status(201).json(
+        formatResponse({
+          statusText: 'SUCCESS',
+          status: 201,
+        })
+      )
+    }
     console.log(
       'RESPONSE',
-      formatResponse({ statusText: 'SUCCESS', status: 201 })
-    )
-    return res.status(201).json(
       formatResponse({
-        statusText: 'SUCCESS',
-        status: 201,
+        statusText: 'ERROR',
+        status: 400,
+        error: 'Bad request',
+      })
+    )
+    return res.status(400).json(
+      formatResponse({
+        statusText: 'ERROR',
+        status: 400,
       })
     )
   } catch (error) {

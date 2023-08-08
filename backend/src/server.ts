@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { NextFunction } from 'express'
 import dotenv from 'dotenv'
 import bodyParser from 'body-parser'
 import { formatResponse } from './libs'
@@ -19,16 +19,20 @@ import {
   deleteUser,
 } from './functions'
 import { register, login, logout } from './functions/auth'
+import { checkToken } from './libs/token'
 
+console.log('-->STARTING SERVER...')
 const app = express() // create a new express application instance
 dotenv.config() // load .env file
 
-const { PORT, ORIGIN, XAPIKEY, PATHDB } = process.env // get environment variables
+const { PORT, ORIGIN, XAPIKEY, PATHDB, PATHTOKEN, PATHUSER } = process.env // get environment variables
 
 console.log('PORT:', PORT)
 console.log('ORIGIN:', ORIGIN)
 console.log('XAPIKEY:', XAPIKEY)
 console.log('PATHDB:', PATHDB)
+console.log('PATHTOKEN:', PATHTOKEN)
+console.log('PATHUSER:', PATHUSER)
 
 // Configuration of the options CORS
 const corsOptions = {
@@ -44,17 +48,40 @@ app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-
 
 app.use(apiKeyMiddleware)
 
-function apiKeyMiddleware(req: Request, res: Response, next: any) {
+function apiKeyMiddleware(req: Request, res: Response, next: NextFunction) {
   console.log('--------------')
-  console.log(`New request! - Path: ${req.path}`)
+  console.log(`-->New request! - Path: ${req.path}`)
+  if (
+    !['/api/v1/login', '/api/v1/register', '/api/v1/logout'].includes(req.path)
+  ) {
+    console.log('XAPIKEY NOT REQUIRED!!!')
+    const bearerToken = req.headers?.authorization ?? null
+    console.log('Authorization:', bearerToken)
+    if (bearerToken) {
+      if (checkToken(bearerToken as string)) {
+        console.log('-->ACCESS GRANTED')
+        next()
+        return
+      }
+    }
+    console.log('-->ACCESS DENIED - NOT AUTHORIZED')
+    return res.status(401).json(
+      formatResponse({
+        statusText: 'ERROR',
+        status: 401,
+        error: 'not authorized',
+      })
+    )
+  }
   const xapikey = req.headers?.['xapikey'] ?? null
   console.log('xapikey:', xapikey)
   if (XAPIKEY === xapikey) {
-    console.log('ACCESS GRANTED')
+    console.log('-->ACCESS GRANTED')
     next()
+    return
   } else {
-    console.log('ACCESS DENIED - NOT AUTHORIZED')
-    res.status(401).json(
+    console.log('-->ACCESS DENIED - NOT AUTHORIZED')
+    return res.status(401).json(
       formatResponse({
         statusText: 'ERROR',
         status: 401,
@@ -66,48 +93,48 @@ function apiKeyMiddleware(req: Request, res: Response, next: any) {
 
 // PATHS Projects:
 // GET /projects - get all projects
-app.get('/projects', getProjects)
+app.get('/api/v1/projects', getProjects)
 // POST /project - create a new project
-app.post('/project', createProject)
+app.post('/api/v1/project', createProject)
 // PUT /project - update a project
-app.put('/project/:id', updateProject)
+app.put('/api/v1/project/:id', updateProject)
 // DELETE /project - delete a project
-app.delete('/project/:id', deleteProject)
+app.delete('/api/v1/project/:id', deleteProject)
 
 // PATHS Tasks:
 // GET /tasks - get all tasks
-app.get('/tasks', getTasks)
+app.get('/api/v1/tasks', getTasks)
 // POST /task - create a new task
-app.post('/task/create', createTask)
+app.post('/api/v1/task/create', createTask)
 // PUT /task - update a task
-app.put('/task/:id', updateTask)
+app.put('/api/v1/task/:id', updateTask)
 // DELETE /task - delete a task
-app.delete('/task/:id', deleteTask)
+app.delete('/api/v1/task/:id', deleteTask)
 
 // PATHS Users:
 // GET /users - get all users
-app.get('/users', getUsers)
+app.get('/api/v1/users', getUsers)
 // POST /user - create a new user
-app.post('/user', createUser)
+app.post('/api/v1/user', createUser)
 // PUT /user - update a user
-app.put('/user/:id', updateUser)
+app.put('/api/v1/user/:id', updateUser)
 // DELETE /user - delete a user
-app.delete('/user/:id', deleteUser)
+app.delete('/api/v1/user/:id', deleteUser)
 
 // PATHS Auth:
 // POST /register
-app.post('/register', register)
+app.post('/api/v1/register', register)
 // POST /login
-app.post('/login', login)
+app.post('/api/v1/login', login)
 // POST /logout
-app.post('/logout', logout)
+app.post('/api/v1/logout', logout)
 
 // (all other methods) /* - 404
 app.all('*', generalPathMatch)
 
 function generalPathMatch(req: Request, res: Response) {
   console.log('REQUEST REJECTED - PATH NOT FOUND')
-  res.status(404).json(
+  return res.status(404).json(
     formatResponse({
       statusText: 'ERROR',
       status: 404,
@@ -123,7 +150,7 @@ function errorHandler(err: Error, req: Request, res: Response) {
   // Log the error
   console.log(err.message, { error: err })
   // Respond with an error message to the client
-  res.status(500).json(
+  return res.status(500).json(
     formatResponse({
       statusText: 'ERROR',
       status: 500,
@@ -134,5 +161,6 @@ function errorHandler(err: Error, req: Request, res: Response) {
 
 // Start the server
 app.listen(PORT, () => {
+  console.log('-->SERVER STARTED!')
   console.log(`Webservices listening on port ${PORT}`)
 })

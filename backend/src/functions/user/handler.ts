@@ -9,7 +9,7 @@ import { User } from '../../types/global'
 
 export function createUser(req: Request, res: Response) {
   try {
-    console.log('createUser', req.body)
+    console.log('-->createUser', req.body)
     if (Object.keys(req.body).length === 0) {
       console.log('Create User: No Body')
       return res.status(400).json(
@@ -32,7 +32,6 @@ export function createUser(req: Request, res: Response) {
     const user = req.body as User
     const { email } = user
     const users = readFile('users')
-    console.log('users:', users)
     if (users.filter((user: User) => user.email === email).length > 0) {
       console.log('Create User: Email already exists')
       return res.status(400).json(
@@ -71,7 +70,7 @@ export function createUser(req: Request, res: Response) {
 
 export function getUsers(req: Request, res: Response) {
   try {
-    console.log('getUsers')
+    console.log('-->getUsers')
     const users = readFile('users') as User[]
     console.log('SUCCESS: get Users')
     return res.status(200).json(
@@ -96,7 +95,7 @@ export function getUsers(req: Request, res: Response) {
 
 export async function deleteUser(req: Request, res: Response) {
   try {
-    console.log('deleteUser', req.params.id)
+    console.log('-->deleteUser', req.params.id)
     if (!req.params.id) {
       console.log('Delete User: No Param id')
       return res.status(400).json(
@@ -143,7 +142,7 @@ export async function deleteUser(req: Request, res: Response) {
 
 export async function updateUser(req: Request, res: Response) {
   try {
-    console.log('updateUser', req.body)
+    console.log('-->updateUser', req.body)
     const { id } = req.params
     if (!id) {
       console.log('Update User: No Param id')

@@ -1,23 +1,23 @@
 import * as crypto from 'crypto'
-import { Token, UserToken } from '@/types/global';
-import { readFileSystem, writeFileSystem } from './utils';
+import { Token, UserToken } from '@/types/global'
+import { readFileSystem, writeFileSystem } from './utils'
 
 export function getUsersToken(): UserToken[] {
-    return readFileSystem('users')
+  return readFileSystem('users')
 }
 
 export function checkPassword(
   password: string,
   hash: string,
   salt: string
-): { token: string | null } {
+): boolean {
   const hashVerify = crypto
     .pbkdf2Sync(password, salt, 10000, 64, 'sha512')
     .toString('hex')
-  if (hashVerify !== hash) {
-    return { token: generateToken() }   
- }
-  return { token: null }
+  if (hashVerify === hash) {
+    return true
+  }
+  return false
 }
 
 export function generatePassword(password: string): {
@@ -32,36 +32,62 @@ export function generatePassword(password: string): {
 }
 
 export function generateToken(): string {
-  const length = 32
+  const length = 256
   const buffer = crypto.randomBytes(Math.ceil(length / 2))
   return buffer.toString('hex').slice(0, length)
 }
 
 export function registrationUser(user: UserToken): boolean {
-    const users = readFileSystem('users')
-    if (user) {
-        users.push(user)
-        return writeFileSystem(users, 'users')
+  const users = readFileSystem('users')
+  if (user) {
+    if (users.find((u) => u.username === user.username)) {
+      return false
     }
-    return false
+    users.push(user)
+    return writeFileSystem(users, 'users')
+  }
+  return false
 }
 
-export function generateTokenUser(userId: number): boolean {
-    const tokens = readFileSystem('tokens')
-    const expiresAt = new Date()
-    expiresAt.setHours(expiresAt.getHours() + 1)
-    const token: Token = {
-        token: generateToken(),
-        userID: userId,
-        expiresAt: expiresAt.toISOString(),
-        createdAt: new Date().toISOString(),
-    }
-    tokens.push(token)
-    return writeFileSystem(tokens, 'tokens')
+export function generateTokenUser(userId: string): { token: string | null } {
+  const tokens = readFileSystem('tokens')
+  const expiresAt = new Date()
+  expiresAt.setHours(expiresAt.getHours() + 1)
+  const token: Token = {
+    token: generateToken(),
+    userID: userId,
+    expiresAt: expiresAt.toISOString(),
+    createdAt: new Date().toISOString(),
+  }
+  tokens.push(token)
+  if (writeFileSystem(tokens, 'tokens')) {
+    return { token: token.token }
+  }
+  return { token: null }
 }
 
 export function checkToken(token: string): boolean {
-    const tokens = readFileSystem('tokens')
-    const tokenIndex = tokens.findIndex((t) => t.token === token)
-    return tokenIndex !== -1
+  const tokens = readFileSystem('tokens')
+  const tokenIndex = tokens.findIndex(
+    (t) => t.token === token.replace('Bearer ', '')
+  )
+  const today = new Date().getTime()
+  if (tokenIndex !== -1) {
+    const tokenExpiresAt = new Date(tokens[tokenIndex].expiresAt).getTime()
+    if (tokenExpiresAt > today) {
+      return true
+    } 
+    tokens.splice(tokenIndex, 1)
+    writeFileSystem(tokens, 'tokens')
+  }
+  return false
+}
+
+export function removeToken(username: string): boolean {
+  const tokens = readFileSystem('tokens') as Token[]
+  const users = readFileSystem('users') as UserToken[]
+  const idUser = users.find((u) => u.username === username)?.id ?? null
+  if (!idUser) return false
+  const newTokens = tokens.filter((t) => t.userID !== idUser)
+  return writeFileSystem(newTokens, 'tokens')
 }

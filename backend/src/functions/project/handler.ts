@@ -71,11 +71,7 @@ export function getProjects(req: Request, res: Response) {
 export function deleteProject(
   req: Request,
   res: Response
-): {
-  error: string | null
-  statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
-  status: 200 | 201 | 204 | 400 | 401 | 404 | 500
-} {
+) {
   try {
     console.log('deleteProject', req, res)
     console.log('SUCCESS: Delete project')
@@ -109,11 +105,7 @@ export function deleteProject(
 export function updateProject(
   req: Request,
   res: Response
-): {
-  error: string | null
-  statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
-  status: 200 | 201 | 204 | 400 | 401 | 404 | 500
-} {
+) {
   try {
     console.log('updateProject', req, res)
     console.log('SUCCESS: Update Project')
