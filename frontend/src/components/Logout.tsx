@@ -41,7 +41,7 @@ const Logout = () => {
   console.log(element)
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen font-bold">
       {'Logout in corso... Attendere...'}
     </div>
   )

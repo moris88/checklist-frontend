@@ -1,10 +1,10 @@
 import React from 'react'
-import { Project } from '../types/global'
+import { Task } from '../types/global'
 
 const VITE_SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) ?? ''
 
-const useProject = () => {
-  const [projects, setProjects] = React.useState<Project[]>([])
+const useTasks = () => {
+  const [tasks, setTasks] = React.useState<Task[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<any>(null)
 
@@ -20,13 +20,13 @@ const useProject = () => {
   React.useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const response = await fetch(`${VITE_SERVER_URL}/projects`, {
+        const response = await fetch(`${VITE_SERVER_URL}/tasks`, {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }).then((d) => d.json())
-        setProjects(response as Project[])
+        setTasks(response as Task[])
       } catch (error) {
         setError(error)
       } finally {
@@ -37,10 +37,10 @@ const useProject = () => {
   }, [token])
 
   return {
-    projects,
+    tasks,
     loading,
     error,
   }
 }
 
-export default useProject
+export default useTasks

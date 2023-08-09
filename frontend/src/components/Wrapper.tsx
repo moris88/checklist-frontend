@@ -15,8 +15,6 @@ const Wrapper = ({ children, title }: WrapperProps) => {
     defaultValues: { token: null, username: null },
   })
 
-  console.log(element)
-
   if (loading) {
     return <Spinner className="flex justify-center items-center h-screen" />
   }
@@ -31,7 +29,7 @@ const Wrapper = ({ children, title }: WrapperProps) => {
       <Navbar fluid rounded>
         <Navbar.Brand href="/">
           <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-            {title}
+            {title === 'Home' ? 'CheckList Work' : title}
           </span>
         </Navbar.Brand>
         <Navbar.Toggle />
