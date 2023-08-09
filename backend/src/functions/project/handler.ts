@@ -1,7 +1,6 @@
 import { formatResponse } from '../../libs/utils'
 import { Request, Response } from 'express'
 
-
 export function createProject(req: Request, res: Response) {
   try {
     console.log('createProject', req, res)
@@ -41,7 +40,7 @@ export function getProjects(req: Request, res: Response) {
   try {
     console.log('getProjects', req, res)
     console.log('SUCCESS: get projects')
-    
+
     console.log(
       'RESPONSE',
       formatResponse({ statusText: 'SUCCESS', status: 200 })
@@ -68,10 +67,7 @@ export function getProjects(req: Request, res: Response) {
   }
 }
 
-export function deleteProject(
-  req: Request,
-  res: Response
-) {
+export function deleteProject(req: Request, res: Response) {
   try {
     console.log('deleteProject', req, res)
     console.log('SUCCESS: Delete project')
@@ -102,10 +98,7 @@ export function deleteProject(
   }
 }
 
-export function updateProject(
-  req: Request,
-  res: Response
-) {
+export function updateProject(req: Request, res: Response) {
   try {
     console.log('updateProject', req, res)
     console.log('SUCCESS: Update Project')

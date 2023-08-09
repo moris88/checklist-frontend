@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Controller, useForm } from 'react-hook-form'
 import useStore from '../../hooks/useStore'
 import { Project, Task, User } from '../../types/global'
@@ -53,23 +54,17 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     control,
     register,
     handleSubmit,
-    getValues,
     formState: { errors },
   } = useForm<Task>({
     values: values,
   })
 
-  console.count('GET VALUES')
-  console.log('GET VALUES', getValues())
-
   useEffect(() => {
     if (defaultValues) {
-      console.log('defaultValues', defaultValues)
       setValues(defaultValues)
       const project = listProjects.filter(
         (project) => project.id === defaultValues.projectID
       )
-      console.log('project', project)
       if (project.length > 0 && project[0].members !== null) {
         setMembers(project[0].members)
       } else {
@@ -78,10 +73,8 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     }
   }, [defaultValues, listProjects])
 
-  console.log('members', members)
-
   const onSubmit = (data: Task) => {
-    const system = systems[0]
+    const [system] = systems
     const dataMembers = data.assignee as unknown as string[]
     if (dataMembers !== null) {
       const newMember: User[] = []
@@ -92,7 +85,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
       data.members = newMember
     }
     data.id = system.taskID
-    console.log(data)
     addSystem({ ...system, taskID: system.taskID + 1 })
     addElement(data)
     window.location.href = '/tasks'
@@ -147,7 +139,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
         name={'assignee'}
         defaultValue={[]}
         render={({ field: { value, onChange } }) => {
-          console.log('value', value?.filter((el) => el !== undefined))
           return (
             <Multiselect
               options={members.map((user) => user.full_name)}

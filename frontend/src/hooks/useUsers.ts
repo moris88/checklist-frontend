@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import { User } from '../types/global'
 import { getUserByID, getUsers } from '../utils/requester'

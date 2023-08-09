@@ -18,7 +18,13 @@ import {
   updateUser,
   deleteUser,
 } from './functions'
-import { register, login, logout, getProfiles, getProfile } from './functions/auth'
+import {
+  register,
+  login,
+  logout,
+  getProfiles,
+  getProfile,
+} from './functions/auth'
 import { checkToken } from './libs/token'
 
 const app = express() // create a new express application instance

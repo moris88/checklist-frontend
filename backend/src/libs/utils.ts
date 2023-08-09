@@ -1,4 +1,5 @@
-import { Project, Task, User } from '../types/global.d'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Project, Task, User } from '../types/global'
 import fs from 'fs'
 import dotenv from 'dotenv'
 
@@ -67,7 +68,10 @@ export const formatResponse = ({
   }
 }
 
-export const writeFile = (data: any[], key: 'projects' | 'tasks' | 'users'): boolean => {
+export const writeFile = (
+  data: any[],
+  key: 'projects' | 'tasks' | 'users'
+): boolean => {
   try {
     const dataDB = JSON.parse(fs.readFileSync(pathDb, 'utf8'))
     dataDB[key] = data

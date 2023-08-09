@@ -163,7 +163,7 @@ export async function updateUser(req: Request, res: Response) {
           error: 'No Body',
         })
       )
-    } 
+    }
     const user = req.body as User
     const users = readFile('users') as User[]
     console.log('users:', users)

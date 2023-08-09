@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Controller, useForm } from 'react-hook-form'
 import useStore from '../../hooks/useStore'
 import { Project, User } from '../../types/global'
@@ -49,14 +50,10 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     control,
     register,
     handleSubmit,
-    getValues,
     formState: { errors },
   } = useForm<Project>({
     values: values,
   })
-
-  console.count('GET VALUES')
-  console.log('GET VALUES', getValues())
 
   useEffect(() => {
     if (defaultValues) {
@@ -65,7 +62,7 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
   }, [defaultValues])
 
   const onSubmit = handleSubmit((data) => {
-    const system = systems[0]
+    const [system] = systems
     const dataMembers = data.members as unknown as string[]
     if (dataMembers !== null) {
       const newMember: User[] = []
@@ -76,7 +73,6 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
       data.members = newMember
     }
     data.id = system.projectID
-    console.log(data)
     addSystem({ ...system, projectID: system.projectID + 1 })
     addElement(data)
     window.location.href = '/projects'

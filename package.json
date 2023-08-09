@@ -4,8 +4,9 @@
   "private": true,
   "scripts": {
     "open": "wait-on http://localhost:3000",
-    "lint": "cd frontend && yarn lint --fix",
+    "lint:frontend": "cd frontend && yarn lint --fix",
     "lint:backend": "cd backend && yarn lint --fix",
+    "lint": "concurrently --kill-others-on-fail --names \"express,react\" \"yarn lint:backend\" \"yarn lint:frontend\"",
     "react": "cd frontend && yarn dev",
     "express": "cd backend && yarn dev",
     "dev": "concurrently --kill-others-on-fail --names \"express,react,open\" \"yarn express\" \"yarn react\" \"yarn open\""

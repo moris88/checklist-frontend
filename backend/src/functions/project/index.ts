@@ -1,1 +1,6 @@
-export { createProject, updateProject, getProjects, deleteProject } from './handler'
+export {
+  createProject,
+  updateProject,
+  getProjects,
+  deleteProject,
+} from './handler'

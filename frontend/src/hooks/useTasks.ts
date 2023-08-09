@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import { Task } from '../types/global'
 import { getTaskByID, getTasks } from '../utils/requester'

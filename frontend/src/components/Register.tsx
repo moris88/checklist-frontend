@@ -34,9 +34,7 @@ const Register = () => {
   const onSubmit = (data: RegisterAccess) => {
     setLoadingRegister(true)
     setError(null)
-    console.log(data)
     if (data.password !== data.confirmPassword) {
-      console.log('Password non coincidono')
       setError('Password non coincidono')
       return
     }

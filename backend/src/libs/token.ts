@@ -89,7 +89,7 @@ export function getUserByToken(token: string): { id: string } | null {
     (t) => t.token === token.replace('Bearer ', '')
   )
   if (tokenIndex !== -1) {
-    const {userID} = tokens[tokenIndex]
+    const { userID } = tokens[tokenIndex]
     const users = readFileSystem('users')
     const userIndex = users.findIndex((u) => u.id === userID)
     if (userIndex !== -1) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from 'react-hook-form'
 import useStore from '../../hooks/useStore'
 import { User } from '../../types/global'
@@ -49,7 +50,7 @@ const FormUser = ({ defaultValues }: FormUserProps) => {
   }, [defaultValues])
 
   const onSubmit = (data: User) => {
-    const system = systems[0]
+    const [system] = systems
     data.id = system.userID
     addSystem({ ...system, userID: system.userID + 1 })
     data.full_name = `${data.first_name} ${data.last_name}`.trim()

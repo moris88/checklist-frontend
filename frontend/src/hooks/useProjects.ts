@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import { Project } from '../types/global'
 import { getProjectByID, getProjects } from '../utils/requester'
