@@ -21,24 +21,16 @@ import {
 import { register, login, logout, getProfiles, getProfile } from './functions/auth'
 import { checkToken } from './libs/token'
 
-console.log('-->STARTING SERVER...')
 const app = express() // create a new express application instance
 dotenv.config() // load .env file
 
-const { PORT, ORIGIN, XAPIKEY, PATHDB, PATHTOKEN, PATHUSER } = process.env // get environment variables
-
-console.log('PORT:', PORT)
-console.log('ORIGIN:', ORIGIN)
-console.log('XAPIKEY:', XAPIKEY)
-console.log('PATHDB:', PATHDB)
-console.log('PATHTOKEN:', PATHTOKEN)
-console.log('PATHUSER:', PATHUSER)
+const { PORT, ORIGIN } = process.env // get environment variables
 
 // Configuration of the options CORS
 const corsOptions = {
   origin: ORIGIN, // Set allowed source
   methods: ['GET,PUT,DELETE,POST'], // Set allowed methods
-  allowedHeaders: ['Content-Type', 'xapikey', 'Authorization'], // Set allowed headers
+  allowedHeaders: ['Content-Type', 'Authorization'], // Set allowed headers
 }
 
 // LIST OF MIDDLEWARES
@@ -54,7 +46,6 @@ function apiKeyMiddleware(req: Request, res: Response, next: NextFunction) {
   if (
     !['/api/v1/login', '/api/v1/register', '/api/v1/logout'].includes(req.path)
   ) {
-    console.log('XAPIKEY NOT REQUIRED!!!')
     const bearerToken = req.headers?.authorization ?? null
     console.log('Authorization:', bearerToken)
     if (bearerToken) {
@@ -73,22 +64,8 @@ function apiKeyMiddleware(req: Request, res: Response, next: NextFunction) {
       })
     )
   }
-  const xapikey = req.headers?.['xapikey'] ?? null
-  console.log('xapikey:', xapikey)
-  if (XAPIKEY === xapikey) {
-    console.log('-->ACCESS GRANTED')
-    next()
-    return
-  } else {
-    console.log('-->ACCESS DENIED - NOT AUTHORIZED')
-    return res.status(401).json(
-      formatResponse({
-        statusText: 'ERROR',
-        status: 401,
-        error: 'not authorized',
-      })
-    )
-  }
+  next()
+  return
 }
 
 // PATHS Projects:
@@ -165,5 +142,5 @@ function errorHandler(err: Error, req: Request, res: Response) {
 // Start the server
 app.listen(PORT, () => {
   console.log('-->SERVER STARTED!')
-  console.log(`Webservices listening on port ${PORT}`)
+  console.log(`Webservice listening on port ${PORT}`)
 })
