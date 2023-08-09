@@ -1,4 +1,4 @@
-import { Module, Project, Store, Task, User } from '../types/global'
+import { Project, Task, User } from '../types/global'
 import FormTask from './forms/FormTask'
 import FormProject from './forms/FormProject'
 import FormUser from './forms/FormUser'
@@ -6,17 +6,17 @@ import { useParams } from 'react-router-dom'
 import useStore from '../hooks/useStore'
 
 interface RecordProps {
-  module: Module
+  module: string
   edit?: boolean
 }
 
 const Record = ({ module, edit }: RecordProps) => {
   const { id } = useParams()
-  const { elements } = useStore<Store>({
+  const { elements } = useStore<any>({
     key: module,
     defaultValues: [],
   })
-  const myElement = (recordId?: string): Store | null => {
+  const myElement = (recordId?: string): any | null => {
     if (recordId) {
       const elementsFilter = elements.filter(
         (element) => element.id === +recordId

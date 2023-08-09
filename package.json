@@ -1,6 +1,6 @@
 {
   "name": "checklist-work",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "open": "wait-on http://localhost:3000",

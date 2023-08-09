@@ -1,16 +1,17 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Wrapper from './components/Wrapper'
-import { Project, Task, User } from './types/global'
 import List from './components/List'
 import Record from './components/Record'
 import Home from './components/Home'
+import Logout from './components/Logout'
+import Login from './components/Login'
 
 const router = createBrowserRouter([
   {
     path: '/projects',
     Component: () => (
       <Wrapper title="Projects">
-        <List<Project> module="project" />
+        <List module="project" />
       </Wrapper>
     ),
   },
@@ -34,7 +35,7 @@ const router = createBrowserRouter([
     path: '/tasks',
     Component: () => (
       <Wrapper title="Tasks">
-        <List<Task> module="task" />
+        <List module="task" />
       </Wrapper>
     ),
   },
@@ -58,7 +59,7 @@ const router = createBrowserRouter([
     path: '/users',
     Component: () => (
       <Wrapper title="Users">
-        <List<User> module="user" />
+        <List module="user" />
       </Wrapper>
     ),
   },
@@ -80,7 +81,19 @@ const router = createBrowserRouter([
   },
   {
     path: '/',
-    Component: () => <Home />,
+    Component: () => (
+      <Wrapper title="Home">
+        <Home />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/login',
+    Component: () => <Login />,
+  },
+  {
+    path: '/logout',
+    Component: () => <Logout />,
   },
 ])
 

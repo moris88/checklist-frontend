@@ -1,11 +1,19 @@
 import { Controller, useForm } from 'react-hook-form'
 import useStore from '../../hooks/useStore'
-import { Project, System, User } from '../../types/global'
-import { systemDefault } from '../../utils/system'
+import { Project, User } from '../../types/global'
 import { Button, Label, Select, TextInput, Textarea } from 'flowbite-react'
 import Multiselect from '../Multiselect'
 import { users } from '../../utils/users'
 import { useEffect, useState } from 'react'
+
+export const systemDefault: any[] = [
+  {
+    id: 1,
+    userID: 9,
+    projectID: 1,
+    taskID: 1,
+  },
+]
 
 interface FormProjectProps {
   defaultValues?: Project
@@ -25,15 +33,15 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
       state: 'OPENED',
     }
   )
-  const { elements: members } = useStore<User>({
+  const { elements: members } = useStore<any>({
     key: 'user',
     defaultValues: users,
   })
-  const { elements: systems, addElement: addSystem } = useStore<System>({
+  const { elements: systems, addElement: addSystem } = useStore<any>({
     key: 'system',
     defaultValues: systemDefault,
   })
-  const { addElement } = useStore<Project>({
+  const { addElement } = useStore<any>({
     key: 'project',
     defaultValues: [],
   })

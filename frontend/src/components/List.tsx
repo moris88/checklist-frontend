@@ -1,6 +1,5 @@
 import useStore from '../hooks/useStore'
 import { users } from '../utils/users'
-import { Module, Store } from '../types/global'
 import MyTable from './MyTable'
 import { Spinner } from './Spinner'
 import { useState } from 'react'
@@ -8,13 +7,13 @@ import MyModal from './MyModal'
 import { Button } from 'flowbite-react'
 
 interface ListProps {
-  module: Module
+  module: string
 }
 
-const List = <T extends Store>({ module }: ListProps) => {
-  const { elements, loading, removeElement } = useStore<T>({
+const List = ({ module }: ListProps) => {
+  const { elements, loading, removeElement } = useStore<any>({
     key: module,
-    defaultValues: module === 'user' ? (users as T[]) : [],
+    defaultValues: module === 'user' ? (users as any[]) : [],
   })
   const [showModal, setShowModal] = useState(false)
   const [recordId, setRecordId] = useState<number | null>(null)

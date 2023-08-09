@@ -1,6 +1,6 @@
 {
-  "name": "webservices-fintyre",
-  "version": "1.0.0",
+  "name": "checklist-work-backend",
+  "version": "0.0.1",
   "main": "dist/server.js",
   "scripts": {
     "prettier": "prettier --config .prettierrc \"src/**/*.ts\" --write",

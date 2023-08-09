@@ -82,14 +82,7 @@ export interface Project {
   state: 'OPENED' | 'ACTIVE' | 'CLOSED'
 }
 
-export type Store = Project | Task | User | System
-
-export type Module = 'project' | 'task' | 'user' | 'system'
-
-export interface System {
-  [key: string]: any
-  id: number
-  userID: number
-  projectID: number
-  taskID: number
+export interface AccessToken {
+  token: string | null
+  username: string | null
 }

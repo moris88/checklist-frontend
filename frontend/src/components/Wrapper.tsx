@@ -1,8 +1,8 @@
 import { Navbar } from 'flowbite-react'
 import React from 'react'
-import { systemDefault } from '../utils/system'
-import { System } from '../types/global'
-import useStore from '../hooks/useStore'
+import useStore from '../hooks/useAccess'
+import { AccessToken } from '../types/global'
+import { Spinner } from './Spinner'
 
 interface WrapperProps {
   title: string
@@ -10,14 +10,22 @@ interface WrapperProps {
 }
 
 const Wrapper = ({ children, title }: WrapperProps) => {
-  const { elements } = useStore<System>({
-    key: 'system',
-    defaultValues: systemDefault,
+  const { element, loading } = useStore<AccessToken>({
+    key: 'access_token',
+    defaultValues: { token: null, username: null },
   })
 
-  if (elements.length === 0) {
-    return <>ERROR SYSTEM!</>
+  console.log(element)
+
+  if (loading) {
+    return <Spinner className="flex justify-center items-center h-screen" />
   }
+
+  if (!element?.token) {
+    window.location.href = '/login'
+    return <></>
+  }
+
   return (
     <main>
       <Navbar fluid rounded>
@@ -31,6 +39,7 @@ const Wrapper = ({ children, title }: WrapperProps) => {
           <Navbar.Link href="/projects">Projects</Navbar.Link>
           <Navbar.Link href="/tasks">Tasks</Navbar.Link>
           <Navbar.Link href="/users">Users</Navbar.Link>
+          <Navbar.Link href="/logout">Logout</Navbar.Link>
         </Navbar.Collapse>
       </Navbar>
       {children}

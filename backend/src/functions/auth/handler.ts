@@ -117,14 +117,15 @@ export function login(req: Request, res: Response) {
       'RESPONSE',
       formatResponse({
         statusText: 'ERROR',
-        status: 400,
-        error: 'Bad request',
+        status: 404,
+        error: 'User not found',
       })
     )
     return res.status(400).json(
       formatResponse({
         statusText: 'ERROR',
-        status: 400,
+        status: 404,
+        error: 'User not found',
       })
     )
   } catch (error) {

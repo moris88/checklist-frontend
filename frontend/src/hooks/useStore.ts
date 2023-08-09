@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Module, Store } from '../types/global'
 
-interface useStoreProps<T extends Store> {
+interface useStoreProps<T extends { id: number }> {
   defaultValues?: T[]
-  key: Module
+  key: string
 }
 
-const useStore = <T extends Store>({
+const useStore = <T extends { id: number }>({
   defaultValues,
   key,
 }: useStoreProps<T>) => {

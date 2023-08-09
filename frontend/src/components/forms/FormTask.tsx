@@ -1,10 +1,18 @@
 import { Controller, useForm } from 'react-hook-form'
 import useStore from '../../hooks/useStore'
-import { Project, System, Task, User } from '../../types/global'
-import { systemDefault } from '../../utils/system'
+import { Project, Task, User } from '../../types/global'
 import { Button, Label, Select, TextInput, Textarea } from 'flowbite-react'
 import Multiselect from '../Multiselect'
 import { useEffect, useState } from 'react'
+
+export const systemDefault: any[] = [
+  {
+    id: 1,
+    userID: 9,
+    projectID: 1,
+    taskID: 1,
+  },
+]
 
 interface FormTaskProps {
   defaultValues?: Task
@@ -28,7 +36,7 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     }
   )
   const isEdit = defaultValues !== undefined
-  const { elements: systems, addElement: addSystem } = useStore<System>({
+  const { elements: systems, addElement: addSystem } = useStore<any>({
     key: 'system',
     defaultValues: systemDefault,
   })

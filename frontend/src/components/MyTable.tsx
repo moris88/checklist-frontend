@@ -1,5 +1,5 @@
 import { Button, Table } from 'flowbite-react'
-import { Module, Store, User } from '../types/global'
+import { User } from '../types/global'
 import TrashIcon from '@heroicons/react/24/outline/TrashIcon'
 import PencilSquareIcon from '@heroicons/react/24/outline/PencilSquareIcon'
 import { twMerge } from 'tailwind-merge'
@@ -9,19 +9,14 @@ interface Columns {
   label: string
 }
 
-interface MyTableProps<T> {
+interface MyTableProps {
   columns: Columns[]
-  rows: T[]
+  rows: any[]
   onDelete?: (id: number) => void
-  module: Module
+  module: string
 }
 
-const MyTable = <T extends Store>({
-  columns,
-  rows,
-  onDelete,
-  module,
-}: MyTableProps<T>) => {
+const MyTable = ({ columns, rows, onDelete, module }: MyTableProps) => {
   return (
     <Table hoverable>
       <Table.Head>
