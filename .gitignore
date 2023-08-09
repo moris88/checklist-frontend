@@ -1,1 +1,20 @@
-node_modules
+/node_modules
+
+# DB fieles
+/backend/db
+
+# package directories
+/backend/node_modules/
+/frontend/node_modules/
+
+# local env files
+/backend/.env
+/frontend/.env
+
+# production build
+/frontend/dist/
+/frontend/logs/
+
+# logs
+/backend/yarn-error.log
+/frontend/yarn-error.log
