@@ -36,7 +36,6 @@ export type SubService =
   | 'others'
 
 export interface Task {
-  [key: string]: any
   id: number
   title: string
   description: string | null
@@ -51,7 +50,6 @@ export interface Task {
 }
 
 export interface User {
-  [key: string]: any
   id: number
   first_name: string
   last_name: string
@@ -70,7 +68,6 @@ export interface User {
 }
 
 export interface Project {
-  [key: string]: any
   id: number
   name: string
   description: string | null

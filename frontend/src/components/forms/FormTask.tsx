@@ -29,7 +29,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
       updatedAt: new Date().toISOString().split('T')[0],
       assignee: null,
       projectID: null,
-      subService: null,
       deadline: new Date().toISOString().split('T')[0],
       priority: 'LOW',
       type: 'others',
@@ -37,14 +36,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     }
   )
   const isEdit = defaultValues !== undefined
-  const { elements: systems, addElement: addSystem } = useStore<any>({
-    key: 'system',
-    defaultValues: systemDefault,
-  })
-  const { addElement } = useStore<Task>({
-    key: 'task',
-    defaultValues: [],
-  })
   const [members, setMembers] = useState<User[]>([])
   const { elements: listProjects } = useStore<Project>({
     key: 'project',
@@ -74,19 +65,7 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
   }, [defaultValues, listProjects])
 
   const onSubmit = (data: Task) => {
-    const [system] = systems
-    const dataMembers = data.assignee as unknown as string[]
-    if (dataMembers !== null) {
-      const newMember: User[] = []
-      dataMembers.forEach((el) => {
-        const member = members.filter((member) => member.full_name === el)
-        newMember.push(member[0])
-      })
-      data.members = newMember
-    }
-    data.id = system.taskID
-    addSystem({ ...system, taskID: system.taskID + 1 })
-    addElement(data)
+    console.log(data)
     window.location.href = '/tasks'
   }
 

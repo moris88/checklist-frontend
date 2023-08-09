@@ -1,4 +1,4 @@
-import { LoginAccess, RegisterAccess } from '../types/global'
+import { LoginAccess, Project, RegisterAccess } from '../types/global'
 import { SERVER_URL } from './metadata'
 
 export async function login(data: LoginAccess) {
@@ -29,6 +29,24 @@ export async function register(data: RegisterAccess) {
     },
     body: JSON.stringify({ username: data.username, password: data.password }),
   }).then((d) => d.json())
+}
+
+export async function createProject(
+  token: string,
+  data: Omit<Project, 'createdAt' | 'updatedAt' | 'id'>
+) {
+  return await fetch(`${SERVER_URL}/project`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  })
+    .then((d) => d.json())
+    .catch((e) => {
+      console.log('getProjects', e)
+    })
 }
 
 export async function getProjects(token: string) {

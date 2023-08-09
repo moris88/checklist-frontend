@@ -10,7 +10,7 @@ interface useProjectProps {
 
 const useProjects = ({ id, skip }: useProjectProps) => {
   const [recordId, setRecordId] = React.useState<string | null>(id ?? null)
-  const [projects, setProjects] = React.useState<Project[] | null>(null)
+  const [projects, setProjects] = React.useState<Project[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<any>(null)
 
@@ -62,17 +62,12 @@ const useProjects = ({ id, skip }: useProjectProps) => {
       setLoading(false)
       return
     }
-    if (projects) {
-      setLoading(false)
-      return
-    }
     console.log('useProjects.fetchProjects')
     fetchProjects()
-  }, [projects, recordId, skip, token])
+  }, [recordId, skip, token])
 
   return {
     setId: (id: string) => {
-      setProjects(null)
       setRecordId(id)
     },
     projects,

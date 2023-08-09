@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 const Login = () => {
   const navigate = useNavigate()
   const [loadingLogin, setLoadingLogin] = useState<boolean>(false)
+  const [message, setMessage] = useState<string | null>(null)
   const { element, setElement, loading } = useAccess<AccessToken>({
     key: 'access_token',
     defaultValues: {
@@ -42,18 +43,29 @@ const Login = () => {
   }
 
   const onSubmit = (data: LoginAccess) => {
-    login(data).then((response) => {
-      if (response.status === 200) {
-        const expiresAt = new Date()
-        expiresAt.setHours(expiresAt.getHours() + 1)
-        setElement({
-          token: response.token,
-          owner: response.owner,
-          expiresAt: expiresAt.getTime(),
-          createdAt: new Date().getTime(),
-        })
-      }
-    })
+    login(data)
+      .then((response) => {
+        if (response.status === 200) {
+          const expiresAt = new Date()
+          expiresAt.setHours(expiresAt.getHours() + 1)
+          setElement({
+            token: response.token,
+            owner: response.owner,
+            expiresAt: expiresAt.getTime(),
+            createdAt: new Date().getTime(),
+          })
+        }
+        if (response.status === 404) {
+          setMessage('Username non trovato!')
+        }
+        if (response.status === 401) {
+          setMessage('Username o password errati!')
+        }
+      })
+      .catch((error) => {
+        console.log(error)
+        setMessage(error.message)
+      })
   }
 
   return (
@@ -64,6 +76,11 @@ const Login = () => {
       <div className="block border-b-2 border-gray-300 w-52">
         <p className="font-bold text-xl text-center">LOGIN</p>
       </div>
+      {message && (
+        <div className="block">
+          <p className="font-bold text-red-800 text-center">{message}</p>
+        </div>
+      )}
       <div>
         <div className="block">
           <Label htmlFor="username" value="Your username" />

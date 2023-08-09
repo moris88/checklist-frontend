@@ -1,82 +1,76 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Controller, useForm } from 'react-hook-form'
-import useStore from '../../hooks/useStore'
-import { Project, User } from '../../types/global'
-import { Button, Label, Select, TextInput, Textarea } from 'flowbite-react'
+import { Project } from '../../types/global'
+import {
+  Button,
+  Label,
+  Select,
+  Spinner,
+  TextInput,
+  Textarea,
+} from 'flowbite-react'
 import Multiselect from '../Multiselect'
-import { users } from '../../utils/users'
-import { useEffect, useState } from 'react'
-
-export const systemDefault: any[] = [
-  {
-    id: 1,
-    userID: 9,
-    projectID: 1,
-    taskID: 1,
-  },
-]
+import React from 'react'
+import { useUsers } from '../../hooks'
+import { createProject } from '../../utils/requester'
+import { useNavigate } from 'react-router-dom'
 
 interface FormProjectProps {
-  defaultValues?: Project
+  defaultValues?: Omit<Project, 'createdAt' | 'updatedAt' | 'id'>
 }
 
 const FormProject = ({ defaultValues }: FormProjectProps) => {
-  const [values, setValues] = useState<Project>(
+  const navigate = useNavigate()
+  const { users, loading: lu } = useUsers({})
+  const [values, setValues] = React.useState<
+    Omit<Project, 'createdAt' | 'updatedAt' | 'id'>
+  >(
     defaultValues ?? {
-      id: 0,
       name: '',
       description: null,
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0],
       members: null,
       service: null,
       subService: null,
       state: 'OPENED',
     }
   )
-  const { elements: members } = useStore<any>({
-    key: 'user',
-    defaultValues: users,
-  })
-  const { elements: systems, addElement: addSystem } = useStore<any>({
-    key: 'system',
-    defaultValues: systemDefault,
-  })
-  const { addElement } = useStore<any>({
-    key: 'project',
-    defaultValues: [],
-  })
+
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Project>({
+  } = useForm<Omit<Project, 'createdAt' | 'updatedAt' | 'id'>>({
     values: values,
   })
 
-  useEffect(() => {
+  const token = React.useMemo(() => {
+    const data = localStorage.getItem('access_token')
+    if (data) {
+      const parsed = JSON.parse(data)
+      return parsed.token
+    }
+    return null
+  }, [])
+
+  React.useEffect(() => {
     if (defaultValues) {
       setValues(defaultValues)
     }
   }, [defaultValues])
 
   const onSubmit = handleSubmit((data) => {
-    const [system] = systems
-    const dataMembers = data.members as unknown as string[]
-    if (dataMembers !== null) {
-      const newMember: User[] = []
-      dataMembers.forEach((el) => {
-        const member = members.filter((member) => member.full_name === el)
-        newMember.push(member[0])
-      })
-      data.members = newMember
-    }
-    data.id = system.projectID
-    addSystem({ ...system, projectID: system.projectID + 1 })
-    addElement(data)
-    window.location.href = '/projects'
+    console.log(data)
+    createProject(token, data)
+    navigate('/projects')
   })
+
+  if (lu) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    )
+  }
 
   return (
     <form className="flex flex-col gap-2 p-4" onSubmit={onSubmit}>

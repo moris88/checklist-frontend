@@ -3,12 +3,14 @@ import { useState } from 'react'
 import MyModal from './MyModal'
 import { Button, Spinner } from 'flowbite-react'
 import { useProjects, useTasks, useUsers } from '../hooks'
+import { useNavigate } from 'react-router-dom'
 
 interface ListProps {
   module: string
 }
 
 const List = ({ module }: ListProps) => {
+  const navigate = useNavigate()
   const [showModal, setShowModal] = useState(false)
   const [recordId] = useState<string | null>(null)
   const { users, loading: lu } = useUsers({
@@ -43,31 +45,37 @@ const List = ({ module }: ListProps) => {
     )
   }
 
-  if (users.length === 0) {
+  if (module === 'task' && tasks.length === 0) {
     return (
       <div className="flex justify-center items-center h-5 mt-10">
         <section className="mt-2 flex justify-end items-center px-4">
-          {module === 'user' && (
-            <Button
-              onClick={() => (window.location.href = `/${module}/create`)}
-            >
-              New User
-            </Button>
-          )}
-          {module === 'project' && (
-            <Button
-              onClick={() => (window.location.href = `/${module}/create`)}
-            >
-              New Project
-            </Button>
-          )}
-          {module === 'task' && (
-            <Button
-              onClick={() => (window.location.href = `/${module}/create`)}
-            >
-              New Task
-            </Button>
-          )}
+          <Button onClick={() => navigate(`/${module}/create`)}>
+            New Task
+          </Button>
+        </section>
+      </div>
+    )
+  }
+
+  if (module === 'user' && users.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-5 mt-10">
+        <section className="mt-2 flex justify-end items-center px-4">
+          <Button onClick={() => navigate(`/${module}/create`)}>
+            New User
+          </Button>
+        </section>
+      </div>
+    )
+  }
+
+  if (module === 'project' && projects.length === 0) {
+    return (
+      <div className="flex justify-center items-center h-5 mt-10">
+        <section className="mt-2 flex justify-end items-center px-4">
+          <Button onClick={() => navigate(`/${module}/create`)}>
+            New Project
+          </Button>
         </section>
       </div>
     )
