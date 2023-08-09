@@ -10,7 +10,7 @@ interface useProjectProps {
 
 const useProjects = ({ id, skip }: useProjectProps) => {
   const [recordId, setRecordId] = React.useState<string | null>(id ?? null)
-  const [projects, setProjects] = React.useState<Project[]>([])
+  const [projects, setProjects] = React.useState<Project[] | null>(null)
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<any>(null)
 
@@ -23,8 +23,14 @@ const useProjects = ({ id, skip }: useProjectProps) => {
     return null
   }, [])
 
+  console.log('useProjects')
+  console.log('useProjects.skip', skip)
+  console.log('useProjects.users', projects)
+  console.log('useProjects.loading', loading)
+
   React.useEffect(() => {
     const fetchProjects = async () => {
+      console.log('useProjects.fetchProjects', recordId)
       if (recordId) {
         try {
           const response = await getProjectByID(token, recordId)
@@ -32,25 +38,43 @@ const useProjects = ({ id, skip }: useProjectProps) => {
         } catch (error) {
           setError(error)
         } finally {
+          console.log('useProjects.fetchProjects.finally')
           setLoading(false)
         }
         return
       }
       try {
         const response = await getProjects(token)
+        console.log('useProjects.fetchProjects.response', response)
         setProjects(response as Project[])
       } catch (error) {
         setError(error)
       } finally {
+        console.log('useProjects.fetchProjects.finally')
         setLoading(false)
       }
     }
-    if (skip) return
+    if (!token) {
+      setLoading(false)
+      return
+    }
+    if (skip) {
+      setLoading(false)
+      return
+    }
+    if (projects) {
+      setLoading(false)
+      return
+    }
+    console.log('useProjects.fetchProjects')
     fetchProjects()
-  }, [recordId, skip, token])
+  }, [projects, recordId, skip, token])
 
   return {
-    setId: (id: string) => setRecordId(id),
+    setId: (id: string) => {
+      setProjects(null)
+      setRecordId(id)
+    },
     projects,
     loading,
     error,

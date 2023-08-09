@@ -6,6 +6,7 @@ import {
 } from '../../libs/utils'
 import { Request, Response } from 'express'
 import { User } from '../../types/global'
+import { getUserByToken } from '../../libs/token'
 
 export function createUser(req: Request, res: Response) {
   try {
@@ -42,20 +43,30 @@ export function createUser(req: Request, res: Response) {
         })
       )
     }
-    user.id = generateLongId()
-    users.push(user)
-    if (writeFile(users, 'users')) {
-      console.log('SUCCESS: Create User')
-      return res.status(201).json(
-        formatResponse({
-          statusText: 'SUCCESS',
-          status: 201,
-          message: 'User created successfully',
-          id: user.id,
-        })
-      )
+    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    if (myUser) {
+      user.owner = { id: myUser.id }
+      user.id = generateLongId()
+      users.push(user)
+      if (writeFile(users, 'users')) {
+        console.log('SUCCESS: Create User')
+        return res.status(201).json(
+          formatResponse({
+            statusText: 'SUCCESS',
+            status: 201,
+            message: 'User created successfully',
+            id: user.id,
+          })
+        )
+      }
     }
-    throw new Error('Error creating user')
+    return res.status(400).json(
+      formatResponse({
+        status: 400,
+        statusText: 'ERROR',
+        error: 'Bad request',
+      })
+    )
   } catch (error) {
     console.log('ERROR!', error)
     return res.status(500).json(
@@ -72,13 +83,26 @@ export function getUsers(req: Request, res: Response) {
   try {
     console.log('-->getUsers')
     const users = readFile('users') as User[]
-    console.log('SUCCESS: get Users')
+    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    if (myUser) {
+      const myUsers = users.filter((user: User) => user.owner.id !== myUser.id)
+      console.log('SUCCESS: get Users')
+      return res.status(200).json(
+        formatResponse({
+          users: myUsers,
+          statusText: 'SUCCESS',
+          status: 200,
+          count: myUsers.length,
+        })
+      )
+    }
+    console.log('No user found')
     return res.status(200).json(
       formatResponse({
-        users,
+        users: [],
         statusText: 'SUCCESS',
         status: 200,
-        count: users.length,
+        count: 0,
       })
     )
   } catch (error) {

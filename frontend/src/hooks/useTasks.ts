@@ -23,6 +23,11 @@ const useTasks = ({ id, skip }: useTaskProps) => {
     return null
   }, [])
 
+  console.log('useTasks')
+  console.log('skip', skip)
+  console.log('users', tasks)
+  console.log('loading', loading)
+
   React.useEffect(() => {
     const fetchProjects = async () => {
       if (recordId) {
@@ -45,7 +50,14 @@ const useTasks = ({ id, skip }: useTaskProps) => {
         setLoading(false)
       }
     }
-    if (skip) return
+    if (!token) {
+      setLoading(false)
+      return
+    }
+    if (skip) {
+      setLoading(false)
+      return
+    }
     fetchProjects()
   }, [recordId, skip, token])
 

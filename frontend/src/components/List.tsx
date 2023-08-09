@@ -24,9 +24,16 @@ const List = ({ module }: ListProps) => {
     skip: module !== 'task',
   })
 
-  console.log('users', users)
-  console.log('projects', projects)
-  console.log('tasks', tasks)
+  console.log(
+    'module',
+    module,
+    module !== 'user',
+    module !== 'project',
+    module !== 'task'
+  )
+  console.log('users', lu, users)
+  console.log('projects`', lp, projects)
+  console.log('tasks', lt, tasks)
 
   if (lu || lp || lt) {
     return (
@@ -140,7 +147,7 @@ const List = ({ module }: ListProps) => {
                 { label: 'Sub Service', api: 'subService' },
                 { label: 'State', api: 'state' },
               ]}
-              rows={projects}
+              rows={projects ?? []}
               module={'project'}
               onDelete={(id) => {
                 setShowModal(true)
@@ -165,7 +172,7 @@ const List = ({ module }: ListProps) => {
                 { label: 'Priority', api: 'priority' },
                 { label: 'Status', api: 'status' },
               ]}
-              rows={tasks}
+              rows={tasks ?? []}
               module={'task'}
               onDelete={(id) => {
                 setShowModal(true)

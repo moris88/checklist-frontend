@@ -47,7 +47,6 @@ app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-
 app.use(apiKeyMiddleware)
 
 function apiKeyMiddleware(req: Request, res: Response, next: NextFunction) {
-  console.log('--------------')
   console.log(`-->New request! - Path: ${req.path}`)
   if (
     !['/api/v1/login', '/api/v1/register', '/api/v1/logout'].includes(req.path)

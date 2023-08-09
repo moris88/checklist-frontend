@@ -32,6 +32,7 @@ export async function register(data: RegisterAccess) {
 }
 
 export async function getProjects(token: string) {
+  console.log('getProjects', token)
   return await fetch(`${SERVER_URL}/projects`, {
     headers: {
       'Content-Type': 'application/json',
@@ -39,7 +40,13 @@ export async function getProjects(token: string) {
     },
   })
     .then((d) => d.json())
-    .then((d) => d.projects)
+    .then((d) => {
+      console.log('getProjects', d)
+      return d.projects
+    })
+    .catch((e) => {
+      console.log('getProjects', e)
+    })
 }
 
 export async function getProjectByID(token: string, id: string) {
