@@ -41,7 +41,7 @@ export function getProjects(req: Request, res: Response) {
   try {
     console.log('getProjects', req, res)
     console.log('SUCCESS: get projects')
-
+    
     console.log(
       'RESPONSE',
       formatResponse({ statusText: 'SUCCESS', status: 200 })

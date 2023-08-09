@@ -92,6 +92,7 @@ export function login(req: Request, res: Response) {
             formatResponse({
               statusText: 'SUCCESS',
               status: 200,
+              owner: { id: user.id, name: user.username},
               token,
             })
           )

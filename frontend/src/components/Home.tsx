@@ -1,17 +1,18 @@
 import { Button } from 'flowbite-react'
-import { redirect } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const Home = () => {
+  const navigate = useNavigate()
   return (
     <div className="flex flex-col justify-center gap-3 mt-5">
       <div className="w-full flex justify-center items-center">
-        <Button onClick={() => redirect('/projects')}>Projects</Button>
+        <Button onClick={() => navigate('/projects')}>Projects</Button>
       </div>
       <div className="w-full flex justify-center items-center">
-        <Button onClick={() => redirect(`/tasks`)}>Tasks</Button>
+        <Button onClick={() => navigate(`/tasks`)}>Tasks</Button>
       </div>
       <div className="w-full flex justify-center items-center">
-        <Button onClick={() => redirect(`/users`)}>Users</Button>
+        <Button onClick={() => navigate(`/users`)}>Users</Button>
       </div>
     </div>
   )

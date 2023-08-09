@@ -9,7 +9,12 @@ const Logout = () => {
   const navigate = useNavigate()
   const { element, setElement, loading } = useAccess<AccessToken>({
     key: 'access_token',
-    defaultValues: { token: null, username: null },
+    defaultValues: {
+      token: null,
+      owner: null,
+      expiresAt: null,
+      createdAt: null,
+    },
   })
 
   console.log('logout', element)
@@ -23,18 +28,20 @@ const Logout = () => {
   }, [element?.token, loading, navigate])
 
   React.useEffect(() => {
-    if (element?.username) {
-      logout(element?.username).then((response) => {
+    if (element?.owner?.name) {
+      logout(element?.owner?.name).then((response) => {
         console.log(response)
         if (response.status === 201) {
           setElement({
             token: null,
-            username: null,
+            owner: null,
+            expiresAt: null,
+            createdAt: null,
           })
         }
       })
     }
-  }, [element?.username, setElement])
+  }, [element?.owner?.name, setElement])
 
   if (loading) {
     return (

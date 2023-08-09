@@ -1,23 +1,42 @@
-import useStore from '../hooks/useStore'
-import { users } from '../utils/users'
 import MyTable from './MyTable'
 import { useState } from 'react'
 import MyModal from './MyModal'
 import { Button, Spinner } from 'flowbite-react'
+import { useProjects, useTasks, useUsers } from '../hooks'
 
 interface ListProps {
   module: string
 }
 
 const List = ({ module }: ListProps) => {
-  const { elements, loading, removeElement } = useStore<any>({
-    key: module,
-    defaultValues: module === 'user' ? (users as any[]) : [],
-  })
   const [showModal, setShowModal] = useState(false)
-  const [recordId, setRecordId] = useState<number | null>(null)
+  const [recordId] = useState<string | null>(null)
+  const { users, loading: lu } = useUsers({
+    id: recordId,
+    skip: module !== 'user',
+  })
+  const { projects, loading: lp } = useProjects({
+    id: recordId,
+    skip: module !== 'project',
+  })
+  const { tasks, loading: lt } = useTasks({
+    id: recordId,
+    skip: module !== 'task',
+  })
 
-  if (elements.length === 0) {
+  console.log('users', users)
+  console.log('projects', projects)
+  console.log('tasks', tasks)
+
+  if (lu || lp || lt) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    )
+  }
+
+  if (users.length === 0) {
     return (
       <div className="flex justify-center items-center h-5 mt-10">
         <section className="mt-2 flex justify-end items-center px-4">
@@ -47,14 +66,6 @@ const List = ({ module }: ListProps) => {
     )
   }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner />
-      </div>
-    )
-  }
-
   if (showModal) {
     return (
       <MyModal
@@ -67,7 +78,7 @@ const List = ({ module }: ListProps) => {
         onAccept={() => {
           if (recordId) {
             console.log(`Deleting ${module} with id ${recordId}`)
-            removeElement(recordId)
+            // removeElement(recordId)
             setShowModal(false)
           }
         }}
@@ -105,11 +116,12 @@ const List = ({ module }: ListProps) => {
                 { label: 'Email', api: 'email' },
                 { label: 'Role', api: 'role' },
               ]}
-              rows={elements}
+              rows={users}
               module={'user'}
               onDelete={(id) => {
                 setShowModal(true)
-                setRecordId(id)
+                console.log(id)
+                // setRecordId(id)
               }}
             />
           </div>
@@ -128,11 +140,12 @@ const List = ({ module }: ListProps) => {
                 { label: 'Sub Service', api: 'subService' },
                 { label: 'State', api: 'state' },
               ]}
-              rows={elements}
+              rows={projects}
               module={'project'}
               onDelete={(id) => {
                 setShowModal(true)
-                setRecordId(id)
+                console.log(id)
+                // setRecordId(id)
               }}
             />
           </div>
@@ -152,11 +165,12 @@ const List = ({ module }: ListProps) => {
                 { label: 'Priority', api: 'priority' },
                 { label: 'Status', api: 'status' },
               ]}
-              rows={elements}
+              rows={tasks}
               module={'task'}
               onDelete={(id) => {
                 setShowModal(true)
-                setRecordId(id)
+                console.log(id)
+                // setRecordId(id)
               }}
             />
           </div>

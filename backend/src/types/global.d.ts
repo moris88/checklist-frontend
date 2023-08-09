@@ -71,6 +71,7 @@ export interface User {
 
 export interface Project {
   [key: string]: any
+  owner: { id: string; name: string }
   id: string
   name: string
   description: string | null

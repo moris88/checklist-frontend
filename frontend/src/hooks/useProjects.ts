@@ -3,10 +3,12 @@ import { Project } from '../types/global'
 import { getProjectByID, getProjects } from '../utils/requester'
 
 interface useProjectProps {
-  id?: string
+  id?: string | null
+  skip?: boolean
 }
 
-const useProject = ({ id }: useProjectProps) => {
+const useProjects = ({ id, skip }: useProjectProps) => {
+  const [recordId, setRecordId] = React.useState<string | null>(id ?? null)
   const [projects, setProjects] = React.useState<Project[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<any>(null)
@@ -22,9 +24,9 @@ const useProject = ({ id }: useProjectProps) => {
 
   React.useEffect(() => {
     const fetchProjects = async () => {
-      if (id) {
+      if (recordId) {
         try {
-          const response = await getProjectByID(token, id)
+          const response = await getProjectByID(token, recordId)
           setProjects(response as Project[])
         } catch (error) {
           setError(error)
@@ -42,14 +44,16 @@ const useProject = ({ id }: useProjectProps) => {
         setLoading(false)
       }
     }
+    if (skip) return
     fetchProjects()
-  }, [id, token])
+  }, [recordId, skip, token])
 
   return {
+    setId: (id: string) => setRecordId(id),
     projects,
     loading,
     error,
   }
 }
 
-export default useProject
+export default useProjects

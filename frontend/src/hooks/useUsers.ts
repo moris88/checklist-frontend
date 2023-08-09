@@ -1,9 +1,14 @@
 import React from 'react'
 import { User } from '../types/global'
+import { getUserByID, getUsers } from '../utils/requester'
 
-const VITE_SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) ?? ''
+interface useUserProps {
+  id?: string | null
+  skip?: boolean
+}
 
-const useUsers = () => {
+const useUsers = ({ id, skip }: useUserProps) => {
+  const [recordId, setRecordId] = React.useState<string | null>(id ?? null)
   const [users, setUsers] = React.useState<User[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<any>(null)
@@ -19,13 +24,19 @@ const useUsers = () => {
 
   React.useEffect(() => {
     const fetchProjects = async () => {
+      if (recordId) {
+        try {
+          const response = await getUserByID(token, recordId)
+          setUsers(response as User[])
+        } catch (error) {
+          setError(error)
+        } finally {
+          setLoading(false)
+        }
+        return
+      }
       try {
-        const response = await fetch(`${VITE_SERVER_URL}/users`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }).then((d) => d.json())
+        const response = await getUsers(token)
         setUsers(response as User[])
       } catch (error) {
         setError(error)
@@ -33,10 +44,12 @@ const useUsers = () => {
         setLoading(false)
       }
     }
+    if (skip) return
     fetchProjects()
-  }, [token])
+  }, [recordId, skip, token])
 
   return {
+    setId: (id: string) => setRecordId(id),
     users,
     loading,
     error,

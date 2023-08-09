@@ -40,7 +40,9 @@ export async function getProjects(token: string) {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-  }).then((d) => d.json())
+  })
+    .then((d) => d.json())
+    .then((d) => d.projects)
 }
 
 export async function getProjectByID(token: string, id: string) {
@@ -51,5 +53,49 @@ export async function getProjectByID(token: string, id: string) {
     },
   })
     .then((d) => d.json())
-    .then((d) => d)
+    .then((d) => d.projects)
+}
+
+export async function getUsers(token: string) {
+  return await fetch(`${SERVER_URL}/users`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((d) => d.json())
+    .then((d) => d.users)
+}
+
+export async function getUserByID(token: string, id: string) {
+  return await fetch(`${SERVER_URL}/users/${id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((d) => d.json())
+    .then((d) => d.users)
+}
+
+export async function getTasks(token: string) {
+  return await fetch(`${SERVER_URL}/tasks`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((d) => d.json())
+    .then((d) => d.tasks)
+}
+
+export async function getTaskByID(token: string, id: string) {
+  return await fetch(`${SERVER_URL}/tasks/${id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((d) => d.json())
+    .then((d) => d.tasks)
 }

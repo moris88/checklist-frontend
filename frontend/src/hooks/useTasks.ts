@@ -1,9 +1,14 @@
 import React from 'react'
 import { Task } from '../types/global'
+import { getTaskByID, getTasks } from '../utils/requester'
 
-const VITE_SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) ?? ''
+interface useTaskProps {
+  id?: string | null
+  skip?: boolean
+}
 
-const useTasks = () => {
+const useTasks = ({ id, skip }: useTaskProps) => {
+  const [recordId, setRecordId] = React.useState<string | null>(id ?? null)
   const [tasks, setTasks] = React.useState<Task[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<any>(null)
@@ -19,13 +24,19 @@ const useTasks = () => {
 
   React.useEffect(() => {
     const fetchProjects = async () => {
+      if (recordId) {
+        try {
+          const response = await getTaskByID(token, recordId)
+          setTasks(response as Task[])
+        } catch (error) {
+          setError(error)
+        } finally {
+          setLoading(false)
+        }
+        return
+      }
       try {
-        const response = await fetch(`${VITE_SERVER_URL}/tasks`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }).then((d) => d.json())
+        const response = await getTasks(token)
         setTasks(response as Task[])
       } catch (error) {
         setError(error)
@@ -33,10 +44,12 @@ const useTasks = () => {
         setLoading(false)
       }
     }
+    if (skip) return
     fetchProjects()
-  }, [token])
+  }, [recordId, skip, token])
 
   return {
+    setId: (id: string) => setRecordId(id),
     tasks,
     loading,
     error,

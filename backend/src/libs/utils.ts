@@ -21,6 +21,7 @@ export const formatResponse = ({
   status,
   count,
   id,
+  owner,
   token,
 }: {
   projects?: Project[] | null
@@ -32,6 +33,7 @@ export const formatResponse = ({
   status: 200 | 201 | 204 | 400 | 401 | 404 | 500
   count?: number
   id?: string
+  owner?: { id: string; name: string }
   token?: string
 }): {
   projects: Project[] | undefined
@@ -43,6 +45,7 @@ export const formatResponse = ({
   status: 200 | 201 | 204 | 400 | 401 | 404 | 500
   count?: number
   id?: string
+  owner?: { id: string; name: string }
   token?: string
 } => {
   return {
@@ -55,6 +58,7 @@ export const formatResponse = ({
     status,
     error: error ?? undefined,
     id: id ?? undefined,
+    owner: owner ?? undefined,
     token: token ?? undefined,
   }
 }

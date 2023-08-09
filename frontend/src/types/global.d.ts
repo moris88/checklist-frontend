@@ -84,7 +84,9 @@ export interface Project {
 
 export interface AccessToken {
   token: string | null
-  username: string | null
+  owner: { id: string; name: string } | null
+  expiresAt: number | null
+  createdAt: number | null
 }
 
 export interface LoginAccess {

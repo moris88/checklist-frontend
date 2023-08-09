@@ -11,7 +11,12 @@ const Login = () => {
   const [loadingLogin, setLoadingLogin] = useState<boolean>(false)
   const { element, setElement, loading } = useAccess<AccessToken>({
     key: 'access_token',
-    defaultValues: { token: null, username: null },
+    defaultValues: {
+      token: null,
+      owner: null,
+      expiresAt: null,
+      createdAt: null,
+    },
   })
   const { register, handleSubmit } = useForm<LoginAccess>({
     values: { username: '', password: '' },
@@ -39,9 +44,13 @@ const Login = () => {
   const onSubmit = (data: LoginAccess) => {
     login(data).then((response) => {
       if (response.status === 200) {
+        const expiresAt = new Date()
+        expiresAt.setHours(expiresAt.getHours() + 1)
         setElement({
           token: response.token,
-          username: data.username,
+          owner: response.owner,
+          expiresAt: expiresAt.getTime(),
+          createdAt: new Date().getTime(),
         })
       }
     })

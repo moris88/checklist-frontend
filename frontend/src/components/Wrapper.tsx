@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import useStore from '../hooks/useAccess'
 import { AccessToken } from '../types/global'
 import { useNavigate } from 'react-router-dom'
+import { checkLogin } from '../utils/utils'
 
 interface WrapperProps {
   title: string
@@ -11,10 +12,26 @@ interface WrapperProps {
 
 const Wrapper = ({ children, title }: WrapperProps) => {
   const navigate = useNavigate()
-  const { element, loading } = useStore<AccessToken>({
+  const { element, setElement, loading } = useStore<AccessToken>({
     key: 'access_token',
-    defaultValues: { token: null, username: null },
+    defaultValues: {
+      token: null,
+      owner: null,
+      expiresAt: null,
+      createdAt: null,
+    },
   })
+
+  useEffect(() => {
+    if (!checkLogin()) {
+      setElement({
+        token: null,
+        owner: null,
+        expiresAt: null,
+        createdAt: null,
+      })
+    }
+  }, [setElement])
 
   useEffect(() => {
     if (!element?.token && !loading) {
