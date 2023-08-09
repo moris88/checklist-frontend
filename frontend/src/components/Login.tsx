@@ -1,16 +1,14 @@
 import useAccess from '../hooks/useAccess'
-import { AccessToken } from '../types/global'
+import { AccessToken, LoginAccess } from '../types/global'
 import { useForm } from 'react-hook-form'
-import { Button, Label, TextInput } from 'flowbite-react'
-import { SERVER_URL, XAPIKEY } from '../utils/metadata'
-import { Spinner } from './Spinner'
-
-interface LoginAccess {
-  username: string
-  password: string
-}
+import { Button, Label, Spinner, TextInput } from 'flowbite-react'
+import { login } from '../utils/requester'
+import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
 
 const Login = () => {
+  const navigate = useNavigate()
+  const [loadingLogin, setLoadingLogin] = useState<boolean>(false)
   const { element, setElement, loading } = useAccess<AccessToken>({
     key: 'access_token',
     defaultValues: { token: null, username: null },
@@ -19,34 +17,34 @@ const Login = () => {
     values: { username: '', password: '' },
   })
 
-  if (loading) {
-    return <Spinner className="flex justify-center items-center h-screen" />
+  console.log('login', element)
+
+  useEffect(() => {
+    if (element?.token && !loading) {
+      setLoadingLogin(true)
+      setTimeout(() => {
+        navigate('/')
+      }, 5000)
+    }
+  }, [element?.token, loading, navigate])
+
+  if (loading || loadingLogin) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    )
   }
 
-  console.log(element)
-
-  const onSubmit = async (data: LoginAccess) => {
-    console.log(data)
-    const response = await fetch(`${SERVER_URL}/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        xapikey: XAPIKEY,
-      },
-      body: JSON.stringify(data),
-    }).then((d) => d.json())
-    console.log(response, response.status === 200)
-    if (response.status === 200) {
-      console.log({
-        token: response.token,
-        username: data.username,
-      })
-      setElement({
-        token: response.token,
-        username: data.username,
-      })
-      window.location.href = '/'
-    }
+  const onSubmit = (data: LoginAccess) => {
+    login(data).then((response) => {
+      if (response.status === 200) {
+        setElement({
+          token: response.token,
+          username: data.username,
+        })
+      }
+    })
   }
 
   return (
@@ -83,7 +81,7 @@ const Login = () => {
         <Button
           color="gray"
           type="button"
-          onClick={() => (window.location.href = '/register')}
+          onClick={() => navigate('/register')}
         >
           Registrati
         </Button>

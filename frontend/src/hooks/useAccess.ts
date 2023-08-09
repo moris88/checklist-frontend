@@ -23,8 +23,10 @@ const useAccess = <T>({ defaultValues, key }: useAccessProps<T>) => {
   }, [key])
 
   const addElement = (e: T) => {
+    setLoading(true)
     setElement(e)
     localStorage.setItem(key, JSON.stringify(e))
+    setLoading(false)
   }
 
   return { element, setElement: addElement, loading }

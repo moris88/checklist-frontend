@@ -1,10 +1,9 @@
 import useStore from '../hooks/useStore'
 import { users } from '../utils/users'
 import MyTable from './MyTable'
-import { Spinner } from './Spinner'
 import { useState } from 'react'
 import MyModal from './MyModal'
-import { Button } from 'flowbite-react'
+import { Button, Spinner } from 'flowbite-react'
 
 interface ListProps {
   module: string
@@ -49,7 +48,11 @@ const List = ({ module }: ListProps) => {
   }
 
   if (loading) {
-    return <Spinner className="flex justify-center items-center h-full" />
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    )
   }
 
   if (showModal) {

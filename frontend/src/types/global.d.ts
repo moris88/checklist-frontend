@@ -86,3 +86,14 @@ export interface AccessToken {
   token: string | null
   username: string | null
 }
+
+export interface LoginAccess {
+  username: string
+  password: string
+}
+
+export interface RegisterAccess {
+  username: string
+  password: string
+  confirmPassword: string
+}

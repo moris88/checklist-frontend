@@ -1,10 +1,8 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Wrapper from './components/Wrapper'
 import List from './components/List'
 import Record from './components/Record'
-import Home from './components/Home'
-import Logout from './components/Logout'
-import Login from './components/Login'
+import { Spinner } from 'flowbite-react'
+import { Wrapper, Home, Login, Logout, Register } from './components'
 
 const router = createBrowserRouter([
   {
@@ -95,10 +93,23 @@ const router = createBrowserRouter([
     path: '/logout',
     Component: () => <Logout />,
   },
+  {
+    path: '/register',
+    Component: () => <Register />,
+  },
 ])
 
 function App() {
-  return <RouterProvider router={router} fallbackElement={<p>Loading...</p>} />
+  return (
+    <RouterProvider
+      router={router}
+      fallbackElement={
+        <div className="flex justify-center items-center h-screen">
+          <Spinner />
+        </div>
+      }
+    />
+  )
 }
 
 export default App
