@@ -1,9 +1,12 @@
 import React from 'react'
 import { Project } from '../types/global'
+import { getProjectByID, getProjects } from '../utils/requester'
 
-const VITE_SERVER_URL = (import.meta.env.VITE_SERVER_URL as string) ?? ''
+interface useProjectProps {
+  id?: string
+}
 
-const useProject = () => {
+const useProject = ({ id }: useProjectProps) => {
   const [projects, setProjects] = React.useState<Project[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<any>(null)
@@ -19,13 +22,19 @@ const useProject = () => {
 
   React.useEffect(() => {
     const fetchProjects = async () => {
+      if (id) {
+        try {
+          const response = await getProjectByID(token, id)
+          setProjects(response as Project[])
+        } catch (error) {
+          setError(error)
+        } finally {
+          setLoading(false)
+        }
+        return
+      }
       try {
-        const response = await fetch(`${VITE_SERVER_URL}/projects`, {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }).then((d) => d.json())
+        const response = await getProjects(token)
         setProjects(response as Project[])
       } catch (error) {
         setError(error)
@@ -34,7 +43,7 @@ const useProject = () => {
       }
     }
     fetchProjects()
-  }, [token])
+  }, [id, token])
 
   return {
     projects,

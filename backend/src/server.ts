@@ -36,7 +36,7 @@ console.log('PATHUSER:', PATHUSER)
 
 // Configuration of the options CORS
 const corsOptions = {
-  // origin: ORIGIN, // Set allowed source
+  origin: ORIGIN, // Set allowed source
   methods: ['GET,PUT,DELETE,POST'], // Set allowed methods
   allowedHeaders: ['Content-Type', 'xapikey', 'Authorization'], // Set allowed headers
 }

@@ -33,3 +33,23 @@ export async function register(data: RegisterAccess) {
     body: JSON.stringify({ username: data.username, password: data.password }),
   }).then((d) => d.json())
 }
+
+export async function getProjects(token: string) {
+  return await fetch(`${SERVER_URL}/projects`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  }).then((d) => d.json())
+}
+
+export async function getProjectByID(token: string, id: string) {
+  return await fetch(`${SERVER_URL}/projects/${id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((d) => d.json())
+    .then((d) => d)
+}
