@@ -38,6 +38,7 @@ export type SubService =
 export interface Task {
   [key: string]: any
   id: string
+  owner: { id: string }
   title: string
   description: string | null
   status: Status
@@ -52,7 +53,8 @@ export interface Task {
 
 export interface User {
   [key: string]: any
-  id?: string
+  id: string
+  owner: { id: string }
   first_name: string
   last_name: string
   full_name: string
@@ -71,8 +73,8 @@ export interface User {
 
 export interface Project {
   [key: string]: any
-  owner: { id: string; name: string }
   id: string
+  owner: { id: string }
   name: string
   description: string | null
   createdAt: string
@@ -91,6 +93,7 @@ export interface UserToken {
   salt: string
   role: 'ADMIN' | 'USER'
   createdAt: string
+  updatedAt: string
 }
 
 export interface Token {

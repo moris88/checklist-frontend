@@ -18,7 +18,7 @@ import {
   updateUser,
   deleteUser,
 } from './functions'
-import { register, login, logout } from './functions/auth'
+import { register, login, logout, getProfiles, getProfile } from './functions/auth'
 import { checkToken } from './libs/token'
 
 console.log('-->STARTING SERVER...')
@@ -128,6 +128,10 @@ app.post('/api/v1/register', register)
 app.post('/api/v1/login', login)
 // POST /logout
 app.post('/api/v1/logout', logout)
+// GET /profiles
+app.get('/api/v1/profiles', getProfiles)
+// GET /profile
+app.get('/api/v1/profiles/:id', getProfile)
 
 // (all other methods) /* - 404
 app.all('*', generalPathMatch)
@@ -141,7 +145,6 @@ function generalPathMatch(req: Request, res: Response) {
       error: 'path not found',
     })
   )
-  // console.timeEnd('Request')
 }
 
 app.use(errorHandler as express.ErrorRequestHandler)

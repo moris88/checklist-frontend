@@ -1,5 +1,5 @@
 import * as crypto from 'crypto'
-import { Token, UserToken } from '@/types/global'
+import { Token, UserToken } from '../types/global'
 import { readFileSystem, writeFileSystem } from './utils'
 
 export function getUsersToken(): UserToken[] {
@@ -76,11 +76,28 @@ export function checkToken(token: string): boolean {
     const tokenExpiresAt = new Date(tokens[tokenIndex].expiresAt).getTime()
     if (tokenExpiresAt > today) {
       return true
-    } 
+    }
     tokens.splice(tokenIndex, 1)
     writeFileSystem(tokens, 'tokens')
   }
   return false
+}
+
+export function getUserByToken(token: string): { id: string } | null {
+  const tokens = readFileSystem('tokens')
+  const tokenIndex = tokens.findIndex(
+    (t) => t.token === token.replace('Bearer ', '')
+  )
+  if (tokenIndex !== -1) {
+    const {userID} = tokens[tokenIndex]
+    const users = readFileSystem('users')
+    const userIndex = users.findIndex((u) => u.id === userID)
+    if (userIndex !== -1) {
+      const user = users[userIndex]
+      return { id: user.id }
+    }
+  }
+  return null
 }
 
 export function removeToken(username: string): boolean {

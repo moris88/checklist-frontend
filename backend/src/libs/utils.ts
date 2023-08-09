@@ -21,6 +21,7 @@ export const formatResponse = ({
   status,
   count,
   id,
+  profiles,
   owner,
   token,
 }: {
@@ -33,6 +34,7 @@ export const formatResponse = ({
   status: 200 | 201 | 204 | 400 | 401 | 404 | 500
   count?: number
   id?: string
+  profiles?: any[]
   owner?: { id: string; name: string }
   token?: string
 }): {
@@ -45,6 +47,7 @@ export const formatResponse = ({
   status: 200 | 201 | 204 | 400 | 401 | 404 | 500
   count?: number
   id?: string
+  profiles?: any[]
   owner?: { id: string; name: string }
   token?: string
 } => {
@@ -58,6 +61,7 @@ export const formatResponse = ({
     status,
     error: error ?? undefined,
     id: id ?? undefined,
+    profiles: profiles ?? undefined,
     owner: owner ?? undefined,
     token: token ?? undefined,
   }

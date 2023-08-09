@@ -1,1 +1,1 @@
-export { register, login, logout } from './handler'
+export { register, login, logout, getProfiles, getProfile } from './handler'

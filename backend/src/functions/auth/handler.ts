@@ -22,6 +22,7 @@ export function register(req: Request, res: Response) {
         salt,
         role: 'USER',
         createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       })
     ) {
       console.log(
@@ -92,7 +93,7 @@ export function login(req: Request, res: Response) {
             formatResponse({
               statusText: 'SUCCESS',
               status: 200,
-              owner: { id: user.id, name: user.username},
+              owner: { id: user.id, name: user.username },
               token,
             })
           )
@@ -177,6 +178,132 @@ export function logout(req: Request, res: Response) {
       formatResponse({
         statusText: 'ERROR',
         status: 400,
+      })
+    )
+  } catch (error) {
+    console.log('ERROR!', error)
+    console.log(
+      'RESPONSE',
+      formatResponse({
+        status: 500,
+        statusText: 'ERROR',
+        error: 'Internal server error',
+      })
+    )
+    return res.status(500).json(
+      formatResponse({
+        status: 500,
+        statusText: 'ERROR',
+        error: 'Internal server error',
+      })
+    )
+  }
+}
+
+export function getProfiles(req: Request, res: Response) {
+  try {
+    console.log('-->getProfiles')
+    console.log(
+      'RESPONSE',
+      formatResponse({
+        statusText: 'SUCCESS',
+        status: 200,
+      })
+    )
+    const profiles = getUsersToken().map((user) => ({
+      id: user.id,
+      username: user.username,
+      role: user.role,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    }))
+    return res.status(200).json(
+      formatResponse({
+        statusText: 'SUCCESS',
+        status: 200,
+        profiles,
+        count: profiles.length,
+      })
+    )
+  } catch (error) {
+    console.log('ERROR!', error)
+    console.log(
+      'RESPONSE',
+      formatResponse({
+        status: 500,
+        statusText: 'ERROR',
+        error: 'Internal server error',
+      })
+    )
+    return res.status(500).json(
+      formatResponse({
+        status: 500,
+        statusText: 'ERROR',
+        error: 'Internal server error',
+      })
+    )
+  }
+}
+
+export function getProfile(req: Request, res: Response) {
+  try {
+    console.log('-->getProfile')
+    const { id } = req.params
+    if (id) {
+      const profiles = getUsersToken()
+      const profile = profiles
+        .filter((user) => user.id === id)
+        .map((user) => ({
+          id: user.id,
+          username: user.username,
+          role: user.role,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+        }))
+      if (profile) {
+        console.log(
+          'RESPONSE',
+          formatResponse({
+            statusText: 'SUCCESS',
+            status: 200,
+          })
+        )
+        return res.status(200).json(
+          formatResponse({
+            statusText: 'SUCCESS',
+            status: 200,
+            profiles: profile,
+          })
+        )
+      }
+      console.log(
+        'RESPONSE',
+        formatResponse({
+          statusText: 'ERROR',
+          status: 404,
+        })
+      )
+      return res.status(200).json(
+        formatResponse({
+          statusText: 'ERROR',
+          status: 404,
+          error: 'User not found',
+        })
+      )
+    }
+    console.log(
+      'RESPONSE',
+      formatResponse({
+        statusText: 'ERROR',
+        status: 400,
+        error: 'Bad request',
+      })
+    )
+    return res.status(400).json(
+      formatResponse({
+        statusText: 'ERROR',
+        status: 400,
+        error: 'Bad request',
       })
     )
   } catch (error) {
