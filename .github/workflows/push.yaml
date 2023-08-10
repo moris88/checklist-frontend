@@ -3,7 +3,7 @@ name: Check Push
 on: push
 
 jobs:
-  lint_app:
+  frontend:
     name: Code Quality
     runs-on: ubuntu-latest
     steps:
@@ -26,4 +26,28 @@ jobs:
         working-directory: ./frontend
       - name: Run Lint
         working-directory: ./frontend
+        run: yarn lint
+  backend:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+      - name: Cache Node.js modules
+        uses: actions/cache@v3
+        with:
+          path: ./app/node_modules
+            # /home/runner/.cache/Cypress
+          key: ${{ runner.OS }}-node-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-node-
+      - name: Install dependencies
+        run: yarn install
+        working-directory: ./backend
+      - name: Run Lint
+        working-directory: ./backend
         run: yarn lint
