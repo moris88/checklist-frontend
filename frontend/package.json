@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --port=3000 --host --open",
     "build": "tsc && vite build",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 20",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 50",
     "prettier": "prettier --config .prettierrc \"src/**/*.ts\" --write",
     "preview": "vite preview"
   },

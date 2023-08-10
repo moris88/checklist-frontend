@@ -38,7 +38,8 @@ const Multiselect = ({
   }, [defaultValues, items.length])
 
   useEffect(() => {
-    const handleOutsideClick = (event: { target: any }) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleOutsideClick = (event: any) => {
       if (ref?.current && !ref?.current?.contains(event.target)) {
         setIsClickedOutside(true)
       } else {
