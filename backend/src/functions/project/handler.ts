@@ -153,7 +153,11 @@ export function updateProject(req: Request, res: Response) {
         res,
       })
     }
-    const newProject = { ...projectsSearch[0], ...project }
+    const newProject: Project = {
+      ...projectsSearch[0],
+      ...project,
+      updatedAt: new Date().toISOString(),
+    }
     const newProjects = [
       ...projects.filter((p: Project) => p.id !== id),
       newProject,

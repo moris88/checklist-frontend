@@ -258,9 +258,10 @@ export function updateProfile(req: Request, res: Response) {
         res,
       })
     }
-    const myUser = {
+    const myUser: User = {
       ...user,
       role: usersSearch[0].role !== 'ADMIN' ? 'USER' : user.role,
+      updatedAt: new Date().toISOString(),
     }
     const newUser = { ...usersSearch[0], ...myUser }
     const newUsers = [...users.filter((u: User) => u.id !== id), newUser]
