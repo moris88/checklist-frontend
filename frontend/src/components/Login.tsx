@@ -27,14 +27,13 @@ const Login = () => {
 
   useEffect(() => {
     if (element?.token && !loading) {
-      setLoadingLogin(true)
       setTimeout(() => {
         navigate('/')
-      }, 5000)
+      }, 1000)
     }
   }, [element?.token, loading, navigate])
 
-  if (loading || loadingLogin) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />
@@ -43,6 +42,7 @@ const Login = () => {
   }
 
   const onSubmit = (data: LoginAccess) => {
+    setLoadingLogin(true)
     login(data)
       .then((response) => {
         if (response.status === 200) {
@@ -57,14 +57,17 @@ const Login = () => {
         }
         if (response.status === 404) {
           setMessage('Username non trovato!')
+          setLoadingLogin(false)
         }
         if (response.status === 401) {
           setMessage('Username o password errati!')
+          setLoadingLogin(false)
         }
       })
       .catch((error) => {
         console.log(error)
         setMessage(error.message)
+        setLoadingLogin(false)
       })
   }
 
@@ -78,7 +81,9 @@ const Login = () => {
       </div>
       {message && (
         <div className="block">
-          <p className="font-bold text-red-800 text-center">{message}</p>
+          <p className="font-bold bg-red-400 text-red-800 text-center rounded-lg shadow-lg">
+            {message}
+          </p>
         </div>
       )}
       <div>
@@ -86,6 +91,7 @@ const Login = () => {
           <Label htmlFor="username" value="Your username" />
         </div>
         <TextInput
+          disabled={loadingLogin}
           id="username"
           required
           type="text"
@@ -97,21 +103,34 @@ const Login = () => {
           <Label htmlFor="password" value="Your password" />
         </div>
         <TextInput
+          disabled={loadingLogin}
           id="password"
           required
           type="password"
           {...register('password')}
         />
       </div>
+      <div>
+        {loadingLogin && (
+          <div className="block">
+            <div className="flex justify-center items-center mt-2">
+              <Spinner />
+            </div>
+          </div>
+        )}
+      </div>
       <div className="flex justify-center gap-2 border-t-2 border-gray-300 w-52 mt-2 pt-4">
         <Button
           color="gray"
           type="button"
+          disabled={loadingLogin}
           onClick={() => navigate('/register')}
         >
           Registrati
         </Button>
-        <Button type="submit">Accedi</Button>
+        <Button disabled={loadingLogin} type="submit">
+          Accedi
+        </Button>
       </div>
     </form>
   )

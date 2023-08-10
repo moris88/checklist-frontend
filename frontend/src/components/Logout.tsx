@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import useAccess from '../hooks/useAccess'
 import { AccessToken } from '../types/global'
 import { Spinner } from 'flowbite-react'
@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom'
 
 const Logout = () => {
   const navigate = useNavigate()
+  const [loadingLogout, setLoadingLogout] = React.useState<boolean>(false)
+  const [message, setMessage] = React.useState<string | null>(null)
   const { element, setElement, loading } = useAccess<AccessToken>({
     key: 'access_token',
     defaultValues: {
@@ -19,27 +21,42 @@ const Logout = () => {
 
   console.log('logout', element)
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!element?.token && !loading) {
       setTimeout(() => {
         navigate('/')
-      }, 5000)
+      }, 1000)
     }
   }, [element?.token, loading, navigate])
 
   React.useEffect(() => {
     if (element?.owner?.name) {
-      logout(element?.owner?.name).then((response) => {
-        console.log(response)
-        if (response.status === 201) {
-          setElement({
-            token: null,
-            owner: null,
-            expiresAt: null,
-            createdAt: null,
-          })
-        }
-      })
+      setLoadingLogout(true)
+      logout(element?.owner?.name)
+        .then((response) => {
+          console.log(response)
+          if (response.status === 201) {
+            setElement({
+              token: null,
+              owner: null,
+              expiresAt: null,
+              createdAt: null,
+            })
+          }
+          if (response.status === 400) {
+            setMessage('Impossibile fare il Logout!')
+            setLoadingLogout(false)
+          }
+          if (response.status === 500) {
+            setMessage('Errore Logout su Server!')
+            setLoadingLogout(false)
+          }
+        })
+        .catch((error) => {
+          console.log(error)
+          setMessage(error.message)
+          setLoadingLogout(false)
+        })
     }
   }, [element?.owner?.name, setElement])
 
@@ -47,6 +64,20 @@ const Logout = () => {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />
+      </div>
+    )
+  }
+
+  if (!loadingLogout) {
+    return <></>
+  }
+
+  if (message) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen">
+        <p className="font-bold bg-red-400 text-red-800 text-center rounded-lg shadow-lg">
+          {message}
+        </p>
       </div>
     )
   }
