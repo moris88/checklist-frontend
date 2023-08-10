@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Project, Task, User } from '../types/global'
+import { Project, Task, Member, User, Token } from '../types/global'
 import fs from 'fs'
 import dotenv from 'dotenv'
 
@@ -12,65 +11,9 @@ const pathToken = PATHTOKEN || ''
 const { PATHUSER } = process.env
 const pathUser = PATHUSER || ''
 
-export const formatResponse = ({
-  projects,
-  tasks,
-  users,
-  error,
-  message,
-  statusText,
-  status,
-  count,
-  id,
-  profiles,
-  owner,
-  token,
-}: {
-  projects?: Project[] | null
-  tasks?: Task[] | null
-  users?: User[] | null
-  error?: string
-  message?: string
-  statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
-  status: 200 | 201 | 204 | 400 | 401 | 404 | 500
-  count?: number
-  id?: string
-  profiles?: any[]
-  owner?: { id: string; name: string }
-  token?: string
-}): {
-  projects: Project[] | undefined
-  tasks: Task[] | undefined
-  users: User[] | undefined
-  error: string | undefined
-  message?: string
-  statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
-  status: 200 | 201 | 204 | 400 | 401 | 404 | 500
-  count?: number
-  id?: string
-  profiles?: any[]
-  owner?: { id: string; name: string }
-  token?: string
-} => {
-  return {
-    projects: projects ?? undefined,
-    tasks: tasks ?? undefined,
-    users: users ?? undefined,
-    message,
-    count: count ?? undefined,
-    statusText,
-    status,
-    error: error ?? undefined,
-    id: id ?? undefined,
-    profiles: profiles ?? undefined,
-    owner: owner ?? undefined,
-    token: token ?? undefined,
-  }
-}
-
 export const writeFile = (
-  data: any[],
-  key: 'projects' | 'tasks' | 'users'
+  data: Project[] | Task[] | Member[],
+  key: 'projects' | 'tasks' | 'members'
 ): boolean => {
   try {
     const dataDB = JSON.parse(fs.readFileSync(pathDb, 'utf8'))
@@ -83,7 +26,9 @@ export const writeFile = (
   }
 }
 
-export const readFile = (key: 'projects' | 'tasks' | 'users'): any[] => {
+export const readFile = (
+  key: 'projects' | 'tasks' | 'members'
+): Project[] | Task[] | Member[] => {
   try {
     const data = JSON.parse(fs.readFileSync(pathDb, 'utf8'))
     return data[key]
@@ -94,7 +39,7 @@ export const readFile = (key: 'projects' | 'tasks' | 'users'): any[] => {
 }
 
 export const writeFileSystem = (
-  data: any[],
+  data: Token[] | User[],
   key: 'tokens' | 'users'
 ): boolean => {
   try {
@@ -114,7 +59,7 @@ export const writeFileSystem = (
   }
 }
 
-export const readFileSystem = (key: 'tokens' | 'users'): any[] => {
+export const readFileSystem = (key: 'tokens' | 'users'): Token[] | User[] => {
   try {
     const system = JSON.parse(
       fs.readFileSync(key === 'tokens' ? pathToken : pathUser, 'utf8')
@@ -131,4 +76,8 @@ export const generateLongId = (): string => {
   const randomNum = Math.floor(Math.random() * 1000000).toString() // Genera un numero casuale a sei cifre come stringa
   const longId = timestamp + randomNum // Combina timestamp e numero casuale
   return longId
+}
+
+export const trimToken = (token: string): string => {
+  return token.replace('Bearer', '').trim()
 }

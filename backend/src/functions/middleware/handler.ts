@@ -8,26 +8,24 @@ export function authorizationMiddleware(
   next: NextFunction
 ) {
   console.log(`-->New request! - Path: ${req.path}`)
+  console.log(`-->New request! - Method: ${req.method}`)
+  console.log(`-->New request! - Body: ${JSON.stringify(req.body)}`)
+  console.log(`-->New request! - Headers: ${JSON.stringify(req.headers)}`)
   if (
     !['/api/v1/login', '/api/v1/register', '/api/v1/logout'].includes(req.path)
   ) {
-    const bearerToken = req.headers?.authorization ?? null
-    console.log('Authorization:', bearerToken)
+    const skip = ['/api/v1/refresh'].includes(req.path)
+    const bearerToken = req.headers?.authorization ?? ''
     if (bearerToken) {
-      if (checkToken(bearerToken as string)) {
-        console.log('-->ACCESS GRANTED')
+      if (checkToken(bearerToken, skip)) {
         next()
         return
       }
     }
-    console.log('-->ACCESS DENIED - NOT AUTHORIZED')
-    return res.status(401).json(
-      formatResponse({
-        statusText: 'ERROR',
-        status: 401,
-        error: 'not authorized',
-      })
-    )
+    return formatResponse({
+      codice: 'E03',
+      res,
+    })
   }
   next()
   return

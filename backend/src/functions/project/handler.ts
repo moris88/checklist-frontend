@@ -1,72 +1,46 @@
-import {
-  formatResponse,
-  generateLongId,
-  readFile,
-  writeFile,
-} from '../../libs/utils'
+import { formatResponse, generateLongId, readFile, writeFile } from '../../libs'
 import { Request, Response } from 'express'
 import { Project } from '../../types/global'
 import { getUserByToken } from '../../libs/token'
 
 export function createProject(req: Request, res: Response) {
   try {
-    console.log('-->createProject', req.body)
-    if (Object.keys(req.body).length === 0) {
-      console.log('Create Project: No Body')
-      return res.status(400).json(
-        formatResponse({
-          status: 400,
-          statusText: 'ERROR',
-          error: 'No Body',
-        })
-      )
-    } else if (!req.body.name) {
-      console.log('Create Project: No Param name')
-      return res.status(400).json(
-        formatResponse({
-          status: 400,
-          statusText: 'ERROR',
-          error: 'No Param name',
-        })
-      )
+    if (Object.keys(req.body).length === 0 || !req.body.name) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
     }
-    const project = req.body as Project
-    const projects = readFile('projects')
+    const { project } = req.body as { project: Project }
+    const projects = readFile('projects') as Project[]
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
-      project.owner = { id: myUser.id }
-      project.id = generateLongId()
-      project.createdAt = new Date().toISOString()
-      project.updatedAt = new Date().toISOString()
-      projects.push(project)
+      projects.push({
+        ...project,
+        owner: { id: myUser.id },
+        id: generateLongId(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      })
       if (writeFile(projects, 'projects')) {
-        console.log('SUCCESS: Create Project')
-        return res.status(201).json(
-          formatResponse({
-            statusText: 'SUCCESS',
-            status: 201,
-            message: 'Project created successfully',
-            id: project.id,
-          })
-        )
+        return formatResponse({
+          codice: 'S06',
+          res,
+          projects: [project],
+          count: 1,
+        })
       }
     }
-    return res.status(400).json(
-      formatResponse({
-        status: 400,
-        statusText: 'ERROR',
-        error: 'Bad request',
-      })
-    )
+    return formatResponse({
+      codice: 'E04',
+      res,
+    })
   } catch (error) {
     console.log('ERROR!', error)
-    return res.status(500).json(
-      formatResponse({
-        status: 500,
-        statusText: 'ERROR',
-        error: 'Internal server error',
-      })
-    )
+    return formatResponse({
+      codice: 'E02',
+      res,
+    })
   }
 }
 
@@ -78,32 +52,27 @@ export function getProjects(req: Request, res: Response) {
       const myProjects = projects.filter(
         (project) => project.owner.id === myUser.id
       )
-      return res.status(200).json(
-        formatResponse({
-          statusText: 'SUCCESS',
-          status: 200,
-          projects: myProjects,
-          count: myProjects.length,
-        })
-      )
+      return formatResponse({
+        codice: 'S07',
+        res,
+        projects: myProjects,
+        count: myProjects.length,
+      })
     }
     return res.status(200).json(
       formatResponse({
-        statusText: 'SUCCESS',
-        status: 200,
+        codice: 'S07',
+        res,
         projects: [],
         count: 0,
       })
     )
   } catch (error) {
     console.log('ERROR!', error)
-    return res.status(500).json(
-      formatResponse({
-        statusText: 'ERROR',
-        status: 500,
-        error: 'Internal server error',
-      })
-    )
+    return formatResponse({
+      codice: 'E02',
+      res,
+    })
   }
 }
 
@@ -115,77 +84,54 @@ export function getProject(req: Request, res: Response) {
       const myProjects = projects.filter(
         (project) => project.owner.id === myUser.id
       )
-      return res.status(200).json(
-        formatResponse({
-          statusText: 'SUCCESS',
-          status: 200,
-          projects: myProjects,
-          count: myProjects.length,
-        })
-      )
-    }
-    return res.status(200).json(
-      formatResponse({
-        statusText: 'SUCCESS',
-        status: 200,
-        projects: [],
-        count: 0,
+      return formatResponse({
+        codice: 'S07',
+        res,
+        projects: myProjects,
+        count: myProjects.length,
       })
-    )
+    }
+    return formatResponse({
+      codice: 'S07',
+      res,
+      projects: [],
+      count: 0,
+    })
   } catch (error) {
     console.log('ERROR!', error)
-    return res.status(500).json(
-      formatResponse({
-        statusText: 'ERROR',
-        status: 500,
-        error: 'Internal server error',
-      })
-    )
+    return formatResponse({
+      codice: 'E02',
+      res,
+    })
   }
 }
 
 export function deleteProject(req: Request, res: Response) {
   try {
-    console.log('deleteProject')
-    console.log('SUCCESS: Delete project')
-
-    return res.status(204).json(
-      formatResponse({
-        statusText: 'SUCCESS',
-        status: 204,
-      })
-    )
+    return formatResponse({
+      codice: 'E01',
+      res,
+    })
   } catch (error) {
     console.log('ERROR!', error)
-    return res.status(500).json(
-      formatResponse({
-        statusText: 'ERROR',
-        status: 500,
-        error: 'Internal server error',
-      })
-    )
+    return formatResponse({
+      codice: 'E02',
+      res,
+    })
   }
 }
 
 export function updateProject(req: Request, res: Response) {
   try {
-    console.log('updateProject')
-    console.log('SUCCESS: Update Project')
-
-    return res.status(200).json(
-      formatResponse({
-        statusText: 'SUCCESS',
-        status: 200,
-      })
-    )
+    return formatResponse({
+      codice: 'E01',
+      res,
+    })
   } catch (error) {
     console.log('ERROR!', error)
-    return res.status(200).json(
-      formatResponse({
-        statusText: 'ERROR',
-        status: 500,
-        error: 'Internal server error',
-      })
-    )
+    return formatResponse({
+      codice: 'E02',
+      res,
+    })
   }
 }

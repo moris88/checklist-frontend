@@ -11,10 +11,10 @@ import {
   createTask,
   updateTask,
   deleteTask,
-  getUsers,
-  createUser,
-  updateUser,
-  deleteUser,
+  getMembers,
+  createMember,
+  updateMember,
+  deleteMember,
   getProject,
   register,
   login,
@@ -25,8 +25,8 @@ import {
   deleteProfile,
   authorizationMiddleware,
   generalPathMatch,
-  errorHandler,
 } from './functions'
+import { refreshToken } from './functions/auth/handler'
 
 const app = express() // create a new express application instance
 dotenv.config() // load .env file
@@ -44,7 +44,6 @@ app.use(cors(corsOptions)) // middleware with options CORS
 app.use(bodyParser.json()) // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 app.use(authorizationMiddleware)
-app.use(errorHandler as express.ErrorRequestHandler) // error handler middleware for catching unhandled errors
 
 // LIST OF ROUTES v1
 // PATHS Projects:
@@ -67,20 +66,22 @@ app.post('/api/v1/task/create', createTask)
 app.put('/api/v1/task/:id', updateTask)
 // DELETE /task - delete a task
 app.delete('/api/v1/task/:id', deleteTask)
-// PATHS Users:
-// GET /users - get all users
-app.get('/api/v1/users', getUsers)
-// POST /user - create a new user
-app.post('/api/v1/user', createUser)
-// PUT /user - update a user
-app.put('/api/v1/user/:id', updateUser)
-// DELETE /user - delete a user
-app.delete('/api/v1/user/:id', deleteUser)
+// PATHS Members:
+// GET /members - get all members
+app.get('/api/v1/members', getMembers)
+// POST /member - create a new member
+app.post('/api/v1/member', createMember)
+// PUT /member - update a member
+app.put('/api/v1/member/:id', updateMember)
+// DELETE /member - delete a member
+app.delete('/api/v1/member/:id', deleteMember)
 // PATHS Auth:
 // POST /register
 app.post('/api/v1/register', register)
 // POST /login
 app.post('/api/v1/login', login)
+// POST /login
+app.post('/api/v1/refresh', refreshToken)
 // POST /logout
 app.post('/api/v1/logout', logout)
 // GET /profiles

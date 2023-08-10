@@ -1,5 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
+export type Role = 'ADMIN' | 'USER' | 'GUEST' | 'INACTIVE'
+export type RoleMember =
+  | 'TECHNICAL LEADER'
+  | 'SENIOR PROJECT MANAGER'
+  | 'JUNIOR PROJECT MANAGER'
+  | 'JUNIOR SOLUTION'
+  | 'SENIOR SOLUTION'
+  | 'JUNIOR DEVELOPER'
+  | 'SENIOR DEVELOPER'
+  | 'JUNIOR STAGE DEVELOPER'
+  | 'NONE'
+export type State = 'OPENED' | 'IN PROGRESS' | 'CLOSED' | 'DELETED'
+export type StatusToken = 'ACTIVE' | 'INACTIVE'
 export type Status =
   | 'BACKLOG'
   | 'OPEN'
@@ -38,7 +49,15 @@ export type SubService =
   | 'others'
 
 export interface Task {
-  [key: string]: any
+  [key: string]:
+    | string
+    | Member[]
+    | null
+    | { id: string }
+    | Priority
+    | Type
+    | Status
+    | number
   id: string
   owner: { id: string }
   title: string
@@ -49,59 +68,94 @@ export interface Task {
   priority: Priority | null
   deadline: string | null
   projectID: number | null
-  assignee: User[] | null
+  assignee: Member[] | null
   type: Type | null
 }
 
-export interface User {
-  [key: string]: any
+export interface Member {
+  [key: string]: string | RoleMember | null | { id: string }
   id: string
   owner: { id: string }
   first_name: string
   last_name: string
   full_name: string
   email: string
-  role:
-    | 'TECHNICAL LEADER'
-    | 'SENIOR PROJECT MANAGER'
-    | 'JUNIOR PROJECT MANAGER'
-    | 'JUNIOR SOLUTION'
-    | 'SENIOR SOLUTION'
-    | 'JUNIOR DEVELOPER'
-    | 'SENIOR DEVELOPER'
-    | 'JUNIOR STAGE DEVELOPER'
-    | 'NONE'
+  role: RoleMember
 }
 
 export interface Project {
-  [key: string]: any
+  [key: string]:
+    | string
+    | Member[]
+    | Service
+    | SubService
+    | State
+    | null
+    | { id: string }
   id: string
   owner: { id: string }
   name: string
   description: string | null
   createdAt: string
   updatedAt: string
-  members: User[] | null
+  members: Member[] | null
   service: Service | null
   subService: SubService | null
-  state: 'OPENED' | 'ACTIVE' | 'CLOSED'
+  state: State
 }
 
-export interface UserToken {
-  [key: string]: any
+export interface User {
+  [key: string]: string | Role
   id: string
   username: string
   hash: string
   salt: string
-  role: 'ADMIN' | 'USER'
+  role: Role
   createdAt: string
   updatedAt: string
 }
 
 export interface Token {
-  [key: string]: any
+  [key: string]: string | StatusToken
   token: string
   expiresAt: string
+  statusToken: StatusToken
   userID: string
   createdAt: string
+}
+
+export type Codice =
+  | 'S01'
+  | 'S02'
+  | 'S03'
+  | 'S04'
+  | 'S05'
+  | 'S06'
+  | 'S07'
+  | 'S08'
+  | 'S09'
+  | 'S10'
+  | 'S11'
+export type CodiceWarning =
+  | 'W01'
+  | 'W02'
+  | 'W03'
+  | 'W04'
+  | 'W05'
+  | 'W06'
+  | 'W07'
+export type CodiceErrore = 'E01' | 'E02' | 'E03' | 'E04' | 'E05' | 'E06' | 'E07'
+export interface ResponseServer {
+  projects?: Project[]
+  tasks?: Task[]
+  members?: Member[]
+  error?: string
+  message?: string
+  statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
+  status: 200 | 202 | 201 | 204 | 400 | 401 | 403 | 404 | 409 | 500 | 501
+  count?: number
+  id?: string
+  profiles?: User[]
+  owner?: { id: string; name: string }
+  token?: string
 }
