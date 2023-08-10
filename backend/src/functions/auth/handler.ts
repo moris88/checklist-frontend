@@ -25,10 +25,7 @@ export function register(req: Request, res: Response) {
         updatedAt: new Date().toISOString(),
       })
     ) {
-      console.log(
-        'RESPONSE',
-        formatResponse({ statusText: 'SUCCESS', status: 201 })
-      )
+      console.log('User created')
       return res.status(200).json(
         formatResponse({
           statusText: 'SUCCESS',
@@ -37,14 +34,7 @@ export function register(req: Request, res: Response) {
         })
       )
     }
-    console.log(
-      'RESPONSE',
-      formatResponse({
-        statusText: 'ERROR',
-        status: 400,
-        error: 'User already exists',
-      })
-    )
+    console.log('User already exists')
     return res.status(400).json(
       formatResponse({
         statusText: 'ERROR',
@@ -54,14 +44,6 @@ export function register(req: Request, res: Response) {
     )
   } catch (error) {
     console.log('ERROR!', error)
-    console.log(
-      'RESPONSE',
-      formatResponse({
-        status: 500,
-        statusText: 'ERROR',
-        error: 'Internal server error',
-      })
-    )
     return res.status(500).json(
       formatResponse({
         status: 500,
@@ -76,19 +58,14 @@ export function login(req: Request, res: Response) {
   try {
     console.log('-->login')
     const { username, password } = req.body
-    console.log('username:', username)
-    console.log('password:', password)
     const users = getUsersToken()
     const user = users.find((user) => user.username === username)
     if (user) {
       const access = checkPassword(password, user.hash, user.salt)
       if (access) {
         const { token } = generateTokenUser(user.id)
-        console.log(
-          'RESPONSE',
-          formatResponse({ statusText: 'SUCCESS', status: 200 })
-        )
         if (token) {
+          console.log('Authorized')
           return res.status(200).json(
             formatResponse({
               statusText: 'SUCCESS',
@@ -99,14 +76,7 @@ export function login(req: Request, res: Response) {
           )
         } else throw new Error('Token not generated')
       }
-      console.log(
-        'RESPONSE',
-        formatResponse({
-          statusText: 'ERROR',
-          status: 401,
-          error: 'Unauthorized',
-        })
-      )
+      console.log('Unauthorized')
       return res.status(401).json(
         formatResponse({
           statusText: 'ERROR',
@@ -115,15 +85,8 @@ export function login(req: Request, res: Response) {
         })
       )
     }
-    console.log(
-      'RESPONSE',
-      formatResponse({
-        statusText: 'ERROR',
-        status: 404,
-        error: 'User not found',
-      })
-    )
-    return res.status(400).json(
+    console.log('User not found')
+    return res.status(404).json(
       formatResponse({
         statusText: 'ERROR',
         status: 404,
@@ -132,14 +95,6 @@ export function login(req: Request, res: Response) {
     )
   } catch (error) {
     console.log('ERROR!', error)
-    console.log(
-      'RESPONSE',
-      formatResponse({
-        status: 500,
-        statusText: 'ERROR',
-        error: 'Internal server error',
-      })
-    )
     return res.status(500).json(
       formatResponse({
         status: 500,
@@ -155,10 +110,7 @@ export function logout(req: Request, res: Response) {
     console.log('-->logout')
     const { username } = req.body
     if (removeToken(username)) {
-      console.log(
-        'RESPONSE',
-        formatResponse({ statusText: 'SUCCESS', status: 201 })
-      )
+      console.log('Logout')
       return res.status(201).json(
         formatResponse({
           statusText: 'SUCCESS',
@@ -166,30 +118,16 @@ export function logout(req: Request, res: Response) {
         })
       )
     }
-    console.log(
-      'RESPONSE',
+    console.log('Bad request')
+    return res.status(400).json(
       formatResponse({
         statusText: 'ERROR',
         status: 400,
         error: 'Bad request',
       })
     )
-    return res.status(400).json(
-      formatResponse({
-        statusText: 'ERROR',
-        status: 400,
-      })
-    )
   } catch (error) {
     console.log('ERROR!', error)
-    console.log(
-      'RESPONSE',
-      formatResponse({
-        status: 500,
-        statusText: 'ERROR',
-        error: 'Internal server error',
-      })
-    )
     return res.status(500).json(
       formatResponse({
         status: 500,
@@ -203,13 +141,6 @@ export function logout(req: Request, res: Response) {
 export function getProfiles(req: Request, res: Response) {
   try {
     console.log('-->getProfiles')
-    console.log(
-      'RESPONSE',
-      formatResponse({
-        statusText: 'SUCCESS',
-        status: 200,
-      })
-    )
     const profiles = getUsersToken().map((user) => ({
       id: user.id,
       username: user.username,
@@ -217,6 +148,7 @@ export function getProfiles(req: Request, res: Response) {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     }))
+    console.log('All profiles')
     return res.status(200).json(
       formatResponse({
         statusText: 'SUCCESS',
@@ -227,14 +159,6 @@ export function getProfiles(req: Request, res: Response) {
     )
   } catch (error) {
     console.log('ERROR!', error)
-    console.log(
-      'RESPONSE',
-      formatResponse({
-        status: 500,
-        statusText: 'ERROR',
-        error: 'Internal server error',
-      })
-    )
     return res.status(500).json(
       formatResponse({
         status: 500,
@@ -261,13 +185,7 @@ export function getProfile(req: Request, res: Response) {
           updatedAt: user.updatedAt,
         }))
       if (profile) {
-        console.log(
-          'RESPONSE',
-          formatResponse({
-            statusText: 'SUCCESS',
-            status: 200,
-          })
-        )
+        console.log(`Profile found: ${profile}`)
         return res.status(200).json(
           formatResponse({
             statusText: 'SUCCESS',
@@ -276,29 +194,16 @@ export function getProfile(req: Request, res: Response) {
           })
         )
       }
-      console.log(
-        'RESPONSE',
-        formatResponse({
-          statusText: 'ERROR',
-          status: 404,
-        })
-      )
+      console.log('Profile not found')
       return res.status(200).json(
         formatResponse({
           statusText: 'ERROR',
           status: 404,
-          error: 'User not found',
+          error: 'Profile not found',
         })
       )
     }
-    console.log(
-      'RESPONSE',
-      formatResponse({
-        statusText: 'ERROR',
-        status: 400,
-        error: 'Bad request',
-      })
-    )
+    console.log('Bad request')
     return res.status(400).json(
       formatResponse({
         statusText: 'ERROR',
@@ -308,14 +213,48 @@ export function getProfile(req: Request, res: Response) {
     )
   } catch (error) {
     console.log('ERROR!', error)
-    console.log(
-      'RESPONSE',
+    return res.status(500).json(
       formatResponse({
         status: 500,
         statusText: 'ERROR',
         error: 'Internal server error',
       })
     )
+  }
+}
+
+export function updateProfile(req: Request, res: Response) {
+  try {
+    return res.status(200).json(
+      formatResponse({
+        statusText: 'SUCCESS',
+        status: 200,
+        error: 'Not implemented',
+      })
+    )
+  } catch (error) {
+    console.log('ERROR!', error)
+    return res.status(500).json(
+      formatResponse({
+        status: 500,
+        statusText: 'ERROR',
+        error: 'Internal server error',
+      })
+    )
+  }
+}
+
+export function deleteProfile(req: Request, res: Response) {
+  try {
+    return res.status(200).json(
+      formatResponse({
+        statusText: 'SUCCESS',
+        status: 200,
+        error: 'Not implemented',
+      })
+    )
+  } catch (error) {
+    console.log('ERROR!', error)
     return res.status(500).json(
       formatResponse({
         status: 500,

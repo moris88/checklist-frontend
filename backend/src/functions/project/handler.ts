@@ -107,6 +107,43 @@ export function getProjects(req: Request, res: Response) {
   }
 }
 
+export function getProject(req: Request, res: Response) {
+  try {
+    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    if (myUser) {
+      const projects = readFile('projects') as Project[]
+      const myProjects = projects.filter(
+        (project) => project.owner.id === myUser.id
+      )
+      return res.status(200).json(
+        formatResponse({
+          statusText: 'SUCCESS',
+          status: 200,
+          projects: myProjects,
+          count: myProjects.length,
+        })
+      )
+    }
+    return res.status(200).json(
+      formatResponse({
+        statusText: 'SUCCESS',
+        status: 200,
+        projects: [],
+        count: 0,
+      })
+    )
+  } catch (error) {
+    console.log('ERROR!', error)
+    return res.status(500).json(
+      formatResponse({
+        statusText: 'ERROR',
+        status: 500,
+        error: 'Internal server error',
+      })
+    )
+  }
+}
+
 export function deleteProject(req: Request, res: Response) {
   try {
     console.log('deleteProject')
