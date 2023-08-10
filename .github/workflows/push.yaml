@@ -4,7 +4,7 @@ on: push
 
 jobs:
   frontend:
-    name: Code Quality
+    name: Code Quality Frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,7 +28,7 @@ jobs:
         working-directory: ./frontend
         run: yarn lint
   backend:
-    name: Code Quality
+    name: Code Quality Backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
