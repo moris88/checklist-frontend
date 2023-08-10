@@ -1,1 +1,7 @@
-export { createMember, updateMember, getMembers, deleteMember } from './handler'
+export {
+  createMember,
+  updateMember,
+  getMembers,
+  getMember,
+  deleteMember,
+} from './handler'

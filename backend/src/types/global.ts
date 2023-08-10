@@ -136,6 +136,9 @@ export type Codice =
   | 'S09'
   | 'S10'
   | 'S11'
+  | 'S12'
+  | 'S13'
+  | 'S14'
 export type CodiceWarning =
   | 'W01'
   | 'W02'

@@ -8,6 +8,8 @@ import {
   regenerateToken,
   formatResponse,
   generateLongId,
+  readFileSystem,
+  writeFileSystem,
 } from '../../libs'
 import { Request, Response } from 'express'
 import { User } from '../../types/global'
@@ -85,7 +87,6 @@ export function login(req: Request, res: Response) {
 
 export function refreshToken(req: Request, res: Response) {
   try {
-    console.log('REFRESH TOKEN')
     const { userId } = req.body
     const bearerToken = req.headers?.authorization ?? ''
     if (bearerToken && userId) {
@@ -150,7 +151,6 @@ export function getProfiles(req: Request, res: Response) {
       codice: 'S05',
       res,
       profiles,
-      count: profiles.length,
     })
   } catch (error) {
     console.log('ERROR!', error)
@@ -180,7 +180,6 @@ export function getProfile(req: Request, res: Response) {
           codice: 'S05',
           res,
           profiles: myProfiles,
-          count: myProfiles.length,
         })
       }
       return formatResponse({
@@ -201,10 +200,35 @@ export function getProfile(req: Request, res: Response) {
   }
 }
 
-export function updateProfile(req: Request, res: Response) {
+export function deleteProfile(req: Request, res: Response) {
   try {
+    const { id } = req.params
+    if (!id) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
+    const users = readFileSystem('users') as User[]
+    const usersSearch = users.filter((u: User) => u.id === id)
+    if (usersSearch.length === 0) {
+      return formatResponse({
+        codice: 'W05',
+        res,
+      })
+    }
+    if (usersSearch[0].role !== 'ADMIN') {
+      return formatResponse({
+        codice: 'E03',
+        res,
+      })
+    }
+    const newUsers = users.filter((u: User) => u.id !== id)
+    if (!writeFileSystem(newUsers, 'users')) {
+      throw new Error('Error deleting user')
+    }
     return formatResponse({
-      codice: 'E01',
+      codice: 'S10',
       res,
     })
   } catch (error) {
@@ -216,11 +240,37 @@ export function updateProfile(req: Request, res: Response) {
   }
 }
 
-export function deleteProfile(req: Request, res: Response) {
+export function updateProfile(req: Request, res: Response) {
   try {
+    const { id } = req.params
+    if (!id || Object.keys(req.body).length === 0) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
+    const { user } = req.body as { user: User }
+    const users = readFileSystem('users') as User[]
+    const usersSearch = users.filter((u: User) => u.id === id)
+    if (usersSearch.length === 0) {
+      return formatResponse({
+        codice: 'W02',
+        res,
+      })
+    }
+    const myUser = {
+      ...user,
+      role: usersSearch[0].role !== 'ADMIN' ? 'USER' : user.role,
+    }
+    const newUser = { ...usersSearch[0], ...myUser }
+    const newUsers = [...users.filter((u: User) => u.id !== id), newUser]
+    if (!writeFileSystem(newUsers, 'users')) {
+      throw new Error('Error updating user')
+    }
     return formatResponse({
-      codice: 'E01',
+      codice: 'S14',
       res,
+      profiles: [newUser],
     })
   } catch (error) {
     console.log('ERROR!', error)

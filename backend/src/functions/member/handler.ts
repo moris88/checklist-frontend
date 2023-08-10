@@ -42,7 +42,6 @@ export function createMember(req: Request, res: Response) {
           codice: 'S08',
           res,
           members: [newMember],
-          count: 1,
         })
       }
     }
@@ -71,14 +70,12 @@ export function getMembers(req: Request, res: Response) {
         codice: 'S09',
         res,
         members: myUsers,
-        count: myUsers.length,
       })
     }
     return formatResponse({
       codice: 'S09',
       res,
       members: [],
-      count: 0,
     })
   } catch (error) {
     console.log('ERROR!', error)
@@ -108,14 +105,12 @@ export function getMember(req: Request, res: Response) {
         codice: 'S09',
         res,
         members: myUsers,
-        count: myUsers.length,
       })
     }
     return formatResponse({
       codice: 'S09',
       res,
       members: [],
-      count: 0,
     })
   } catch (error) {
     console.log('ERROR!', error)
@@ -128,22 +123,22 @@ export function getMember(req: Request, res: Response) {
 
 export async function deleteMember(req: Request, res: Response) {
   try {
-    console.log('-->deleteUser', req.params.id)
-    if (!req.params.id) {
+    const { id } = req.params
+    if (!id) {
       return formatResponse({
         codice: 'E04',
         res,
       })
     }
     const members = readFile('members') as Member[]
-    const membersSearch = members.filter((m: Member) => m.id === req.params.id)
+    const membersSearch = members.filter((m: Member) => m.id === id)
     if (membersSearch.length === 0) {
       return formatResponse({
         codice: 'W05',
         res,
       })
     }
-    const newMembers = members.filter((m: Member) => m.id !== req.params.id)
+    const newMembers = members.filter((m: Member) => m.id !== id)
     if (!writeFile(newMembers, 'members')) {
       throw new Error('Error deleting member')
     }
@@ -171,12 +166,6 @@ export async function updateMember(req: Request, res: Response) {
     }
     const { member } = req.body as { member: Member }
     const members = readFile('members') as Member[]
-    if (members.filter((m: Member) => m.id === id).length === 0) {
-      return formatResponse({
-        codice: 'W05',
-        res,
-      })
-    }
     const membersSearch = members.filter((m: Member) => m.id === id)
     if (membersSearch.length === 0) {
       return formatResponse({
@@ -196,7 +185,6 @@ export async function updateMember(req: Request, res: Response) {
       codice: 'S11',
       res,
       members: [newMember],
-      count: 1,
     })
   } catch (error) {
     console.log('ERROR!', error)

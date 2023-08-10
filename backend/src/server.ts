@@ -25,6 +25,8 @@ import {
   deleteProfile,
   authorizationMiddleware,
   generalPathMatch,
+  getMember,
+  getTask,
 } from './functions'
 import { refreshToken } from './functions/auth/handler'
 
@@ -60,6 +62,8 @@ app.delete('/api/v1/project/:id', deleteProject)
 // PATHS Tasks:
 // GET /tasks - get all tasks
 app.get('/api/v1/tasks', getTasks)
+// GET /task - get task
+app.get('/api/v1/task/:id', getTask)
 // POST /task - create a new task
 app.post('/api/v1/task/create', createTask)
 // PUT /task - update a task
@@ -69,6 +73,8 @@ app.delete('/api/v1/task/:id', deleteTask)
 // PATHS Members:
 // GET /members - get all members
 app.get('/api/v1/members', getMembers)
+// GET /member - get member
+app.get('/api/v1/members/:id', getMember)
 // POST /member - create a new member
 app.post('/api/v1/member', createMember)
 // PUT /member - update a member

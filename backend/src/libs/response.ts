@@ -33,7 +33,6 @@ export const formatResponse = ({
   projects,
   //   tasks,
   members,
-  count,
 }: {
   codice: Codice | CodiceWarning | CodiceErrore
   res: Response
@@ -43,7 +42,6 @@ export const formatResponse = ({
   projects?: Project[]
   tasks?: Task[]
   members?: Member[]
-  count?: number
 }): void => {
   const responseServer: ResponseServer = {
     statusText: 'SUCCESS',
@@ -123,10 +121,10 @@ export const formatResponse = ({
       break
     }
     case 'W06': {
-      console.log('W06', 'Member not found')
+      console.log('W06', 'Project not found')
       responseServer.statusText = 'WARNING'
       responseServer.status = 404
-      responseServer.message = 'Member not found'
+      responseServer.message = 'Project not found'
       break
     }
     // SUCCESS
@@ -164,7 +162,7 @@ export const formatResponse = ({
       responseServer.statusText = 'SUCCESS'
       responseServer.status = 200
       responseServer.profiles = profiles
-      responseServer.count = count
+      responseServer.count = profiles?.length || 0
       break
     }
     case 'S06': {
@@ -173,7 +171,7 @@ export const formatResponse = ({
       responseServer.status = 201
       responseServer.message = 'Project created'
       responseServer.projects = projects
-      responseServer.count = count
+      responseServer.count = projects?.length || 0
       break
     }
     case 'S07': {
@@ -181,7 +179,7 @@ export const formatResponse = ({
       responseServer.statusText = 'SUCCESS'
       responseServer.status = 200
       responseServer.projects = projects
-      responseServer.count = count
+      responseServer.count = projects?.length || 0
       break
     }
     case 'S08': {
@@ -190,7 +188,7 @@ export const formatResponse = ({
       responseServer.status = 201
       responseServer.message = 'Member created'
       responseServer.members = members
-      responseServer.count = count
+      responseServer.count = members?.length || 0
       break
     }
     case 'S09': {
@@ -198,7 +196,7 @@ export const formatResponse = ({
       responseServer.statusText = 'SUCCESS'
       responseServer.status = 200
       responseServer.members = members
-      responseServer.count = count
+      responseServer.count = members?.length || 0
       break
     }
     case 'S10': {
@@ -214,7 +212,30 @@ export const formatResponse = ({
       responseServer.status = 200
       responseServer.message = 'Member updated'
       responseServer.members = members
-      responseServer.count = count
+      responseServer.count = members?.length || 0
+      break
+    }
+    case 'S12': {
+      console.log('S12', 'Project deleted')
+      responseServer.statusText = 'SUCCESS'
+      responseServer.status = 204
+      responseServer.message = 'Project deleted'
+      break
+    }
+    case 'S13': {
+      console.log('S13', 'Project updated')
+      responseServer.statusText = 'SUCCESS'
+      responseServer.status = 200
+      responseServer.message = 'Project updated'
+      responseServer.projects = projects
+      responseServer.count = projects?.length || 0
+      break
+    }
+    case 'S14': {
+      console.log('S14', 'User updated')
+      responseServer.statusText = 'SUCCESS'
+      responseServer.status = 200
+      responseServer.message = 'User updated'
       break
     }
   }

@@ -31,6 +31,21 @@ export async function getTasks(req: Request, res: Response) {
   }
 }
 
+export async function getTask(req: Request, res: Response) {
+  try {
+    return formatResponse({
+      codice: 'E01',
+      res,
+    })
+  } catch (error) {
+    console.log('ERROR!', error)
+    return formatResponse({
+      codice: 'E02',
+      res,
+    })
+  }
+}
+
 export async function deleteTask(req: Request, res: Response) {
   try {
     return formatResponse({
