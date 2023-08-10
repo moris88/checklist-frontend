@@ -1,1 +1,7 @@
-export { createTask, updateTask, getTasks, deleteTask } from './handler'
+export {
+  createTask,
+  updateTask,
+  getTasks,
+  getTask,
+  deleteTask,
+} from './handler'
