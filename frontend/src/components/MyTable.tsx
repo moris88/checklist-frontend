@@ -11,6 +11,7 @@ interface Columns {
 
 interface MyTableProps {
   columns: Columns[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rows: any[]
   onDelete?: (id: number) => void
   module: string
