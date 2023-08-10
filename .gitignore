@@ -12,6 +12,7 @@
 /frontend/.env
 
 # production build
+/backend/dist/
 /frontend/dist/
 /frontend/logs/
 
