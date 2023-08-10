@@ -67,20 +67,13 @@ export function generateTokenUser(userId: string): { token: string | null } {
 }
 
 export function checkToken(token: string): boolean {
-  const tokens = readFileSystem('tokens')
-  const tokenIndex = tokens.findIndex(
-    (t) => t.token === token.replace('Bearer ', '')
-  )
   const today = new Date().getTime()
-  if (tokenIndex !== -1) {
-    const tokenExpiresAt = new Date(tokens[tokenIndex].expiresAt).getTime()
-    if (tokenExpiresAt > today) {
-      return true
-    }
-    tokens.splice(tokenIndex, 1)
-    writeFileSystem(tokens, 'tokens')
-  }
-  return false
+  const tokens = readFileSystem('tokens') as Token[]
+  const myTokens = tokens.filter((t) => new Date(t.expiresAt).getTime() < today)
+  writeFileSystem(myTokens, 'tokens')
+  const myToken = token.replace('Bearer ', '')
+  const tokenIndex = myTokens.findIndex((t) => t.token === myToken)
+  return tokenIndex !== -1
 }
 
 export function getUserByToken(token: string): { id: string } | null {
