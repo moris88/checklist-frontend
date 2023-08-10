@@ -15,18 +15,19 @@ export function createProject(req: Request, res: Response) {
     const projects = readFile('projects') as Project[]
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
-      projects.push({
+      const newProject = {
         ...project,
         owner: { id: myUser.id },
         id: generateLongId(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      })
+      }
+      projects.push(newProject)
       if (writeFile(projects, 'projects')) {
         return formatResponse({
           codice: 'S06',
           res,
-          projects: [project],
+          projects: [newProject],
         })
       }
     }
@@ -48,9 +49,7 @@ export function getProjects(req: Request, res: Response) {
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       const projects = readFile('projects') as Project[]
-      const myProjects = projects.filter(
-        (project) => project.owner.id === myUser.id
-      )
+      const myProjects = projects.filter((p) => p.owner.id === myUser.id)
       return formatResponse({
         codice: 'S07',
         res,
@@ -78,9 +77,7 @@ export function getProject(req: Request, res: Response) {
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       const projects = readFile('projects') as Project[]
-      const myProjects = projects.filter(
-        (project) => project.owner.id === myUser.id
-      )
+      const myProjects = projects.filter((p) => p.owner.id === myUser.id)
       return formatResponse({
         codice: 'S07',
         res,
@@ -123,7 +120,7 @@ export function deleteProject(req: Request, res: Response) {
       throw new Error('Error deleting project')
     }
     return formatResponse({
-      codice: 'S12',
+      codice: 'S17',
       res,
     })
   } catch (error) {
@@ -149,7 +146,7 @@ export function updateProject(req: Request, res: Response) {
     const projectsSearch = projects.filter((p: Project) => p.id === id)
     if (projectsSearch.length === 0) {
       return formatResponse({
-        codice: 'W05',
+        codice: 'W06',
         res,
       })
     }
@@ -166,7 +163,7 @@ export function updateProject(req: Request, res: Response) {
       throw new Error('Error updating project')
     }
     return formatResponse({
-      codice: 'S11',
+      codice: 'S18',
       res,
       projects: [newProject],
     })

@@ -140,12 +140,12 @@ export function logout(req: Request, res: Response) {
 
 export function getProfiles(req: Request, res: Response) {
   try {
-    const profiles = getUsersToken().map((user) => ({
-      id: user.id,
-      username: user.username,
-      role: user.role,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+    const profiles = getUsersToken().map((u) => ({
+      id: u.id,
+      username: u.username,
+      role: u.role,
+      createdAt: u.createdAt,
+      updatedAt: u.updatedAt,
     })) as User[]
     formatResponse({
       codice: 'S05',
@@ -167,13 +167,13 @@ export function getProfile(req: Request, res: Response) {
     if (id) {
       const profiles = getUsersToken()
       const myProfiles = profiles
-        .filter((user) => user.id === id)
-        .map((user) => ({
-          id: user.id,
-          username: user.username,
-          role: user.role,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
+        .filter((u) => u.id === id)
+        .map((u) => ({
+          id: u.id,
+          username: u.username,
+          role: u.role,
+          createdAt: u.createdAt,
+          updatedAt: u.updatedAt,
         })) as User[]
       if (myProfiles) {
         return formatResponse({

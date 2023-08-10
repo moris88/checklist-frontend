@@ -139,6 +139,10 @@ export type Codice =
   | 'S12'
   | 'S13'
   | 'S14'
+  | 'S15'
+  | 'S16'
+  | 'S17'
+  | 'S18'
 export type CodiceWarning =
   | 'W01'
   | 'W02'
@@ -147,7 +151,7 @@ export type CodiceWarning =
   | 'W05'
   | 'W06'
   | 'W07'
-export type CodiceErrore = 'E01' | 'E02' | 'E03' | 'E04' | 'E05' | 'E06' | 'E07'
+export type CodiceErrore = 'E01' | 'E02' | 'E03' | 'E04' | 'E05'
 export interface ResponseServer {
   projects?: Project[]
   tasks?: Task[]

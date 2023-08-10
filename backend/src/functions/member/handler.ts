@@ -63,9 +63,7 @@ export function getMembers(req: Request, res: Response) {
     const members = readFile('members') as Member[]
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
-      const myUsers = members.filter(
-        (user: Member) => user.owner.id === myUser.id
-      )
+      const myUsers = members.filter((u: Member) => u.owner.id === myUser.id)
       return formatResponse({
         codice: 'S09',
         res,
@@ -99,7 +97,7 @@ export function getMember(req: Request, res: Response) {
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       const myUsers = members.filter(
-        (user: Member) => user.owner.id !== myUser.id && user.id === id
+        (u: Member) => u.owner.id !== myUser.id && u.id === id
       )
       return formatResponse({
         codice: 'S09',

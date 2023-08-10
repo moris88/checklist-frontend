@@ -31,7 +31,7 @@ export const formatResponse = ({
   token,
   profiles,
   projects,
-  //   tasks,
+  tasks,
   members,
 }: {
   codice: Codice | CodiceWarning | CodiceErrore
@@ -125,6 +125,13 @@ export const formatResponse = ({
       responseServer.statusText = 'WARNING'
       responseServer.status = 404
       responseServer.message = 'Project not found'
+      break
+    }
+    case 'W07': {
+      console.log('W07', 'Task not found')
+      responseServer.statusText = 'WARNING'
+      responseServer.status = 404
+      responseServer.message = 'Task not found'
       break
     }
     // SUCCESS
@@ -236,6 +243,39 @@ export const formatResponse = ({
       responseServer.statusText = 'SUCCESS'
       responseServer.status = 200
       responseServer.message = 'User updated'
+      break
+    }
+    case 'S15': {
+      console.log('S15', 'Task created', tasks)
+      responseServer.statusText = 'SUCCESS'
+      responseServer.status = 201
+      responseServer.message = 'Project created'
+      responseServer.tasks = tasks
+      responseServer.count = tasks?.length || 0
+      break
+    }
+    case 'S16': {
+      console.log('S016', 'Get tasks', tasks)
+      responseServer.statusText = 'SUCCESS'
+      responseServer.status = 200
+      responseServer.tasks = tasks
+      responseServer.count = tasks?.length || 0
+      break
+    }
+    case 'S17': {
+      console.log('S17', 'Task deleted')
+      responseServer.statusText = 'SUCCESS'
+      responseServer.status = 204
+      responseServer.message = 'Task deleted'
+      break
+    }
+    case 'S18': {
+      console.log('S18', 'Task updated')
+      responseServer.statusText = 'SUCCESS'
+      responseServer.status = 200
+      responseServer.message = 'Task updated'
+      responseServer.tasks = tasks
+      responseServer.count = tasks?.length || 0
       break
     }
   }
