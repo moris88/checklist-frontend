@@ -1,3 +1,4 @@
+export type Module = 'member' | 'project' | 'task'
 export type Status =
   | 'BACKLOG'
   | 'OPEN'
@@ -8,7 +9,7 @@ export type Status =
   | 'CLOSED'
   | 'REOPENED'
   | 'PENDING'
-
+export type State = 'OPENED' | 'ACTIVE' | 'CLOSED'
 export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
 export type Type =
   | 'system integration'
@@ -34,8 +35,19 @@ export type SubService =
   | 'Zendesk Sell'
   | 'Zendesk Guide'
   | 'others'
+export type Role =
+  | 'TECHNICAL LEADER'
+  | 'SENIOR PROJECT MANAGER'
+  | 'JUNIOR PROJECT MANAGER'
+  | 'JUNIOR SOLUTION'
+  | 'SENIOR SOLUTION'
+  | 'JUNIOR DEVELOPER'
+  | 'SENIOR DEVELOPER'
+  | 'JUNIOR STAGE DEVELOPER'
+  | 'NONE'
 
 export interface Task {
+  [key: string]: string | null | Status | Priority | Member[] | Type
   id: string
   title: string
   description: string | null
@@ -45,29 +57,22 @@ export interface Task {
   priority: Priority | null
   deadline: string | null
   projectID: string | null
-  assignee: User[] | null
+  assignee: Member[] | null
   type: Type | null
 }
 
 export interface Member {
+  [key: string]: string | Role
   id: string
   first_name: string
   last_name: string
   full_name: string
   email: string
-  role:
-    | 'TECHNICAL LEADER'
-    | 'SENIOR PROJECT MANAGER'
-    | 'JUNIOR PROJECT MANAGER'
-    | 'JUNIOR SOLUTION'
-    | 'SENIOR SOLUTION'
-    | 'JUNIOR DEVELOPER'
-    | 'SENIOR DEVELOPER'
-    | 'JUNIOR STAGE DEVELOPER'
-    | 'NONE'
+  role: Role
 }
 
 export interface Project {
+  [key: string]: string | null | User[] | Service | SubService | State
   id: string
   name: string
   description: string | null
@@ -76,12 +81,21 @@ export interface Project {
   members: User[] | null
   service: Service | null
   subService: SubService | null
-  state: 'OPENED' | 'ACTIVE' | 'CLOSED'
+  state: State
+}
+
+export interface User {
+  id: string
+  username: string
+  role: 'ADMIN' | 'USER'
+  createdAt: string
+  updatedAt: string
+  password: string | null
 }
 
 export interface AccessToken {
   token: string | null
-  owner: { id: string; name: string } | null
+  owner: { id: string | null; name: string | null } | null
   expiresAt: number | null
   createdAt: number | null
 }

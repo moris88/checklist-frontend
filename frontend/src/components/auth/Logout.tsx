@@ -1,9 +1,9 @@
 import React from 'react'
 import { Spinner } from 'flowbite-react'
 import { useNavigate } from 'react-router-dom'
-import { accessState, clearAccessState } from '../atoms'
+import { accessState, clearAccessState, defaultState } from '../../atoms'
 import { useAtom } from 'jotai'
-import { useFetch } from '../hooks'
+import { useFetch } from '../../hooks'
 
 const Logout = () => {
   const navigate = useNavigate()
@@ -28,12 +28,7 @@ const Logout = () => {
   React.useEffect(() => {
     if (response) {
       clearAccessState()
-      setAccess({
-        token: null,
-        owner: null,
-        expiresAt: null,
-        createdAt: null,
-      })
+      setAccess(defaultState())
       setTimeout(() => {
         navigate('/')
       }, 5000)

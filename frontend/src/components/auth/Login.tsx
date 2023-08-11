@@ -1,11 +1,11 @@
-import { AccessToken, LoginAccess } from '../types/global'
+import { AccessToken, LoginAccess } from '../../types/global'
 import { useForm } from 'react-hook-form'
 import { Button, Label, Spinner, TextInput } from 'flowbite-react'
 import { useNavigate } from 'react-router-dom'
 import React from 'react'
 import { useAtom } from 'jotai'
-import { accessState, setAccessState } from '../atoms'
-import { useFetch } from '../hooks'
+import { accessState, setAccessState } from '../../atoms'
+import { useFetch } from '../../hooks'
 
 const Login = () => {
   const navigate = useNavigate()

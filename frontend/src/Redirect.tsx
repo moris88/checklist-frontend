@@ -1,16 +1,23 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import List from './components/List'
-import Record from './components/Record'
 import { Spinner } from 'flowbite-react'
-import { Wrapper, Home, Login, Logout, Register } from './components'
-import Profile from './components/Profile'
-import View from './components/View'
+import {
+  Wrapper,
+  Home,
+  Login,
+  Logout,
+  Register,
+  View,
+  Record,
+  List,
+  Profile,
+} from './components'
+import NotFoundPage from './components/NotFoundPage'
 
 const router = createBrowserRouter([
   {
     path: '/projects',
     Component: () => (
-      <Wrapper title="Projects">
+      <Wrapper title="List Projects">
         <List module="project" />
       </Wrapper>
     ),
@@ -42,7 +49,7 @@ const router = createBrowserRouter([
   {
     path: '/tasks',
     Component: () => (
-      <Wrapper title="Tasks">
+      <Wrapper title="List Tasks">
         <List module="task" />
       </Wrapper>
     ),
@@ -74,7 +81,7 @@ const router = createBrowserRouter([
   {
     path: '/members',
     Component: () => (
-      <Wrapper title="Members">
+      <Wrapper title="List Members">
         <List module="member" />
       </Wrapper>
     ),
@@ -130,6 +137,14 @@ const router = createBrowserRouter([
   {
     path: '/register',
     Component: () => <Register />,
+  },
+  {
+    path: '*',
+    Component: () => (
+      <Wrapper title="Not Found">
+        <NotFoundPage />
+      </Wrapper>
+    ),
   },
 ])
 

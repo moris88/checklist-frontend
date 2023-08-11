@@ -12,6 +12,7 @@ import Multiselect from '../Multiselect'
 import { useFetch } from '../../hooks'
 import { useNavigate } from 'react-router-dom'
 import React from 'react'
+import { ArrowLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 
 interface FormTaskProps {
   defaultValues?: Omit<Task, 'createdAt' | 'updatedAt' | 'id'>
@@ -158,7 +159,7 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
               options={members.map((user) => user.full_name)}
               disabled={members.length === 0}
               defaultValues={
-                value
+                (value as Member[])
                   ?.filter((el) => el !== undefined)
                   .map((user) => user.full_name) ?? []
               }
@@ -206,10 +207,14 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
         <option value={'others'}>{'others'}</option>
       </Select>
       <div className="flex justify-center w-full gap-3">
-        <Button color="gray" onClick={() => navigate(-1)}>
+        <Button onClick={() => navigate(-1)}>
+          <ArrowLeftIcon className="w-5 h-5 mr-2" />
           Done
         </Button>
-        <Button type="submit">{defaultValues ? 'Edit' : 'Save'}</Button>
+        <Button color="success" type="submit">
+          <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
+          Save
+        </Button>
       </div>
     </form>
   )

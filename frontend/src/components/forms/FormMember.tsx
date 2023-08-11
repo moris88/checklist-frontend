@@ -4,6 +4,7 @@ import { Button, Label, Select, Spinner, TextInput } from 'flowbite-react'
 import { useFetch } from '../../hooks'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ArrowLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 
 interface FormMemberProps {
   defaultValues?: Omit<Member, 'full_name' | 'id'>
@@ -122,8 +123,15 @@ const FormMember = ({ defaultValues }: FormMemberProps) => {
           {'JUNIOR STAGE DEVELOPER'}
         </option>
       </Select>
-      <div className="flex justify-center w-full">
-        <Button type="submit">{defaultValues ? 'Edit' : 'Save'}</Button>
+      <div className="flex justify-center w-full gap-3">
+        <Button onClick={() => navigate(-1)}>
+          <ArrowLeftIcon className="w-5 h-5 mr-2" />
+          Done
+        </Button>
+        <Button color="success" type="submit">
+          <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
+          Save
+        </Button>
       </div>
     </form>
   )

@@ -1,10 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Button, Table } from 'flowbite-react'
-import { Member } from '../types/global'
-import TrashIcon from '@heroicons/react/24/outline/TrashIcon'
-import PencilSquareIcon from '@heroicons/react/24/outline/PencilSquareIcon'
-import { twMerge } from 'tailwind-merge'
+import { Table } from 'flowbite-react'
+import { Member, Module, Project, Task } from '../types/global'
 import { useNavigate } from 'react-router-dom'
+import { Deadline, Priority, State, Status } from './badge'
+import moment from 'moment'
 
 interface Columns {
   api: string
@@ -13,35 +11,27 @@ interface Columns {
 
 interface MyTableProps {
   columns: Columns[]
-  rows: any[]
-  onDelete: (id: string) => void
-  onRow: (id: string) => void
-  module: string
+  rows: Member[] | Project[] | Task[]
+  module: Module
 }
 
-const MyTable = ({ columns, rows, onDelete, onRow, module }: MyTableProps) => {
+const MyTable = ({ columns, rows, module }: MyTableProps) => {
   const navigate = useNavigate()
   return (
-    <Table hoverable>
+    <Table hoverable className="w-full">
       <Table.Head>
         {columns.map((column) => (
           <Table.HeadCell key={`table-head-${column.api}`}>
             {column.label}
           </Table.HeadCell>
         ))}
-        <Table.HeadCell>
-          <span className="sr-only">Edit</span>
-        </Table.HeadCell>
-        <Table.HeadCell>
-          <span className="sr-only">Delete</span>
-        </Table.HeadCell>
       </Table.Head>
       <Table.Body className="divide-y">
         {rows.map((row, index) => (
           <Table.Row
             key={row.id}
-            className="bg-white dark:border-gray-700 dark:bg-gray-800"
-            onClick={() => onRow(row.id)}
+            className="bg-white dark:border-gray-700 dark:bg-gray-800 cursor-pointer"
+            onClick={() => navigate(`/${module}/${row.id}`)}
           >
             {columns.map((column) => {
               if (module === 'project' && column.api === 'id') {
@@ -68,68 +58,38 @@ const MyTable = ({ columns, rows, onDelete, onRow, module }: MyTableProps) => {
               if (module === 'project' && column.api === 'state') {
                 return (
                   <Table.Cell key={`table-body-${column.api}`}>
-                    <span
-                      className={twMerge(
-                        'p-2 border rounded-lg font-bold',
-                        row[column.api] === 'OPENED'
-                          ? 'bg-blue-500  text-black'
-                          : row[column.api] === 'ACTIVE'
-                          ? 'bg-green-500 text-white'
-                          : 'bg-red-500 text-black'
-                      )}
-                    >
-                      {row[column.api]}
-                    </span>
+                    <State>{row[column.api] as string}</State>
                   </Table.Cell>
                 )
               }
               if (module === 'task' && column.api === 'status') {
                 return (
                   <Table.Cell key={`table-body-${column.api}`}>
-                    <span
-                      className={twMerge(
-                        'p-2 border rounded-lg font-bold',
-                        row[column.api] === 'BACKLOG'
-                          ? 'bg-gray-500  text-black'
-                          : row[column.api] === 'OPEN'
-                          ? 'bg-green-500 text-black'
-                          : row[column.api] === 'IN PROGRESS'
-                          ? 'bg-yellow-500 text-black'
-                          : row[column.api] === 'DONE'
-                          ? 'bg-blue-500 text-black'
-                          : row[column.api] === 'DELETED'
-                          ? 'bg-red-500 text-black'
-                          : row[column.api] === 'ARCHIVED'
-                          ? 'bg-indigo-500 text-black'
-                          : row[column.api] === 'CLOSED'
-                          ? 'bg-stone-500 text-black'
-                          : row[column.api] === 'REOPENED'
-                          ? 'bg-cyan-500 text-black'
-                          : 'bg-teal-500 text-black'
-                      )}
-                    >
-                      {row[column.api]}
-                    </span>
+                    <Status>{row[column.api] as string}</Status>
                   </Table.Cell>
                 )
               }
               if (module === 'task' && column.api === 'priority') {
                 return (
                   <Table.Cell key={`table-body-${column.api}`}>
-                    <span
-                      className={twMerge(
-                        'p-2 border rounded-lg font-bold',
-                        row[column.api] === 'LOW'
-                          ? 'bg-green-500  text-black'
-                          : row[column.api] === 'MEDIUM'
-                          ? 'bg-yellow-500 text-black'
-                          : row[column.api] === 'HIGH'
-                          ? 'bg-orange-500 text-black'
-                          : 'bg-red-500 text-black'
-                      )}
-                    >
-                      {row[column.api]}
-                    </span>
+                    <Priority>{row[column.api] as string}</Priority>
+                  </Table.Cell>
+                )
+              }
+              if (
+                (module === 'task' || module === 'project') &&
+                (column.api === 'createdAt' || column.api === 'updatedAt')
+              ) {
+                return (
+                  <Table.Cell key={`table-body-${column.api}`}>
+                    {moment(row[column.api]).format('DD-MM-YYYY HH:MM')}
+                  </Table.Cell>
+                )
+              }
+              if (module === 'task' && column.api === 'deadline') {
+                return (
+                  <Table.Cell key={`table-body-${column.api}`}>
+                    <Deadline>{row[column.api] as string}</Deadline>
                   </Table.Cell>
                 )
               }
@@ -147,25 +107,10 @@ const MyTable = ({ columns, rows, onDelete, onRow, module }: MyTableProps) => {
               }
               return (
                 <Table.Cell key={`table-body-${column.api}`}>
-                  {row[column.api]}
+                  {row[column.api] as string}
                 </Table.Cell>
               )
             })}
-            <Table.Cell>
-              <Button onClick={() => navigate(`/${module}/edit/${row.id}`)}>
-                <PencilSquareIcon className="w-5 h-5" />
-              </Button>
-            </Table.Cell>
-            <Table.Cell>
-              <Button
-                color="failure"
-                onClick={() => {
-                  if (onDelete) onDelete(row.id)
-                }}
-              >
-                <TrashIcon className="w-5 h-5" />
-              </Button>
-            </Table.Cell>
           </Table.Row>
         ))}
       </Table.Body>

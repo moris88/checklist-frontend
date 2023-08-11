@@ -18,6 +18,10 @@ function getAccessStateDefault() {
       }
     }
   }
+  return defaultState()
+}
+
+export function defaultState() {
   return {
     token: null,
     owner: null,

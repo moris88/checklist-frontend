@@ -12,6 +12,7 @@ import Multiselect from '../Multiselect'
 import React from 'react'
 import { useFetch } from '../../hooks'
 import { useNavigate } from 'react-router-dom'
+import { ArrowLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 
 interface FormProjectProps {
   defaultValues?: Omit<Project, 'createdAt' | 'updatedAt' | 'id'>
@@ -23,11 +24,20 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     response: responseMembers,
     loading: loadingMember,
     error: errorMember,
-    setRequest,
   } = useFetch<{
     members: Member[]
   }>({
     endpoint: '/members',
+  })
+  const {
+    response: responseProjects,
+    loading: loadingProjects,
+    error: errorProjects,
+    setRequest,
+  } = useFetch<{
+    members: Member[]
+  }>({
+    skip: true,
   })
   const members = responseMembers?.members ?? []
   const [values, setValues] = React.useState<
@@ -58,6 +68,12 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     }
   }, [defaultValues])
 
+  React.useEffect(() => {
+    if (responseProjects) {
+      navigate('/projects')
+    }
+  }, [navigate, responseProjects])
+
   const onSubmit = handleSubmit((data) => {
     setRequest({
       url: '/project',
@@ -68,13 +84,7 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     })
   })
 
-  React.useEffect(() => {
-    if (responseMembers) {
-      navigate('/projects')
-    }
-  }, [navigate, responseMembers])
-
-  if (loadingMember) {
+  if (loadingMember || loadingProjects) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />
@@ -82,7 +92,7 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     )
   }
 
-  if (errorMember) {
+  if (errorMember || errorProjects) {
     return (
       <div className="flex justify-center items-center h-screen">
         <p>ERROR</p>
@@ -111,7 +121,7 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
             <Multiselect
               options={members.map((m) => m.full_name)}
               defaultValues={
-                value
+                (value as unknown as Member[])
                   ?.filter((el) => el !== undefined)
                   .map((user) => user.full_name) ?? []
               }
@@ -152,8 +162,15 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
         <option value={'ACTIVE'}>{'ACTIVE'}</option>
         <option value={'CLOSED'}>{'CLOSED'}</option>
       </Select>
-      <div className="flex justify-center w-full">
-        <Button type="submit">{defaultValues ? 'Edit' : 'Save'}</Button>
+      <div className="flex justify-center w-full gap-3">
+        <Button onClick={() => navigate(-1)}>
+          <ArrowLeftIcon className="w-5 h-5 mr-2" />
+          Done
+        </Button>
+        <Button color="success" type="submit">
+          <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
+          Save
+        </Button>
       </div>
     </form>
   )

@@ -1,4 +1,4 @@
-import { AccessToken } from '../types/global'
+import { AccessToken, Module } from '../types/global'
 
 export function checkLogin() {
   const accessTokenString: string | null = localStorage.getItem('access_token')
@@ -16,7 +16,7 @@ export function checkLogin() {
 }
 
 export function getSkip(
-  module: string,
+  module: Module,
   id: string | undefined
 ): { skipMember: boolean; skipProject: boolean; skipTask: boolean } {
   let skipMember = true
@@ -35,7 +35,7 @@ export function getSkip(
   return { skipMember, skipProject, skipTask }
 }
 
-export function getSkipByModule(module: string): {
+export function getSkipByModule(module: Module): {
   skipMember: boolean
   skipProject: boolean
   skipTask: boolean
@@ -54,4 +54,14 @@ export function getSkipByModule(module: string): {
     skipTask = false
   }
   return { skipMember, skipProject, skipTask }
+}
+
+export function capitalizeFirstLetter(input: string): string {
+  if (!input) {
+    return input // Restituisci la stringa originale se è null o undefined
+  }
+  if (input.length === 0) {
+    return input // Restituisci la stringa originale se è vuota
+  }
+  return input?.charAt(0)?.toUpperCase() + input?.slice(1)
 }
