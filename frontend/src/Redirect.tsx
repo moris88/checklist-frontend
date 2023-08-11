@@ -108,7 +108,7 @@ const router = createBrowserRouter([
   },
 ])
 
-function App() {
+function Redirect() {
   return (
     <RouterProvider
       router={router}
@@ -121,4 +121,4 @@ function App() {
   )
 }
 
-export default App
+export default Redirect

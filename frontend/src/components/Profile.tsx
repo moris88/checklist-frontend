@@ -14,7 +14,7 @@ const Profile = () => {
 
   return (
     <div className="flex justify-center items-center h-[90vh]">
-      <h1>My Profile</h1>
+      <p>{`My Profile => `}</p>
       <pre>{JSON.stringify(profiles, null, 5)}</pre>
     </div>
   )
