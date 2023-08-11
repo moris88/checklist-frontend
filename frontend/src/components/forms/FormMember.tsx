@@ -132,7 +132,7 @@ const FormMember = ({ defaultValues }: FormMemberProps) => {
         </option>
       </Select>
       <div className="flex justify-center w-full">
-        <Button type="submit">Add</Button>
+        <Button type="submit">{defaultValues ? 'Edit' : 'Save'}</Button>
       </div>
     </form>
   )

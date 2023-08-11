@@ -1,88 +1,64 @@
-import useAccess from '../hooks/useAccess'
 import { AccessToken, LoginAccess } from '../types/global'
 import { useForm } from 'react-hook-form'
 import { Button, Label, Spinner, TextInput } from 'flowbite-react'
-import { login } from '../utils/requester'
 import { useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import React from 'react'
+import { useAtom } from 'jotai'
+import { accessState, setAccessState } from '../atoms'
+import { useFetch } from '../hooks'
 
 const Login = () => {
   const navigate = useNavigate()
-  const [loadingLogin, setLoadingLogin] = useState<boolean>(false)
-  const [message, setMessage] = useState<string | null>(null)
-  const { element, setElement, loading } = useAccess<AccessToken>({
-    key: 'access_token',
-    defaultValues: {
-      token: null,
-      owner: null,
-      expiresAt: null,
-      createdAt: null,
-    },
+  const [access, setAccess] = useAtom(accessState)
+  const { response, loading, error, setRequest } = useFetch<{
+    token: string
+    owner: { id: string; name: string }
+  }>({
+    skip: true,
+    skipToken: true,
   })
   const { register, handleSubmit } = useForm<LoginAccess>({
     values: { username: '', password: '' },
   })
 
-  console.log('login', element)
-
-  useEffect(() => {
-    if (element?.token && !loading) {
+  React.useEffect(() => {
+    if (response) {
+      const expiresAt = new Date()
+      expiresAt.setHours(expiresAt.getHours() + 1)
+      const access: AccessToken = {
+        token: response.token,
+        owner: response.owner,
+        expiresAt: expiresAt.getTime(),
+        createdAt: new Date().getTime(),
+      }
+      setAccess(access)
+      setAccessState(access)
       setTimeout(() => {
         navigate('/')
-      }, 1000)
+      }, 5000)
     }
-  }, [element?.token, loading, navigate])
+  }, [navigate, response, setAccess])
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner />
-      </div>
-    )
-  }
-
-  const onSubmit = (data: LoginAccess) => {
-    setLoadingLogin(true)
-    login(data)
-      .then((response) => {
-        if (response.status === 202) {
-          const expiresAt = new Date()
-          expiresAt.setHours(expiresAt.getHours() + 1)
-          setElement({
-            token: response.token,
-            owner: response.owner,
-            expiresAt: expiresAt.getTime(),
-            createdAt: new Date().getTime(),
-          })
-        }
-        if (response.status === 404) {
-          setMessage('Username non trovato!')
-          setLoadingLogin(false)
-        }
-        if (response.status === 401) {
-          setMessage('Username o password errati!')
-          setLoadingLogin(false)
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-        setMessage(error.message)
-        setLoadingLogin(false)
-      })
-  }
+  const onSubmit = handleSubmit((data: LoginAccess) => {
+    setRequest({
+      url: '/login',
+      method: 'POST',
+      body: data,
+    })
+  })
 
   return (
     <form
       className="flex flex-col justify-center items-center h-screen gap-2 "
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={onSubmit}
     >
       <div className="block border-b-2 border-gray-300 w-52">
         <p className="font-bold text-xl text-center">LOGIN</p>
       </div>
-      {message && (
+      {error && (
         <div className="block">
-          <p className="font-bold bg-red-400 text-red-800 text-center rounded-lg shadow-lg">
-            {message}
+          <p className="font-bold bg-red-400 text-red-800 text-center rounded-lg p-2">
+            {error?.message ?? error?.error}
           </p>
         </div>
       )}
@@ -91,7 +67,7 @@ const Login = () => {
           <Label htmlFor="username" value="Your username" />
         </div>
         <TextInput
-          disabled={loadingLogin}
+          disabled={loading || access?.token !== null}
           id="username"
           required
           type="text"
@@ -103,7 +79,7 @@ const Login = () => {
           <Label htmlFor="password" value="Your password" />
         </div>
         <TextInput
-          disabled={loadingLogin}
+          disabled={loading || access?.token !== null}
           id="password"
           required
           type="password"
@@ -111,7 +87,7 @@ const Login = () => {
         />
       </div>
       <div>
-        {loadingLogin && (
+        {(loading || access?.token) && (
           <div className="block">
             <div className="flex justify-center items-center mt-2">
               <Spinner />
@@ -123,12 +99,12 @@ const Login = () => {
         <Button
           color="gray"
           type="button"
-          disabled={loadingLogin}
+          disabled={loading || access?.token}
           onClick={() => navigate('/register')}
         >
           Registrati
         </Button>
-        <Button disabled={loadingLogin} type="submit">
+        <Button disabled={loading || access?.token} type="submit">
           Accedi
         </Button>
       </div>

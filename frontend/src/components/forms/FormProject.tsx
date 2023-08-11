@@ -162,7 +162,7 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
         <option value={'CLOSED'}>{'CLOSED'}</option>
       </Select>
       <div className="flex justify-center w-full">
-        <Button type="submit">SAVE</Button>
+        <Button type="submit">{defaultValues ? 'Edit' : 'Save'}</Button>
       </div>
     </form>
   )

@@ -1,10 +1,8 @@
-import { Spinner } from 'flowbite-react'
 import React, { useEffect } from 'react'
-import useStore from '../hooks/useAccess'
-import { AccessToken } from '../types/global'
 import { useNavigate } from 'react-router-dom'
-import { checkLogin } from '../utils/utils'
 import Header from './Header'
+import { useAtom } from 'jotai'
+import { accessState } from '../atoms'
 
 interface WrapperProps {
   title: string
@@ -13,42 +11,17 @@ interface WrapperProps {
 
 const Wrapper = ({ children, title }: WrapperProps) => {
   const navigate = useNavigate()
-  const { element, setElement, loading } = useStore<AccessToken>({
-    key: 'access_token',
-    defaultValues: {
-      token: null,
-      owner: null,
-      expiresAt: null,
-      createdAt: null,
-    },
-  })
+  const [access] = useAtom(accessState)
+
+  console.log('LOGIN', access)
 
   useEffect(() => {
-    if (!checkLogin()) {
-      setElement({
-        token: null,
-        owner: null,
-        expiresAt: null,
-        createdAt: null,
-      })
-    }
-  }, [setElement])
-
-  useEffect(() => {
-    if (!element?.token && !loading) {
+    if (!access?.token) {
       navigate('/login')
     }
-  }, [element?.token, loading, navigate])
+  }, [access?.token, navigate])
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner />
-      </div>
-    )
-  }
-
-  if (!element?.token) {
+  if (!access?.token) {
     return <></>
   }
 

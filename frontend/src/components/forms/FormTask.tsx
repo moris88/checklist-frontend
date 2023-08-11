@@ -216,8 +216,11 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
         <option value={'call internal'}>{'call internal'}</option>
         <option value={'others'}>{'others'}</option>
       </Select>
-      <div className="flex justify-center w-full">
-        <Button type="submit">SAVE</Button>
+      <div className="flex justify-center w-full gap-3">
+        <Button color="gray" onClick={() => navigate(-1)}>
+          Done
+        </Button>
+        <Button type="submit">{defaultValues ? 'Edit' : 'Save'}</Button>
       </div>
     </form>
   )

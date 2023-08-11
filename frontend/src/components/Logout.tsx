@@ -1,90 +1,53 @@
 import React from 'react'
-import useAccess from '../hooks/useAccess'
-import { AccessToken } from '../types/global'
 import { Spinner } from 'flowbite-react'
-import { logout } from '../utils/requester'
 import { useNavigate } from 'react-router-dom'
+import { accessState, clearAccessState } from '../atoms'
+import { useAtom } from 'jotai'
+import { useFetch } from '../hooks'
 
 const Logout = () => {
   const navigate = useNavigate()
-  const [loadingLogout, setLoadingLogout] = React.useState<boolean>(false)
-  const [message, setMessage] = React.useState<string | null>(null)
-  const { element, setElement, loading } = useAccess<AccessToken>({
-    key: 'access_token',
-    defaultValues: {
-      token: null,
-      owner: null,
-      expiresAt: null,
-      createdAt: null,
-    },
+  const [access, setAccess] = useAtom(accessState)
+  const { response, error, setRequest } = useFetch<{
+    statusText: 'SUCCESS' | 'WARNING' | 'ERROR'
+    status: number
+  }>({
+    skip: true,
   })
 
-  console.log('logout', element)
+  React.useEffect(() => {
+    if (access?.token) {
+      setRequest({
+        url: '/logout',
+        method: 'POST',
+        body: { username: access?.owner?.name },
+      })
+    }
+  }, [access?.token, access?.owner?.name, setRequest])
 
   React.useEffect(() => {
-    if (!element?.token && !loading) {
+    if (response) {
+      clearAccessState()
+      setAccess({
+        token: null,
+        owner: null,
+        expiresAt: null,
+        createdAt: null,
+      })
       setTimeout(() => {
         navigate('/')
-      }, 1000)
+      }, 5000)
     }
-  }, [element?.token, loading, navigate])
-
-  React.useEffect(() => {
-    if (element?.owner?.name) {
-      setLoadingLogout(true)
-      logout(element?.owner?.name)
-        .then((response) => {
-          console.log(response)
-          if (response.status === 202) {
-            setElement({
-              token: null,
-              owner: null,
-              expiresAt: null,
-              createdAt: null,
-            })
-          }
-          if (response.status === 400) {
-            setMessage('Impossibile fare il Logout!')
-            setLoadingLogout(false)
-          }
-          if (response.status === 500) {
-            setMessage('Errore Logout su Server!')
-            setLoadingLogout(false)
-          }
-        })
-        .catch((error) => {
-          console.log(error)
-          setMessage(error.message)
-          setLoadingLogout(false)
-        })
-    }
-  }, [element?.owner?.name, setElement])
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner />
-      </div>
-    )
-  }
-
-  if (!loadingLogout) {
-    return <></>
-  }
-
-  if (message) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen">
-        <p className="font-bold bg-red-400 text-red-800 text-center rounded-lg shadow-lg">
-          {message}
-        </p>
-      </div>
-    )
-  }
+  }, [navigate, response, setAccess])
 
   return (
     <div className="flex flex-col justify-center items-center h-screen font-bold">
       {'Logout in corso... Attendere...'}
+      {error && (
+        <p className="font-bold bg-red-400 text-red-800 text-center rounded-lg p-2">
+          {error?.message ?? error?.error}
+        </p>
+      )}
       <div className="flex justify-center items-center">
         <Spinner />
       </div>

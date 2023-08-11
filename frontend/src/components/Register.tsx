@@ -2,25 +2,37 @@ import { RegisterAccess } from '../types/global'
 import { useForm } from 'react-hook-form'
 import { Button, Label, Spinner, TextInput } from 'flowbite-react'
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
-import { register } from '../utils/requester'
+import React from 'react'
+import { useFetch } from '../hooks'
 
 const Register = () => {
   const navigate = useNavigate()
-  const [loadingRegister, setLoadingRegister] = useState<boolean>(false)
-  const [output, setOutput] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const { register: registerForm, handleSubmit } = useForm<RegisterAccess>({
+  const [loadingRegister, setLoadingRegister] = React.useState(false)
+  const [output, setOutput] = React.useState<string | null>(null)
+  const [errorPwd, setErrorPwd] = React.useState<string | null>(null)
+  const { response, loading, error, setRequest } = useFetch<{
+    token: string
+    owner: { id: string; name: string }
+  }>({
+    skip: true,
+    skipToken: true,
+  })
+  const {
+    register: registerForm,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterAccess>({
     values: { username: '', password: '', confirmPassword: '' },
   })
 
-  if (loadingRegister) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <Spinner />
-      </div>
-    )
-  }
+  React.useEffect(() => {
+    if (response) {
+      setTimeout(() => {
+        setOutput('Registrazione effettuata con successo')
+        setLoadingRegister(false)
+      }, 5000)
+    }
+  }, [navigate, response])
 
   if (output) {
     return (
@@ -32,20 +44,17 @@ const Register = () => {
   }
 
   const onSubmit = (data: RegisterAccess) => {
-    setLoadingRegister(true)
-    setError(null)
+    setErrorPwd(null)
     if (data.password !== data.confirmPassword) {
-      setError('Password non coincidono')
+      setErrorPwd('Passwords do not match')
       return
     }
-    register(data).then((response) => {
-      if (response.status === 200) {
-        setTimeout(() => {
-          setOutput('Registrazione effettuata con successo')
-          setLoadingRegister(false)
-        }, 5000)
-      }
+    setRequest({
+      url: '/register',
+      method: 'POST',
+      body: data,
     })
+    setLoadingRegister(true)
   }
 
   return (
@@ -57,44 +66,99 @@ const Register = () => {
         <p className="font-bold text-xl text-center">REGISTRAZIONE ACCOUNT</p>
       </div>
       {error && (
-        <div className="block p-2 rounded-lg shadow-lg bg-red-400 text-red-800">
-          <p className="font-bold text-center">{error}</p>
+        <div className="block">
+          <p className="font-bold bg-red-400 text-red-800 text-center rounded-lg p-2">
+            {error?.message ?? error?.error}
+          </p>
         </div>
       )}
       <div>
         <div className="block">
           <Label htmlFor="username" value="Your username" />
         </div>
+        {errors.username && (
+          <div className="block">
+            <p className="font-bold bg-red-400 text-red-800 text-center rounded-lg p-2">
+              {errors.username.message}
+            </p>
+          </div>
+        )}
         <TextInput
           id="username"
           required
+          disabled={loadingRegister}
           type="text"
-          {...registerForm('username')}
+          {...registerForm('username', {
+            required: true,
+            maxLength: { value: 20, message: 'Username too long' },
+            minLength: { value: 3, message: 'Username too short' },
+          })}
         />
       </div>
       <div>
         <div className="block">
           <Label htmlFor="password" value="Your password" />
         </div>
+        {errors.password && (
+          <div className="block">
+            <ul className="font-bold bg-red-400 text-red-800 text-center rounded-lg p-2">
+              <li>The password must contain:</li>
+              <li>at least 8 characters</li>
+              <li>at least one lowercase letter (a-z)</li>
+              <li>at least one uppercase letter (A-Z)</li>
+              <li>at least one digit (0-9)</li>
+              <li>at least one special character of the set: @$!%*?&#</li>
+            </ul>
+          </div>
+        )}
         <TextInput
           id="password"
           required
+          disabled={loadingRegister}
           type="password"
-          {...registerForm('password')}
+          {...registerForm('password', {
+            required: true,
+            minLength: { value: 8, message: 'Insecure password' },
+            pattern: {
+              value:
+                /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/,
+              message: 'Insecure password',
+            },
+          })}
         />
       </div>
       <div>
         <div className="block">
           <Label htmlFor="confirmPassword" value="Confirm your password" />
         </div>
+        {errorPwd && (
+          <div className="block">
+            <p className="font-bold bg-red-400 text-red-800 text-center rounded-lg p-2">
+              {errorPwd}
+            </p>
+          </div>
+        )}
         <TextInput
           id="confirmPassword"
           required
+          disabled={loadingRegister}
           type="password"
           {...registerForm('confirmPassword')}
         />
       </div>
-      <div className="flex justify-center gap-2 border-t-2 border-gray-300 w-52 mt-2 pt-4">
+      <div>
+        {(loading || loadingRegister) && (
+          <div className="block">
+            <div className="flex justify-center items-center mt-2">
+              <Spinner />
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="flex justify-center gap-3 border-t-2 border-gray-300 w-52 mt-2 pt-4">
+        <Button color="gray" onClick={() => navigate(-1)}>
+          Done
+        </Button>
         <Button type="submit">Crea Account</Button>
       </div>
     </form>

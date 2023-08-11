@@ -55,7 +55,7 @@ const List = ({ module }: ListProps) => {
         </p>
         <section className="flex justify-end items-center">
           <Button onClick={() => navigate(`/${module}/create`)}>
-            New Member
+            New Task
           </Button>
         </section>
       </div>
@@ -85,7 +85,7 @@ const List = ({ module }: ListProps) => {
         </p>
         <section className="flex justify-end items-center">
           <Button onClick={() => navigate(`/${module}/create`)}>
-            New Member
+            New Project
           </Button>
         </section>
       </div>

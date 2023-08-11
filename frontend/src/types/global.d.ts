@@ -36,7 +36,7 @@ export type SubService =
   | 'others'
 
 export interface Task {
-  id: number
+  id: string
   title: string
   description: string | null
   status: Status
@@ -44,13 +44,13 @@ export interface Task {
   updatedAt: string
   priority: Priority | null
   deadline: string | null
-  projectID: number | null
+  projectID: string | null
   assignee: User[] | null
   type: Type | null
 }
 
 export interface Member {
-  id: number
+  id: string
   first_name: string
   last_name: string
   full_name: string
@@ -68,7 +68,7 @@ export interface Member {
 }
 
 export interface Project {
-  id: number
+  id: string
   name: string
   description: string | null
   createdAt: string

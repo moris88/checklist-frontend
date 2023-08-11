@@ -18,7 +18,7 @@ const router = createBrowserRouter([
   {
     path: '/project/:id',
     Component: () => (
-      <Wrapper title="Projects">
+      <Wrapper title="Project View">
         <View module="project" />
       </Wrapper>
     ),
@@ -48,6 +48,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/task/:id',
+    Component: () => (
+      <Wrapper title="Task View">
+        <View module="task" />
+      </Wrapper>
+    ),
+  },
+  {
     path: '/task/create',
     Component: () => (
       <Wrapper title="New Task">
@@ -68,6 +76,14 @@ const router = createBrowserRouter([
     Component: () => (
       <Wrapper title="Members">
         <List module="member" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/member/:id',
+    Component: () => (
+      <Wrapper title="Member View">
+        <View module="member" />
       </Wrapper>
     ),
   },
