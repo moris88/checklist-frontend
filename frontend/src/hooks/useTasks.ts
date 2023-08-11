@@ -23,10 +23,10 @@ const useTasks = ({ id, skip }: useTaskProps) => {
     return null
   }, [])
 
-  console.log('useTasks')
-  console.log('skip', skip)
-  console.log('users', tasks)
-  console.log('loading', loading)
+  console.log('useTasks.skip', skip)
+  console.log('useTasks.tasks', tasks)
+  console.log('useTasks.loading', loading)
+  console.log('useTasks.error', error)
 
   React.useEffect(() => {
     const fetchProjects = async () => {

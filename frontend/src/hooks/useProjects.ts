@@ -23,14 +23,13 @@ const useProjects = ({ id, skip }: useProjectProps) => {
     return null
   }, [])
 
-  console.log('useProjects')
   console.log('useProjects.skip', skip)
-  console.log('useProjects.users', projects)
+  console.log('useProjects.projects', projects)
   console.log('useProjects.loading', loading)
+  console.log('useProjects.error', error)
 
   React.useEffect(() => {
     const fetchProjects = async () => {
-      console.log('useProjects.fetchProjects', recordId)
       if (recordId) {
         try {
           const response = await getProjectByID(token, recordId)
@@ -38,19 +37,16 @@ const useProjects = ({ id, skip }: useProjectProps) => {
         } catch (error) {
           setError(error)
         } finally {
-          console.log('useProjects.fetchProjects.finally')
           setLoading(false)
         }
         return
       }
       try {
         const response = await getProjects(token)
-        console.log('useProjects.fetchProjects.response', response)
         setProjects(response as Project[])
       } catch (error) {
         setError(error)
       } finally {
-        console.log('useProjects.fetchProjects.finally')
         setLoading(false)
       }
     }
@@ -62,7 +58,6 @@ const useProjects = ({ id, skip }: useProjectProps) => {
       setLoading(false)
       return
     }
-    console.log('useProjects.fetchProjects')
     fetchProjects()
   }, [recordId, skip, token])
 

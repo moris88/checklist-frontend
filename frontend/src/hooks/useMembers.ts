@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
-import { User } from '../types/global'
-import { getUserByID, getUsers } from '../utils/requester'
+import { Member } from '../types/global'
+import { getMemberByID, getMembers } from '../utils/requester'
 
 interface useUserProps {
   id?: string | null
   skip?: boolean
 }
 
-const useUsers = ({ id, skip }: useUserProps) => {
+const useMembers = ({ id, skip }: useUserProps) => {
   const [recordId, setRecordId] = React.useState<string | null>(id ?? null)
-  const [users, setUsers] = React.useState<User[]>([])
+  const [members, setMembers] = React.useState<Member[]>([])
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<any>(null)
 
@@ -23,17 +23,17 @@ const useUsers = ({ id, skip }: useUserProps) => {
     return null
   }, [])
 
-  console.log('useUsers')
-  console.log('skip', skip)
-  console.log('users', users)
-  console.log('loading', loading)
+  console.log('useMembers.skip', skip)
+  console.log('useMembers.members', members)
+  console.log('useMembers.loading', loading)
+  console.log('useMembers.error', error)
 
   React.useEffect(() => {
     const fetchProjects = async () => {
       if (recordId) {
         try {
-          const response = await getUserByID(token, recordId)
-          setUsers(response as User[])
+          const response = await getMemberByID(token, recordId)
+          setMembers(response as Member[])
         } catch (error) {
           setError(error)
         } finally {
@@ -42,8 +42,8 @@ const useUsers = ({ id, skip }: useUserProps) => {
         return
       }
       try {
-        const response = await getUsers(token)
-        setUsers(response as User[])
+        const response = await getMembers(token)
+        setMembers(response as Member[])
       } catch (error) {
         setError(error)
       } finally {
@@ -63,10 +63,10 @@ const useUsers = ({ id, skip }: useUserProps) => {
 
   return {
     setId: (id: string) => setRecordId(id),
-    users,
+    members,
     loading,
     error,
   }
 }
 
-export default useUsers
+export default useMembers

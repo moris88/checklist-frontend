@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from 'react-hook-form'
 import useStore from '../../hooks/useStore'
-import { User } from '../../types/global'
+import { Member } from '../../types/global'
 import { Button, Label, Select, TextInput } from 'flowbite-react'
-import { users } from '../../utils/users'
+import { members } from '../../utils/users'
 import { useEffect, useState } from 'react'
 
 export const systemDefault: any[] = [
@@ -16,10 +16,10 @@ export const systemDefault: any[] = [
 ]
 
 interface FormUserProps {
-  defaultValues?: User
+  defaultValues?: Member
 }
-const FormUser = ({ defaultValues }: FormUserProps) => {
-  const [values, setValues] = useState<User>(
+const FormMember = ({ defaultValues }: FormUserProps) => {
+  const [values, setValues] = useState<Member>(
     defaultValues ?? {
       id: 0,
       first_name: '',
@@ -30,8 +30,8 @@ const FormUser = ({ defaultValues }: FormUserProps) => {
     }
   )
   const { addElement } = useStore<any>({
-    key: 'user',
-    defaultValues: users,
+    key: 'member',
+    defaultValues: members,
   })
   const { elements: systems, addElement: addSystem } = useStore<any>({
     key: 'system',
@@ -41,7 +41,7 @@ const FormUser = ({ defaultValues }: FormUserProps) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<User>({ defaultValues: values })
+  } = useForm<Member>({ defaultValues: values })
 
   useEffect(() => {
     if (defaultValues) {
@@ -49,7 +49,7 @@ const FormUser = ({ defaultValues }: FormUserProps) => {
     }
   }, [defaultValues])
 
-  const onSubmit = (data: User) => {
+  const onSubmit = (data: Member) => {
     const [system] = systems
     data.id = system.userID
     addSystem({ ...system, userID: system.userID + 1 })
@@ -111,4 +111,4 @@ const FormUser = ({ defaultValues }: FormUserProps) => {
   )
 }
 
-export default FormUser
+export default FormMember

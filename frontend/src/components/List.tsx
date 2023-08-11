@@ -2,7 +2,7 @@ import MyTable from './MyTable'
 import { useState } from 'react'
 import MyModal from './MyModal'
 import { Button, Spinner } from 'flowbite-react'
-import { useProjects, useTasks, useUsers } from '../hooks'
+import { useProjects, useTasks, useMembers } from '../hooks'
 import { useNavigate } from 'react-router-dom'
 
 interface ListProps {
@@ -13,9 +13,9 @@ const List = ({ module }: ListProps) => {
   const navigate = useNavigate()
   const [showModal, setShowModal] = useState(false)
   const [recordId] = useState<string | null>(null)
-  const { users, loading: lu } = useUsers({
+  const { members, loading: lm } = useMembers({
     id: recordId,
-    skip: module !== 'user',
+    skip: module !== 'member',
   })
   const { projects, loading: lp } = useProjects({
     id: recordId,
@@ -29,15 +29,15 @@ const List = ({ module }: ListProps) => {
   console.log(
     'module',
     module,
-    module !== 'user',
+    module !== 'member',
     module !== 'project',
     module !== 'task'
   )
-  console.log('users', lu, users)
+  console.log('members', lm, members)
   console.log('projects`', lp, projects)
   console.log('tasks', lt, tasks)
 
-  if (lu || lp || lt) {
+  if (lm || lp || lt) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />
@@ -57,12 +57,12 @@ const List = ({ module }: ListProps) => {
     )
   }
 
-  if (module === 'user' && users.length === 0) {
+  if (module === 'member' && members.length === 0) {
     return (
       <div className="flex justify-center items-center h-5 mt-10">
         <section className="mt-2 flex justify-end items-center px-4">
           <Button onClick={() => navigate(`/${module}/create`)}>
-            New User
+            New Member
           </Button>
         </section>
       </div>
@@ -105,9 +105,9 @@ const List = ({ module }: ListProps) => {
   return (
     <>
       <section className="mt-2 flex justify-end items-center px-4">
-        {module === 'user' && (
+        {module === 'member' && (
           <Button onClick={() => (window.location.href = `/${module}/create`)}>
-            New User
+            New Member
           </Button>
         )}
         {module === 'project' && (
@@ -122,7 +122,7 @@ const List = ({ module }: ListProps) => {
         )}
       </section>
       <section className="mt-2">
-        {module === 'user' && (
+        {module === 'member' && (
           <div className="p-4">
             <MyTable
               columns={[
@@ -131,8 +131,8 @@ const List = ({ module }: ListProps) => {
                 { label: 'Email', api: 'email' },
                 { label: 'Role', api: 'role' },
               ]}
-              rows={users}
-              module={'user'}
+              rows={members}
+              module={'member'}
               onDelete={(id) => {
                 setShowModal(true)
                 console.log(id)

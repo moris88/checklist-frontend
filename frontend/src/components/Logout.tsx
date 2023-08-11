@@ -35,7 +35,7 @@ const Logout = () => {
       logout(element?.owner?.name)
         .then((response) => {
           console.log(response)
-          if (response.status === 201) {
+          if (response.status === 202) {
             setElement({
               token: null,
               owner: null,

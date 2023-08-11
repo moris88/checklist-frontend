@@ -10,7 +10,7 @@ import {
 } from 'flowbite-react'
 import Multiselect from '../Multiselect'
 import React from 'react'
-import { useUsers } from '../../hooks'
+import { useMembers } from '../../hooks'
 import { createProject } from '../../utils/requester'
 import { useNavigate } from 'react-router-dom'
 
@@ -20,7 +20,7 @@ interface FormProjectProps {
 
 const FormProject = ({ defaultValues }: FormProjectProps) => {
   const navigate = useNavigate()
-  const { users, loading: lu } = useUsers({})
+  const { members, loading: lm } = useMembers({})
   const [values, setValues] = React.useState<
     Omit<Project, 'createdAt' | 'updatedAt' | 'id'>
   >(
@@ -64,7 +64,7 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     navigate('/projects')
   })
 
-  if (lu) {
+  if (lm) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />
@@ -92,7 +92,7 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
         render={({ field: { value, onChange } }) => {
           return (
             <Multiselect
-              options={users.map((user) => user.full_name)}
+              options={members.map((m) => m.full_name)}
               defaultValues={
                 value
                   ?.filter((el) => el !== undefined)

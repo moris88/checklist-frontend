@@ -5,6 +5,11 @@ interface useStoreProps<T extends { id: number }> {
   key: string
 }
 
+/**
+ * @deprecated
+ * @param param0
+ * @returns
+ */
 const useStore = <T extends { id: number }>({
   defaultValues,
   key,

@@ -1,5 +1,5 @@
 import { Button, Table } from 'flowbite-react'
-import { User } from '../types/global'
+import { Member } from '../types/global'
 import TrashIcon from '@heroicons/react/24/outline/TrashIcon'
 import PencilSquareIcon from '@heroicons/react/24/outline/PencilSquareIcon'
 import { twMerge } from 'tailwind-merge'
@@ -54,10 +54,10 @@ const MyTable = ({ columns, rows, onDelete, module }: MyTableProps) => {
                   </Table.Cell>
                 )
               }
-              if (module === 'user' && column.api === 'id') {
+              if (module === 'member' && column.api === 'id') {
                 return (
                   <Table.Cell key={`table-body-${column.api}`}>
-                    #U{row[column.api]}
+                    #M{row[column.api]}
                   </Table.Cell>
                 )
               }
@@ -130,7 +130,7 @@ const MyTable = ({ columns, rows, onDelete, module }: MyTableProps) => {
                 )
               }
               if (module === 'project' && column.api === 'members') {
-                const users = row[column.api] as User[]
+                const users = row[column.api] as Member[]
                 if (users === null)
                   return (
                     <Table.Cell key={`table-body-${column.api}`}>-</Table.Cell>

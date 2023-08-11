@@ -3,6 +3,7 @@ import List from './components/List'
 import Record from './components/Record'
 import { Spinner } from 'flowbite-react'
 import { Wrapper, Home, Login, Logout, Register } from './components'
+import Profile from './components/Profile'
 
 const router = createBrowserRouter([
   {
@@ -54,26 +55,26 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: '/users',
+    path: '/members',
     Component: () => (
-      <Wrapper title="Users">
-        <List module="user" />
+      <Wrapper title="Members">
+        <List module="member" />
       </Wrapper>
     ),
   },
   {
-    path: '/user/create',
+    path: '/member/create',
     Component: () => (
-      <Wrapper title="New User">
-        <Record module="user" />
+      <Wrapper title="New Member">
+        <Record module="member" />
       </Wrapper>
     ),
   },
   {
-    path: '/user/edit/:id',
+    path: '/member/edit/:id',
     Component: () => (
-      <Wrapper title="User Edit">
-        <Record module="user" edit />
+      <Wrapper title="Member Edit">
+        <Record module="member" edit />
       </Wrapper>
     ),
   },
@@ -92,6 +93,14 @@ const router = createBrowserRouter([
   {
     path: '/logout',
     Component: () => <Logout />,
+  },
+  {
+    path: '/profile',
+    Component: () => (
+      <Wrapper title="Profile">
+        <Profile />
+      </Wrapper>
+    ),
   },
   {
     path: '/register',

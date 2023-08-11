@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Project, Task, User } from '../types/global'
+import { Project, Task, Member } from '../types/global'
 import FormTask from './forms/FormTask'
 import FormProject from './forms/FormProject'
-import FormUser from './forms/FormUser'
+import FormMember from './forms/FormMember'
 import { useParams } from 'react-router-dom'
 import useStore from '../hooks/useStore'
 
@@ -31,7 +31,7 @@ const Record = ({ module, edit }: RecordProps) => {
       return <FormProject defaultValues={myElement(id) as unknown as Project} />
     }
     if (module === 'user') {
-      return <FormUser defaultValues={myElement(id) as unknown as User} />
+      return <FormMember defaultValues={myElement(id) as unknown as Member} />
     }
     if (module === 'task') {
       return <FormTask defaultValues={myElement(id) as unknown as Task} />
@@ -40,8 +40,8 @@ const Record = ({ module, edit }: RecordProps) => {
     if (module === 'project') {
       return <FormProject />
     }
-    if (module === 'user') {
-      return <FormUser />
+    if (module === 'member') {
+      return <FormMember />
     }
     if (module === 'task') {
       return <FormTask />

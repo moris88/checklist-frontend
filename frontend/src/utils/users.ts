@@ -1,6 +1,6 @@
-import { User } from '../types/global'
+import { Member } from '../types/global'
 
-export const users: User[] = [
+export const members: Member[] = [
   {
     id: 1,
     first_name: 'Maurizio',

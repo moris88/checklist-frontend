@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Controller, useForm } from 'react-hook-form'
 import useStore from '../../hooks/useStore'
-import { Project, Task, User } from '../../types/global'
+import { Project, Task, Member } from '../../types/global'
 import { Button, Label, Select, TextInput, Textarea } from 'flowbite-react'
 import Multiselect from '../Multiselect'
 import { useEffect, useState } from 'react'
@@ -36,7 +36,7 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     }
   )
   const isEdit = defaultValues !== undefined
-  const [members, setMembers] = useState<User[]>([])
+  const [members, setMembers] = useState<Member[]>([])
   const { elements: listProjects } = useStore<Project>({
     key: 'project',
     defaultValues: [],

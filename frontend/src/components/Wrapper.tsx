@@ -1,9 +1,10 @@
-import { Navbar, Spinner } from 'flowbite-react'
+import { Spinner } from 'flowbite-react'
 import React, { useEffect } from 'react'
 import useStore from '../hooks/useAccess'
 import { AccessToken } from '../types/global'
 import { useNavigate } from 'react-router-dom'
 import { checkLogin } from '../utils/utils'
+import Header from './Header'
 
 interface WrapperProps {
   title: string
@@ -53,21 +54,7 @@ const Wrapper = ({ children, title }: WrapperProps) => {
 
   return (
     <main>
-      <Navbar fluid rounded>
-        <Navbar.Brand href="/">
-          <span className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-            {title === 'Home' ? 'CheckList Work' : title}
-          </span>
-        </Navbar.Brand>
-        <Navbar.Toggle />
-        <Navbar.Collapse>
-          {title !== 'Home' && <Navbar.Link href="/">Home</Navbar.Link>}
-          <Navbar.Link href="/projects">Projects</Navbar.Link>
-          <Navbar.Link href="/tasks">Tasks</Navbar.Link>
-          <Navbar.Link href="/users">Users</Navbar.Link>
-          <Navbar.Link href="/logout">Logout</Navbar.Link>
-        </Navbar.Collapse>
-      </Navbar>
+      <Header title={title} />
       {children}
     </main>
   )

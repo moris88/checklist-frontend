@@ -45,7 +45,7 @@ const Login = () => {
     setLoadingLogin(true)
     login(data)
       .then((response) => {
-        if (response.status === 200) {
+        if (response.status === 202) {
           const expiresAt = new Date()
           expiresAt.setHours(expiresAt.getHours() + 1)
           setElement({
