@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Controller, useForm } from 'react-hook-form'
 import { Project, Task, Member } from '../../types/global'
 import {
