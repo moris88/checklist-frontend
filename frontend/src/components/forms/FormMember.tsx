@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useForm } from 'react-hook-form'
 import { Member } from '../../types/global'
 import { Button, Label, Select, Spinner, TextInput } from 'flowbite-react'

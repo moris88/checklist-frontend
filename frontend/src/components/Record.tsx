@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Project, Task, Member } from '../types/global'
 import FormTask from './forms/FormTask'
 import FormProject from './forms/FormProject'

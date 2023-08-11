@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from 'react-router-dom'
 import { Member, Project, Task } from '../types/global'
 import { useFetch } from '../hooks'
