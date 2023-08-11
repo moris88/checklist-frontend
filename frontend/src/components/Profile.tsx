@@ -1,8 +1,23 @@
 import { Spinner } from 'flowbite-react'
-import { useProfiles } from '../hooks'
+import { useFetch } from '../hooks'
+import React from 'react'
 
 const Profile = () => {
-  const { profiles, loading } = useProfiles({})
+  const idUser: unknown | null = React.useMemo(() => {
+    const data = localStorage.getItem('access_token')
+    if (data) {
+      const parsed = JSON.parse(data)
+      return parsed?.owner?.id ?? null
+    }
+    return null
+  }, [])
+
+  const { response, loading } = useFetch<{ profiles: unknown[] }>({
+    endpoint: `/profiles/${idUser}`,
+    skip: !idUser,
+  })
+
+  const profiles = response?.profiles ?? []
 
   if (loading) {
     return (

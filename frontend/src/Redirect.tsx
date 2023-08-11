@@ -4,6 +4,7 @@ import Record from './components/Record'
 import { Spinner } from 'flowbite-react'
 import { Wrapper, Home, Login, Logout, Register } from './components'
 import Profile from './components/Profile'
+import View from './components/View'
 
 const router = createBrowserRouter([
   {
@@ -11,6 +12,14 @@ const router = createBrowserRouter([
     Component: () => (
       <Wrapper title="Projects">
         <List module="project" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/project/:id',
+    Component: () => (
+      <Wrapper title="Projects">
+        <View module="project" />
       </Wrapper>
     ),
   },

@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form'
-import { Project } from '../../types/global'
+import { Member, Project } from '../../types/global'
 import {
   Button,
   Label,
@@ -9,9 +9,8 @@ import {
   Textarea,
 } from 'flowbite-react'
 import Multiselect from '../Multiselect'
-import React from 'react'
-import { useMembers } from '../../hooks'
-import { createProject } from '../../utils/requester'
+import React, { useEffect } from 'react'
+import { useFetch } from '../../hooks'
 import { useNavigate } from 'react-router-dom'
 
 interface FormProjectProps {
@@ -20,7 +19,18 @@ interface FormProjectProps {
 
 const FormProject = ({ defaultValues }: FormProjectProps) => {
   const navigate = useNavigate()
-  const { members, loading: lm } = useMembers({})
+  const {
+    response: responseMembers,
+    loading: loadingMember,
+    error: errorMember,
+    setRequest,
+  } = useFetch<{
+    members: Member[]
+    status: number
+  }>({
+    endpoint: '/members',
+  })
+  const members = responseMembers?.members ?? []
   const [values, setValues] = React.useState<
     Omit<Project, 'createdAt' | 'updatedAt' | 'id'>
   >(
@@ -43,15 +53,6 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     values: values,
   })
 
-  const token = React.useMemo(() => {
-    const data = localStorage.getItem('access_token')
-    if (data) {
-      const parsed = JSON.parse(data)
-      return parsed.token
-    }
-    return null
-  }, [])
-
   React.useEffect(() => {
     if (defaultValues) {
       setValues(defaultValues)
@@ -60,11 +61,25 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
 
   const onSubmit = handleSubmit((data) => {
     console.log(data)
-    createProject(token, data)
-    navigate('/projects')
+    setRequest({
+      url: '/project',
+      method: 'POST',
+      body: {
+        project: data,
+      },
+    })
   })
 
-  if (lm) {
+  useEffect(() => {
+    if (responseMembers) {
+      console.log('responseMembers', responseMembers)
+      if (responseMembers.status && responseMembers.status === 201) {
+        navigate('/projects')
+      }
+    }
+  }, [responseMembers])
+
+  if (loadingMember) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />
@@ -72,6 +87,13 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     )
   }
 
+  if (errorMember) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>ERROR</p>
+      </div>
+    )
+  }
   return (
     <form className="flex flex-col gap-2 p-4" onSubmit={onSubmit}>
       {errors.name?.message && (

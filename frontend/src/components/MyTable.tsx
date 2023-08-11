@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Button, Table } from 'flowbite-react'
 import { Member } from '../types/global'
 import TrashIcon from '@heroicons/react/24/outline/TrashIcon'
@@ -11,13 +12,13 @@ interface Columns {
 
 interface MyTableProps {
   columns: Columns[]
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   rows: any[]
-  onDelete?: (id: number) => void
+  onDelete: (id: string) => void
+  onRow: (id: string) => void
   module: string
 }
 
-const MyTable = ({ columns, rows, onDelete, module }: MyTableProps) => {
+const MyTable = ({ columns, rows, onDelete, onRow, module }: MyTableProps) => {
   return (
     <Table hoverable>
       <Table.Head>
@@ -34,30 +35,31 @@ const MyTable = ({ columns, rows, onDelete, module }: MyTableProps) => {
         </Table.HeadCell>
       </Table.Head>
       <Table.Body className="divide-y">
-        {rows.map((row) => (
+        {rows.map((row, index) => (
           <Table.Row
-            key={`table-row-${row.id}`}
+            key={row.id}
             className="bg-white dark:border-gray-700 dark:bg-gray-800"
+            onClick={() => onRow(row.id)}
           >
             {columns.map((column) => {
               if (module === 'project' && column.api === 'id') {
                 return (
                   <Table.Cell key={`table-body-${column.api}`}>
-                    #P{row[column.api]}
+                    #P{index + 1}
                   </Table.Cell>
                 )
               }
               if (module === 'task' && column.api === 'id') {
                 return (
                   <Table.Cell key={`table-body-${column.api}`}>
-                    #T{row[column.api]}
+                    #T{index + 1}
                   </Table.Cell>
                 )
               }
               if (module === 'member' && column.api === 'id') {
                 return (
                   <Table.Cell key={`table-body-${column.api}`}>
-                    #M{row[column.api]}
+                    #M{index + 1}
                   </Table.Cell>
                 )
               }
