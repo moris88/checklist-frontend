@@ -3,7 +3,10 @@
 const Home = () => {
   // const navigate = useNavigate()
   return (
-    <div className="flex justify-center items-center h-[90vh]">DASHBOARD</div>
+    <div className="flex flex-col justify-center items-center h-[90vh]">
+      <p>DASHBOARD</p>
+      <p>QUI CI SARANNO I GRAFICI RECHARTS.JS</p>
+    </div>
   )
 }
 
