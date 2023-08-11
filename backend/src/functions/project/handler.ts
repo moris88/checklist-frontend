@@ -5,16 +5,17 @@ import { getUserByToken } from '../../libs/token'
 
 export function createProject(req: Request, res: Response) {
   try {
-    if (Object.keys(req.body).length === 0 || !req.body.name) {
+    const { project } = req.body as { project: Project }
+    if (!project || Object.keys(project).length === 0 || !project.name) {
       return formatResponse({
         codice: 'E04',
         res,
       })
     }
-    const { project } = req.body as { project: Project }
     const projects = readFile('projects') as Project[]
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
+      console.log('project', project)
       const newProject = {
         ...project,
         owner: { id: myUser.id },
@@ -23,6 +24,7 @@ export function createProject(req: Request, res: Response) {
         updatedAt: new Date().toISOString(),
       }
       projects.push(newProject)
+      console.log('projects', projects)
       if (writeFile(projects, 'projects')) {
         return formatResponse({
           codice: 'S06',
