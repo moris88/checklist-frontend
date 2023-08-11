@@ -9,7 +9,7 @@ import {
   Textarea,
 } from 'flowbite-react'
 import Multiselect from '../Multiselect'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useFetch } from '../../hooks'
 import { useNavigate } from 'react-router-dom'
 
@@ -26,7 +26,7 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     setRequest,
   } = useFetch<{
     members: Member[]
-    status: number
+    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   }>({
     endpoint: '/members',
   })
@@ -70,14 +70,18 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     })
   })
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (responseMembers) {
       console.log('responseMembers', responseMembers)
-      if (responseMembers.status && responseMembers.status === 201) {
+      if (
+        responseMembers &&
+        responseMembers.statusText &&
+        responseMembers.statusText === 'SUCCESS'
+      ) {
         navigate('/projects')
       }
     }
-  }, [responseMembers])
+  }, [navigate, responseMembers])
 
   if (loadingMember) {
     return (

@@ -1,32 +1,64 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Controller, useForm } from 'react-hook-form'
-import useStore from '../../hooks/useStore'
 import { Project, Task, Member } from '../../types/global'
-import { Button, Label, Select, TextInput, Textarea } from 'flowbite-react'
+import {
+  Button,
+  Label,
+  Select,
+  Spinner,
+  TextInput,
+  Textarea,
+} from 'flowbite-react'
 import Multiselect from '../Multiselect'
-import { useEffect, useState } from 'react'
-
-export const systemDefault: any[] = [
-  {
-    id: 1,
-    userID: 9,
-    projectID: 1,
-    taskID: 1,
-  },
-]
+import { useFetch } from '../../hooks'
+import { useNavigate } from 'react-router-dom'
+import React from 'react'
 
 interface FormTaskProps {
-  defaultValues?: Task
+  defaultValues?: Omit<Task, 'createdAt' | 'updatedAt' | 'id'>
 }
 
 const FormTask = ({ defaultValues }: FormTaskProps) => {
-  const [values, setValues] = useState<Task>(
+  const navigate = useNavigate()
+  const {
+    response: responseMembers,
+    loading: loadingMember,
+    error: errorMember,
+  } = useFetch<{
+    members: Member[]
+    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
+  }>({
+    endpoint: '/members',
+  })
+  const {
+    response: responseProjects,
+    loading: loadingProjects,
+    error: errorProjects,
+  } = useFetch<{
+    projects: Project[]
+    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
+  }>({
+    endpoint: '/projects',
+  })
+  const {
+    response: responseTasks,
+    loading: loadingTasks,
+    error: errorTasks,
+    setRequest,
+  } = useFetch<{
+    tasks: Task[]
+    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
+  }>({
+    skip: true,
+  })
+  const projects = responseProjects?.projects ?? []
+  const members = responseMembers?.members ?? []
+  const [values, setValues] = React.useState<
+    Omit<Task, 'createdAt' | 'updatedAt' | 'id'>
+  >(
     defaultValues ?? {
-      id: 0,
       title: '',
       description: null,
-      createdAt: new Date().toISOString().split('T')[0],
-      updatedAt: new Date().toISOString().split('T')[0],
       assignee: null,
       projectID: null,
       deadline: new Date().toISOString().split('T')[0],
@@ -36,52 +68,67 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     }
   )
   const isEdit = defaultValues !== undefined
-  const [members, setMembers] = useState<Member[]>([])
-  const { elements: listProjects } = useStore<Project>({
-    key: 'project',
-    defaultValues: [],
-  })
   const {
     control,
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Task>({
+  } = useForm<Omit<Task, 'createdAt' | 'updatedAt' | 'id'>>({
     values: values,
   })
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (defaultValues) {
       setValues(defaultValues)
-      const project = listProjects.filter(
-        (project) => project.id === defaultValues.projectID
-      )
-      if (project.length > 0 && project[0].members !== null) {
-        setMembers(project[0].members)
-      } else {
-        setMembers([])
+    }
+  }, [defaultValues])
+
+  const onSubmit = handleSubmit((data) => {
+    console.log(data)
+    setRequest({
+      url: '/task',
+      method: 'POST',
+      body: {
+        task: data,
+      },
+    })
+  })
+
+  React.useEffect(() => {
+    if (responseTasks) {
+      console.log('responseTasks', responseTasks)
+      if (
+        responseTasks &&
+        responseTasks.statusText &&
+        responseTasks.statusText === 'SUCCESS'
+      ) {
+        navigate('/tasks')
       }
     }
-  }, [defaultValues, listProjects])
+  }, [navigate, responseTasks])
 
-  const onSubmit = (data: Task) => {
-    console.log(data)
-    window.location.href = '/tasks'
+  if (loadingMember || loadingProjects || loadingTasks) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    )
+  }
+
+  if (errorMember || errorProjects || errorTasks) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>ERROR</p>
+      </div>
+    )
   }
 
   const handleChangeProject = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const project = listProjects.filter(
-      (project) => project.id === +e.target.value
-    )
-    if (project.length > 0 && project[0].members !== null) {
-      setMembers(project[0].members)
-    } else {
-      setMembers([])
-    }
+    console.log(e.target.value)
   }
 
   return (
-    <form className="flex flex-col gap-2 p-4" onSubmit={handleSubmit(onSubmit)}>
+    <form className="flex flex-col gap-2 p-4" onSubmit={onSubmit}>
       {errors.title?.message && (
         <Label className="font-bold text-red-500">
           {errors.title?.message}
@@ -106,7 +153,7 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
         disabled={isEdit}
       >
         <option value={''}>{'--NONE--'}</option>
-        {listProjects.map((project) => (
+        {projects.map((project) => (
           <option key={`option-project-${project.id}`} value={project.id}>
             {project.name}
           </option>

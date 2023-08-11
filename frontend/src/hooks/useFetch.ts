@@ -52,8 +52,16 @@ const useFetch = <T>({ endpoint, skip }: useFetchProps) => {
         })
           .then((result) => result.json())
           .then((result) => {
-            console.log('Success', result)
-            setResponse(result)
+            console.log('fetchGeneric', result)
+            if (
+              result &&
+              result.statusText &&
+              result.statusText === 'SUCCESS'
+            ) {
+              setResponse(result)
+            } else {
+              setError(result)
+            }
           })
           .catch((e) => {
             console.log('Error', e)
@@ -82,8 +90,12 @@ const useFetch = <T>({ endpoint, skip }: useFetchProps) => {
       })
         .then((result) => result.json())
         .then((result) => {
-          console.log('Success', result)
-          setResponse(result)
+          console.log('fetchGet', result)
+          if (result && result.statusText && result.statusText === 'SUCCESS') {
+            setResponse(result)
+          } else {
+            setError(result)
+          }
         })
         .catch((e) => {
           console.log('Error', e)

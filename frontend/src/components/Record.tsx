@@ -4,37 +4,58 @@ import FormTask from './forms/FormTask'
 import FormProject from './forms/FormProject'
 import FormMember from './forms/FormMember'
 import { useParams } from 'react-router-dom'
-import useStore from '../hooks/useStore'
+import { useFetch } from '../hooks'
+import { getSkip } from '../utils/utils'
+import { Spinner } from 'flowbite-react'
 
 interface RecordProps {
   module: string
-  edit?: boolean
 }
 
-const Record = ({ module, edit }: RecordProps) => {
+const Record = ({ module }: RecordProps) => {
   const { id } = useParams()
-  const { elements } = useStore<any>({
-    key: module,
-    defaultValues: [],
+
+  const { skipProject, skipMember, skipTask } = getSkip(module, id)
+  const { response: responseMembers, loading: loadingMembers } = useFetch<{
+    members: Member[]
+  }>({
+    endpoint: `/member/${id}`,
+    skip: skipMember,
   })
-  const myElement = (recordId?: string): any | null => {
-    if (recordId) {
-      const elementsFilter = elements.filter(
-        (element) => element.id === +recordId
-      )
-      return elementsFilter.length > 0 ? elementsFilter[0] : null
-    } else return null
+  const { response: responseProjects, loading: loadingProjects } = useFetch<{
+    projects: Project[]
+  }>({
+    endpoint: `/project/${id}`,
+    skip: skipProject,
+  })
+  const { response: responseTasks, loading: loadingTasks } = useFetch<{
+    tasks: Task[]
+  }>({
+    endpoint: `/task/${id}`,
+    skip: skipTask,
+  })
+
+  const members = responseMembers?.members ?? []
+  const projects = responseProjects?.projects ?? []
+  const tasks = responseTasks?.tasks ?? []
+
+  if (loadingMembers || loadingProjects || loadingTasks) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    )
   }
 
-  if (edit) {
+  if (id) {
     if (module === 'project') {
-      return <FormProject defaultValues={myElement(id) as unknown as Project} />
+      return <FormProject defaultValues={projects[0] as unknown as Project} />
     }
-    if (module === 'user') {
-      return <FormMember defaultValues={myElement(id) as unknown as Member} />
+    if (module === 'member') {
+      return <FormMember defaultValues={members[0] as unknown as Member} />
     }
     if (module === 'task') {
-      return <FormTask defaultValues={myElement(id) as unknown as Task} />
+      return <FormTask defaultValues={tasks[0] as unknown as Task} />
     }
   } else {
     if (module === 'project') {
@@ -46,8 +67,8 @@ const Record = ({ module, edit }: RecordProps) => {
     if (module === 'task') {
       return <FormTask />
     }
+    return <></>
   }
-  return <></>
 }
 
 export default Record

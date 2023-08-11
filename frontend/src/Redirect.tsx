@@ -35,7 +35,7 @@ const router = createBrowserRouter([
     path: '/project/edit/:id',
     Component: () => (
       <Wrapper title="Project Edit">
-        <Record module="project" edit />
+        <Record module="project" />
       </Wrapper>
     ),
   },
@@ -59,7 +59,7 @@ const router = createBrowserRouter([
     path: '/task/edit/:id',
     Component: () => (
       <Wrapper title="Task Edit">
-        <Record module="task" edit />
+        <Record module="task" />
       </Wrapper>
     ),
   },
@@ -83,7 +83,7 @@ const router = createBrowserRouter([
     path: '/member/edit/:id',
     Component: () => (
       <Wrapper title="Member Edit">
-        <Record module="member" edit />
+        <Record module="member" />
       </Wrapper>
     ),
   },
