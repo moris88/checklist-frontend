@@ -13,8 +13,6 @@ const Wrapper = ({ children, title }: WrapperProps) => {
   const navigate = useNavigate()
   const [access] = useAtom(accessState)
 
-  console.log('LOGIN', access)
-
   useEffect(() => {
     if (!access?.token) {
       navigate('/login')

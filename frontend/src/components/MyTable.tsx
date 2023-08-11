@@ -4,6 +4,7 @@ import { Member } from '../types/global'
 import TrashIcon from '@heroicons/react/24/outline/TrashIcon'
 import PencilSquareIcon from '@heroicons/react/24/outline/PencilSquareIcon'
 import { twMerge } from 'tailwind-merge'
+import { useNavigate } from 'react-router-dom'
 
 interface Columns {
   api: string
@@ -19,6 +20,7 @@ interface MyTableProps {
 }
 
 const MyTable = ({ columns, rows, onDelete, onRow, module }: MyTableProps) => {
+  const navigate = useNavigate()
   return (
     <Table hoverable>
       <Table.Head>
@@ -150,11 +152,7 @@ const MyTable = ({ columns, rows, onDelete, onRow, module }: MyTableProps) => {
               )
             })}
             <Table.Cell>
-              <Button
-                onClick={() =>
-                  (window.location.href = `/${module}/edit/${row.id}`)
-                }
-              >
+              <Button onClick={() => navigate(`/${module}/edit/${row.id}`)}>
                 <PencilSquareIcon className="w-5 h-5" />
               </Button>
             </Table.Cell>

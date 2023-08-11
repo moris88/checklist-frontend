@@ -17,7 +17,6 @@ const FormMember = ({ defaultValues }: FormMemberProps) => {
     setRequest,
   } = useFetch<{
     members: Member[]
-    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   }>({
     endpoint: '/members',
     skip: true,
@@ -43,7 +42,6 @@ const FormMember = ({ defaultValues }: FormMemberProps) => {
   }, [defaultValues])
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
     setRequest({
       url: '/member',
       method: 'POST',
@@ -58,14 +56,7 @@ const FormMember = ({ defaultValues }: FormMemberProps) => {
 
   React.useEffect(() => {
     if (responseMembers) {
-      console.log('responseMembers', responseMembers)
-      if (
-        responseMembers &&
-        responseMembers.statusText &&
-        responseMembers.statusText === 'SUCCESS'
-      ) {
-        navigate('/members')
-      }
+      navigate('/members')
     }
   }, [navigate, responseMembers])
 

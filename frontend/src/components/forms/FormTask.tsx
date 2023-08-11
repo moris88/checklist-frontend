@@ -25,7 +25,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     error: errorMember,
   } = useFetch<{
     members: Member[]
-    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   }>({
     endpoint: '/members',
   })
@@ -35,7 +34,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     error: errorProjects,
   } = useFetch<{
     projects: Project[]
-    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   }>({
     endpoint: '/projects',
   })
@@ -46,7 +44,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     setRequest,
   } = useFetch<{
     tasks: Task[]
-    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   }>({
     skip: true,
   })
@@ -83,7 +80,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
   }, [defaultValues])
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
     setRequest({
       url: '/task',
       method: 'POST',
@@ -95,14 +91,7 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
 
   React.useEffect(() => {
     if (responseTasks) {
-      console.log('responseTasks', responseTasks)
-      if (
-        responseTasks &&
-        responseTasks.statusText &&
-        responseTasks.statusText === 'SUCCESS'
-      ) {
-        navigate('/tasks')
-      }
+      navigate('/tasks')
     }
   }, [navigate, responseTasks])
 

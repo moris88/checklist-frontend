@@ -138,11 +138,9 @@ const List = ({ module }: ListProps) => {
               rows={members}
               module={'member'}
               onRow={(id) => {
-                console.log(id)
                 navigate(`/${module}/${id}`)
               }}
               onDelete={(id) => {
-                console.log(id)
                 setID(id)
                 setShowModal(true)
               }}
@@ -166,11 +164,9 @@ const List = ({ module }: ListProps) => {
               rows={projects ?? []}
               module={'project'}
               onRow={(id) => {
-                console.log(id)
                 navigate(`/${module}/${id}`)
               }}
               onDelete={(id) => {
-                console.log(id)
                 setID(id)
                 setShowModal(true)
               }}
@@ -195,11 +191,9 @@ const List = ({ module }: ListProps) => {
               rows={tasks ?? []}
               module={'task'}
               onRow={(id) => {
-                console.log(id)
                 navigate(`/${module}/${id}`)
               }}
               onDelete={(id) => {
-                console.log(id)
                 setID(id)
                 setShowModal(true)
               }}
