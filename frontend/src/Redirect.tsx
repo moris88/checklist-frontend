@@ -3,6 +3,8 @@ import List from './components/List'
 import Record from './components/Record'
 import { Spinner } from 'flowbite-react'
 import { Wrapper, Home, Login, Logout, Register } from './components'
+import Profile from './components/Profile'
+import View from './components/View'
 
 const router = createBrowserRouter([
   {
@@ -10,6 +12,14 @@ const router = createBrowserRouter([
     Component: () => (
       <Wrapper title="Projects">
         <List module="project" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/project/:id',
+    Component: () => (
+      <Wrapper title="Projects">
+        <View module="project" />
       </Wrapper>
     ),
   },
@@ -25,7 +35,7 @@ const router = createBrowserRouter([
     path: '/project/edit/:id',
     Component: () => (
       <Wrapper title="Project Edit">
-        <Record module="project" edit />
+        <Record module="project" />
       </Wrapper>
     ),
   },
@@ -49,31 +59,31 @@ const router = createBrowserRouter([
     path: '/task/edit/:id',
     Component: () => (
       <Wrapper title="Task Edit">
-        <Record module="task" edit />
+        <Record module="task" />
       </Wrapper>
     ),
   },
   {
-    path: '/users',
+    path: '/members',
     Component: () => (
-      <Wrapper title="Users">
-        <List module="user" />
+      <Wrapper title="Members">
+        <List module="member" />
       </Wrapper>
     ),
   },
   {
-    path: '/user/create',
+    path: '/member/create',
     Component: () => (
-      <Wrapper title="New User">
-        <Record module="user" />
+      <Wrapper title="New Member">
+        <Record module="member" />
       </Wrapper>
     ),
   },
   {
-    path: '/user/edit/:id',
+    path: '/member/edit/:id',
     Component: () => (
-      <Wrapper title="User Edit">
-        <Record module="user" edit />
+      <Wrapper title="Member Edit">
+        <Record module="member" />
       </Wrapper>
     ),
   },
@@ -94,12 +104,20 @@ const router = createBrowserRouter([
     Component: () => <Logout />,
   },
   {
+    path: '/profile',
+    Component: () => (
+      <Wrapper title="Profile">
+        <Profile />
+      </Wrapper>
+    ),
+  },
+  {
     path: '/register',
     Component: () => <Register />,
   },
 ])
 
-function App() {
+function Redirect() {
   return (
     <RouterProvider
       router={router}
@@ -112,4 +130,4 @@ function App() {
   )
 }
 
-export default App
+export default Redirect

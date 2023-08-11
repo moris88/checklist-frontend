@@ -10,17 +10,17 @@ import { Member } from '../../types/global'
 
 export function createMember(req: Request, res: Response) {
   try {
+    const { member } = req.body as { member: Member }
     if (
-      Object.keys(req.body).length === 0 ||
-      !req.body.email ||
-      !req.body.last_name
+      Object.keys(member).length === 0 ||
+      !member.email ||
+      !member.last_name
     ) {
       return formatResponse({
         codice: 'E04',
         res,
       })
     }
-    const member = req.body as Member
     const { email } = member
     const members = readFile('members') as Member[]
     if (members.filter((m: Member) => m.email === email).length > 0) {

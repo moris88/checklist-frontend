@@ -1,13 +1,8 @@
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
+import Redirect from './Redirect.tsx'
 import './index.css'
-import React from 'react'
 
 const root = document.getElementById('root')
 if (!root) throw new Error('Root element not found')
 
-ReactDOM.createRoot(root).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-)
+ReactDOM.createRoot(root).render(<Redirect />)

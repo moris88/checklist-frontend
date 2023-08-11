@@ -31,6 +31,42 @@ export async function register(data: RegisterAccess) {
   }).then((d) => d.json())
 }
 
+export async function getProfileByID(token: string, id: string) {
+  console.log('getProfile', token)
+  return await fetch(`${SERVER_URL}/profiles/${id}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((d) => d.json())
+    .then((d) => {
+      console.log('getProfile', d)
+      return d.profiles
+    })
+    .catch((e) => {
+      console.log('getProfile', e)
+    })
+}
+
+export async function getProfiles(token: string) {
+  console.log('getProfile', token)
+  return await fetch(`${SERVER_URL}/profiles`, {
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then((d) => d.json())
+    .then((d) => {
+      console.log('getProfile', d)
+      return d.profiles
+    })
+    .catch((e) => {
+      console.log('getProfile', e)
+    })
+}
+
 export async function createProject(
   token: string,
   data: Omit<Project, 'createdAt' | 'updatedAt' | 'id'>
@@ -78,26 +114,26 @@ export async function getProjectByID(token: string, id: string) {
     .then((d) => d.projects)
 }
 
-export async function getUsers(token: string) {
-  return await fetch(`${SERVER_URL}/users`, {
+export async function getMembers(token: string) {
+  return await fetch(`${SERVER_URL}/members`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
   })
     .then((d) => d.json())
-    .then((d) => d.users)
+    .then((d) => d.members)
 }
 
-export async function getUserByID(token: string, id: string) {
-  return await fetch(`${SERVER_URL}/users/${id}`, {
+export async function getMemberByID(token: string, id: string) {
+  return await fetch(`${SERVER_URL}/members/${id}`, {
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
   })
     .then((d) => d.json())
-    .then((d) => d.users)
+    .then((d) => d.members)
 }
 
 export async function getTasks(token: string) {

@@ -49,7 +49,7 @@ export interface Task {
   type: Type | null
 }
 
-export interface User {
+export interface Member {
   id: number
   first_name: string
   last_name: string

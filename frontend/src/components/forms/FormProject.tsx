@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form'
-import { Project } from '../../types/global'
+import { Member, Project } from '../../types/global'
 import {
   Button,
   Label,
@@ -10,8 +10,7 @@ import {
 } from 'flowbite-react'
 import Multiselect from '../Multiselect'
 import React from 'react'
-import { useUsers } from '../../hooks'
-import { createProject } from '../../utils/requester'
+import { useFetch } from '../../hooks'
 import { useNavigate } from 'react-router-dom'
 
 interface FormProjectProps {
@@ -20,7 +19,18 @@ interface FormProjectProps {
 
 const FormProject = ({ defaultValues }: FormProjectProps) => {
   const navigate = useNavigate()
-  const { users, loading: lu } = useUsers({})
+  const {
+    response: responseMembers,
+    loading: loadingMember,
+    error: errorMember,
+    setRequest,
+  } = useFetch<{
+    members: Member[]
+    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
+  }>({
+    endpoint: '/members',
+  })
+  const members = responseMembers?.members ?? []
   const [values, setValues] = React.useState<
     Omit<Project, 'createdAt' | 'updatedAt' | 'id'>
   >(
@@ -43,15 +53,6 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     values: values,
   })
 
-  const token = React.useMemo(() => {
-    const data = localStorage.getItem('access_token')
-    if (data) {
-      const parsed = JSON.parse(data)
-      return parsed.token
-    }
-    return null
-  }, [])
-
   React.useEffect(() => {
     if (defaultValues) {
       setValues(defaultValues)
@@ -60,11 +61,29 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
 
   const onSubmit = handleSubmit((data) => {
     console.log(data)
-    createProject(token, data)
-    navigate('/projects')
+    setRequest({
+      url: '/project',
+      method: 'POST',
+      body: {
+        project: data,
+      },
+    })
   })
 
-  if (lu) {
+  React.useEffect(() => {
+    if (responseMembers) {
+      console.log('responseMembers', responseMembers)
+      if (
+        responseMembers &&
+        responseMembers.statusText &&
+        responseMembers.statusText === 'SUCCESS'
+      ) {
+        navigate('/projects')
+      }
+    }
+  }, [navigate, responseMembers])
+
+  if (loadingMember) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />
@@ -72,6 +91,13 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     )
   }
 
+  if (errorMember) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p>ERROR</p>
+      </div>
+    )
+  }
   return (
     <form className="flex flex-col gap-2 p-4" onSubmit={onSubmit}>
       {errors.name?.message && (
@@ -92,7 +118,7 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
         render={({ field: { value, onChange } }) => {
           return (
             <Multiselect
-              options={users.map((user) => user.full_name)}
+              options={members.map((m) => m.full_name)}
               defaultValues={
                 value
                   ?.filter((el) => el !== undefined)

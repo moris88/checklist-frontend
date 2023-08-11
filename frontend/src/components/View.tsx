@@ -1,19 +1,15 @@
-import { Project, Task, Member } from '../types/global'
-import FormTask from './forms/FormTask'
-import FormProject from './forms/FormProject'
-import FormMember from './forms/FormMember'
 import { useParams } from 'react-router-dom'
+import { Member, Project, Task } from '../types/global'
 import { useFetch } from '../hooks'
-import { getSkip } from '../utils/utils'
 import { Spinner } from 'flowbite-react'
+import { getSkip } from '../utils/utils'
 
-interface RecordProps {
+interface ViewProps {
   module: string
 }
 
-const Record = ({ module }: RecordProps) => {
+const View = ({ module }: ViewProps) => {
   const { id } = useParams()
-
   const { skipProject, skipMember, skipTask } = getSkip(module, id)
   const { response: responseMembers, loading: loadingMembers } = useFetch<{
     members: Member[]
@@ -46,28 +42,16 @@ const Record = ({ module }: RecordProps) => {
     )
   }
 
-  if (id) {
-    if (module === 'project') {
-      return <FormProject defaultValues={projects[0] as unknown as Project} />
-    }
-    if (module === 'member') {
-      return <FormMember defaultValues={members[0] as unknown as Member} />
-    }
-    if (module === 'task') {
-      return <FormTask defaultValues={tasks[0] as unknown as Task} />
-    }
-  } else {
-    if (module === 'project') {
-      return <FormProject />
-    }
-    if (module === 'member') {
-      return <FormMember />
-    }
-    if (module === 'task') {
-      return <FormTask />
-    }
-    return <></>
+  if (module === 'task' && tasks.length !== 0) {
+    return <pre>{JSON.stringify(tasks[0])}</pre>
   }
+  if (module === 'project' && projects.length !== 0) {
+    return <pre>{JSON.stringify(projects[0], null, 5)}</pre>
+  }
+  if (module === 'member' && members.length !== 0) {
+    return <pre>{JSON.stringify(members[0], null, 5)}</pre>
+  }
+  return <></>
 }
 
-export default Record
+export default View

@@ -10,13 +10,13 @@ import { Task } from '../../types/global'
 
 export async function createTask(req: Request, res: Response) {
   try {
-    if (Object.keys(req.body).length === 0 || !req.body.title) {
+    const { task } = req.body as { task: Task }
+    if (Object.keys(task).length === 0 || !task.title) {
       return formatResponse({
         codice: 'E04',
         res,
       })
     }
-    const { task } = req.body as { task: Task }
     const tasks = readFile('tasks') as Task[]
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {

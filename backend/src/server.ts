@@ -74,7 +74,7 @@ app.delete('/api/v1/task/:id', deleteTask)
 // GET /members - get all members
 app.get('/api/v1/members', getMembers)
 // GET /member - get member
-app.get('/api/v1/members/:id', getMember)
+app.get('/api/v1/member/:id', getMember)
 // POST /member - create a new member
 app.post('/api/v1/member', createMember)
 // PUT /member - update a member
