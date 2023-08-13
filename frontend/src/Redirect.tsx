@@ -12,6 +12,7 @@ import {
   Profile,
 } from './components'
 import NotFoundPage from './components/NotFoundPage'
+import Contact from './components/Contact'
 
 const router = createBrowserRouter([
   {
@@ -133,6 +134,10 @@ const router = createBrowserRouter([
         <Profile />
       </Wrapper>
     ),
+  },
+  {
+    path: '/contact',
+    Component: () => <Contact />,
   },
   {
     path: '/register',

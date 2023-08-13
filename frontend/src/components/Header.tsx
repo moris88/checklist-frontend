@@ -21,6 +21,7 @@ interface HeaderProps {
 const Header = ({ title }: HeaderProps) => {
   const location = useLocation()
   const navigate = useNavigate()
+  const activeHome = location.pathname === '/'
   const activeProjects = location.pathname === '/projects'
   const activeTasks = location.pathname === '/tasks'
   const activeMembers = location.pathname === '/members'
@@ -48,7 +49,12 @@ const Header = ({ title }: HeaderProps) => {
         </Navbar.Brand>
         <Navbar.Brand>
           <div className="flex justify-center items-center gap-3">
-            <Button size="sm" color="gray" onClick={() => navigate('/')}>
+            <Button
+              size="sm"
+              color="gray"
+              disabled={activeHome}
+              onClick={() => navigate('/')}
+            >
               Home
             </Button>
             <Dropdown
