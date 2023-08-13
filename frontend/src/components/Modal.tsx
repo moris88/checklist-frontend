@@ -1,4 +1,4 @@
-import { Button, Modal } from 'flowbite-react'
+import { Button, Modal as ModalFlowbite } from 'flowbite-react'
 
 interface MyModalProps {
   show: boolean
@@ -9,7 +9,7 @@ interface MyModalProps {
   title: string
 }
 
-const MyModal = ({
+const Modal = ({
   show,
   title,
   message,
@@ -18,21 +18,21 @@ const MyModal = ({
   onDecline,
 }: MyModalProps) => {
   return (
-    <Modal
+    <ModalFlowbite
       show={show}
       onClose={() => {
         if (onClose) onClose()
       }}
     >
-      <Modal.Header>{title}</Modal.Header>
-      <Modal.Body>
+      <ModalFlowbite.Header>{title}</ModalFlowbite.Header>
+      <ModalFlowbite.Body>
         <div className="space-y-6">
           <p className="text-base leading-relaxed text-gray-500 dark:text-gray-400">
             {message}
           </p>
         </div>
-      </Modal.Body>
-      <Modal.Footer>
+      </ModalFlowbite.Body>
+      <ModalFlowbite.Footer>
         <Button
           onClick={() => {
             if (onAccept) onAccept()
@@ -48,9 +48,9 @@ const MyModal = ({
         >
           Cancel
         </Button>
-      </Modal.Footer>
-    </Modal>
+      </ModalFlowbite.Footer>
+    </ModalFlowbite>
   )
 }
 
-export default MyModal
+export default Modal

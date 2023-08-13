@@ -145,7 +145,7 @@ export function deleteProject(req: Request, res: Response) {
       throw new Error('Error deleting project')
     }
     return formatResponse({
-      codice: 'S17',
+      codice: 'S12',
       res,
     })
   } catch (error) {

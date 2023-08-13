@@ -10,6 +10,7 @@ import {
   Record,
   List,
   Profile,
+  Delete,
 } from './components'
 import NotFoundPage from './components/NotFoundPage'
 import Contact from './components/Contact'
@@ -48,6 +49,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/project/delete/:id',
+    Component: () => (
+      <Wrapper title="Project Delete">
+        <Delete module="project" />
+      </Wrapper>
+    ),
+  },
+  {
     path: '/tasks',
     Component: () => (
       <Wrapper title="List Tasks">
@@ -80,6 +89,14 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/task/delete/:id',
+    Component: () => (
+      <Wrapper title="Task Delete">
+        <Delete module="task" />
+      </Wrapper>
+    ),
+  },
+  {
     path: '/members',
     Component: () => (
       <Wrapper title="List Members">
@@ -108,6 +125,14 @@ const router = createBrowserRouter([
     Component: () => (
       <Wrapper title="Member Edit">
         <Record module="member" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/member/delete/:id',
+    Component: () => (
+      <Wrapper title="Member Delete">
+        <Delete module="member" />
       </Wrapper>
     ),
   },

@@ -40,6 +40,7 @@ const useFetch = <T>({ endpoint, skip, skipToken }: useFetchProps) => {
         })
           .then((result) => result.json())
           .then((result) => {
+            console.log('result', result)
             if (
               result &&
               result.statusText &&

@@ -151,7 +151,7 @@ export async function deleteTask(req: Request, res: Response) {
       throw new Error('Error deleting task')
     }
     return formatResponse({
-      codice: 'S12',
+      codice: 'S17',
       res,
     })
   } catch (error) {

@@ -101,8 +101,10 @@ const FormProject = ({ defaultValues, id }: FormProjectProps) => {
 
   if (errorMember || errorProjects) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center h-screen">
         <p>ERROR</p>
+        {errorMember && <pre>{JSON.stringify(errorMember, null, 5)}</pre>}
+        {errorProjects && <pre>{JSON.stringify(errorProjects, null, 5)}</pre>}
       </div>
     )
   }

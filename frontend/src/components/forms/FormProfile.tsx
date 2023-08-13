@@ -74,8 +74,9 @@ const FormProfile = ({ defaultValues }: FormMemberProps) => {
 
   if (errorProfiles) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center h-screen">
         <p>ERROR</p>
+        {errorProfiles && <pre>{JSON.stringify(errorProfiles, null, 5)}</pre>}
       </div>
     )
   }

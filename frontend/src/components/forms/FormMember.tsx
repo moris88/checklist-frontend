@@ -86,8 +86,9 @@ const FormMember = ({ defaultValues, id }: FormMemberProps) => {
 
   if (errorMember) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center h-screen">
         <p>ERROR</p>
+        {errorMember && <pre>{JSON.stringify(errorMember, null, 5)}</pre>}
       </div>
     )
   }
