@@ -8,8 +8,9 @@ import { ArrowLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 
 interface FormMemberProps {
   defaultValues?: Omit<Member, 'full_name' | 'id'>
+  id?: string
 }
-const FormMember = ({ defaultValues }: FormMemberProps) => {
+const FormMember = ({ defaultValues, id }: FormMemberProps) => {
   const navigate = useNavigate()
   const {
     response: responseMembers,
@@ -22,27 +23,41 @@ const FormMember = ({ defaultValues }: FormMemberProps) => {
     endpoint: '/members',
     skip: true,
   })
-  const [values, setValues] = React.useState<Omit<Member, 'full_name' | 'id'>>(
-    defaultValues ?? {
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Omit<Member, 'full_name' | 'id'>>({
+    defaultValues: {
       first_name: '',
       last_name: '',
       email: '',
       role: 'NONE',
-    }
-  )
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Omit<Member, 'full_name' | 'id'>>({ defaultValues: values })
+    },
+  })
 
   React.useEffect(() => {
     if (defaultValues) {
-      setValues(defaultValues)
+      reset(defaultValues)
     }
-  }, [defaultValues])
+  }, [defaultValues, reset])
 
   const onSubmit = handleSubmit((data) => {
+    if (id) {
+      setRequest({
+        url: `/member/${id}`,
+        method: 'PUT',
+        body: {
+          member: {
+            ...data,
+            full_name: `${data.first_name} ${data.last_name}`,
+          },
+        },
+      })
+      return
+    }
     setRequest({
       url: '/member',
       method: 'POST',
@@ -79,32 +94,35 @@ const FormMember = ({ defaultValues }: FormMemberProps) => {
 
   return (
     <form className="flex flex-col gap-2 p-4" onSubmit={onSubmit}>
-      {errors.first_name?.message && (
-        <Label className="font-bold text-red-500">
-          {errors.first_name?.message}
+      {errors.email?.message && (
+        <Label className="font-bold rounded-lg bg-red-400 p-2 text-red-800">
+          {errors.email?.message as string}
         </Label>
       )}
       {errors.last_name?.message && (
-        <Label className="font-bold text-red-500">
-          {errors.last_name?.message}
+        <Label className="font-bold rounded-lg bg-red-400 p-2 text-red-800">
+          {errors.last_name?.message as string}
         </Label>
       )}
       <TextInput
         className="font-medium"
         placeholder="First Name"
-        {...register('first_name', {
-          required: 'Mandatory First Name',
-        })}
+        {...register('first_name')}
       />
       <TextInput
         className="font-medium"
         placeholder="Last Name"
-        {...register('last_name', { required: 'Mandatory Last Name' })}
+        {...register('last_name', {
+          required: { value: true, message: 'Mandatory Last Name' },
+        })}
       />
       <TextInput
         className="font-medium"
         placeholder="Email"
-        {...register('email', { required: 'Mandatory Email' })}
+        type="email"
+        {...register('email', {
+          required: { value: true, message: 'Mandatory Email' },
+        })}
       />
       <Select {...register('role')}>
         <option value="NONE">Selected a role</option>

@@ -6,6 +6,9 @@ interface StateProps {
 }
 
 const State = ({ children }: StateProps) => {
+  if (!children) {
+    return <span>{`--NONE--`}</span>
+  }
   return (
     <span
       className={twMerge(

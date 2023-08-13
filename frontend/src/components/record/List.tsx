@@ -1,4 +1,4 @@
-import MyTable from '../MyTable'
+import Table from '../Table'
 import { Button, Spinner } from 'flowbite-react'
 import { useFetch } from '../../hooks'
 import { useNavigate } from 'react-router-dom'
@@ -94,7 +94,7 @@ const List = ({ module }: ListProps) => {
         {module === 'member' && (
           <div className="px-4 " style={{ maxWidth: '100vw' }}>
             <div className="overflow-y-scroll overflow-x-scroll">
-              <MyTable
+              <Table
                 columns={[
                   { label: 'N.', api: 'id' },
                   { label: 'Full Name', api: 'full_name' },
@@ -110,7 +110,7 @@ const List = ({ module }: ListProps) => {
         {module === 'project' && (
           <div className="px-4 " style={{ maxWidth: '100vw' }}>
             <div className="overflow-y-scroll overflow-x-scroll">
-              <MyTable
+              <Table
                 columns={[
                   { label: 'N.', api: 'id' },
                   { label: 'Name', api: 'name' },
@@ -131,7 +131,7 @@ const List = ({ module }: ListProps) => {
         {module === 'task' && (
           <div className="px-4 " style={{ maxWidth: '100vw' }}>
             <div className="overflow-y-scroll overflow-x-scroll">
-              <MyTable
+              <Table
                 columns={[
                   { label: 'N.', api: 'id' },
                   { label: 'Title', api: 'title' },

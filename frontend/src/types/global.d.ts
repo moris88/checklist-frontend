@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Module = 'member' | 'project' | 'task'
 export type Status =
   | 'BACKLOG'
@@ -47,41 +48,41 @@ export type Role =
   | 'NONE'
 
 export interface Task {
-  [key: string]: string | null | Status | Priority | Member[] | Type
+  [key: string]: any
   id: string
   title: string
   description: string | null
-  status: Status
+  status: Status | null
   createdAt: string
   updatedAt: string
   priority: Priority | null
   deadline: string | null
-  projectID: string | null
-  assignee: Member[] | null
+  project: { id: string; name: string } | null
+  assignee: { id: string; name: string }[] | null
   type: Type | null
 }
 
 export interface Member {
-  [key: string]: string | Role
+  [key: string]: any
   id: string
-  first_name: string
+  first_name: string | null
   last_name: string
   full_name: string
   email: string
-  role: Role
+  role: Role | null
 }
 
 export interface Project {
-  [key: string]: string | null | User[] | Service | SubService | State
+  [key: string]: any
   id: string
   name: string
   description: string | null
   createdAt: string
   updatedAt: string
-  members: User[] | null
+  members: { id: string; name: string }[] | null
   service: Service | null
   subService: SubService | null
-  state: State
+  state: State | null
 }
 
 export interface User {

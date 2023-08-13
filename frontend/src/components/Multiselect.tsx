@@ -3,15 +3,15 @@ import { XMarkIcon } from '@heroicons/react/24/outline'
 import { twMerge } from 'tailwind-merge'
 
 export interface MultiselectProps {
-  options?: string[]
-  defaultValues?: string[]
+  options?: { id: string; name: string }[]
+  defaultValues?: { id: string; name: string }[]
   placeholder?: string
   className?: string
   disabled?: boolean
   mandatory?: boolean
   maxItems?: number
   messageMaxItems?: string
-  onChange?: (e: string[]) => void
+  onChange?: (e: { id: string; name: string }[]) => void
 }
 
 const Multiselect = ({
@@ -25,17 +25,13 @@ const Multiselect = ({
   messageMaxItems,
   onChange,
 }: MultiselectProps): JSX.Element => {
-  const [items, setItems] = useState<string[]>(defaultValues ?? [])
+  const [items, setItems] = useState<{ id: string; name: string }[]>(
+    defaultValues ?? []
+  )
   const [show, setShow] = useState<boolean>(false)
   const [showMaxItems, setShowMaxItems] = useState<boolean>(false)
   const ref = useRef<HTMLDivElement | null>(null)
   const [isClickedOutside, setIsClickedOutside] = useState(false)
-
-  useEffect(() => {
-    if (items.length === 0 && defaultValues && defaultValues.length > 0) {
-      setItems(defaultValues.filter((el) => el !== undefined))
-    }
-  }, [defaultValues, items.length])
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -66,31 +62,25 @@ const Multiselect = ({
     }
   }, [showMaxItems])
 
-  useEffect(() => {
-    if (onChange && items.length > 0) {
-      onChange(items)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [items.length])
-
-  const handleRemoveElement = (e: string): void => {
-    const myItem = items.filter((el) => el !== e)
-    setItems(myItem)
+  const handleRemoveElement = (e: { id: string; name: string }): void => {
+    setItems((prev) => prev.filter((el) => el.id !== e.id))
+    if (onChange) onChange(items)
   }
 
   const handleDeleteAll = (): void => {
     setItems([])
+    if (onChange) onChange([])
   }
 
-  const handleAddElement = (e: string): void => {
-    const elementFind = items.find((el) => el === e)
+  const handleAddElement = (e: { id: string; name: string }): void => {
+    const elementFind = items.find((el) => el.id === e.id)
     if (elementFind) return
     if (maxItems && items.length >= maxItems) {
       setShowMaxItems(true)
       return
     }
-    const myItem = [...items, e]
-    setItems(myItem)
+    setItems((prev) => [...prev, e])
+    if (onChange) onChange(items)
   }
 
   return (
@@ -123,19 +113,21 @@ const Multiselect = ({
               {placeholder}
             </span>
           )}
-          {items.map((el, index) => {
+          {items.map((el) => {
+            console.log(el)
             return (
               <div
-                key={`option-multiselect-${index}-${(el ?? '').replace(
-                  ' ',
-                  '-'
-                )}`}
+                key={`option-multiselect-${el.name}`}
                 className="inline hover:bg-cyan-500 hover:text-white rounded-lg px-2"
               >
-                {el}
+                {el.name}
                 <XMarkIcon
                   className="w-5 h-5 cursor-pointer inline"
-                  onClick={() => handleRemoveElement(el)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    console.log('el', el)
+                    handleRemoveElement(el)
+                  }}
                 />
               </div>
             )
@@ -144,17 +136,18 @@ const Multiselect = ({
         {options && options.length > 0 && show && (
           <div className="w-full bg-[#374151] border border-[#4b5563] rounded-lg overflow-auto shadow-md max-h-32 absolute top-[100%] left-0 z-50">
             <ul className="w-full font-bold list-none p-0 m-0">
-              {options.map((el, index) => {
+              {options.map((el) => {
                 return (
                   <li
-                    key={`option-multiselect-li-${(el ?? '').replace(
-                      ' ',
-                      '-'
-                    )}-${index}`}
+                    key={`option-${el.id}`}
                     className="w-full px-2 cursor-pointer hover:bg-gray-500 hover:text-white rounded"
-                    onClick={() => handleAddElement(el)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      console.log('el', el)
+                      handleAddElement(el)
+                    }}
                   >
-                    {el}
+                    {el.name}
                   </li>
                 )
               })}

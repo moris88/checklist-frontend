@@ -206,9 +206,9 @@ export async function updateTask(req: Request, res: Response) {
       ...task,
       updatedAt: new Date().toISOString(),
     }
-    const newProjects = [...tasks.filter((t: Task) => t.id !== id), newTask]
-    if (!writeFile(newProjects, 'members')) {
-      throw new Error('Error updating project')
+    const newTasks = [...tasks.filter((t: Task) => t.id !== id), newTask]
+    if (!writeFile(newTasks, 'tasks')) {
+      throw new Error('Error updating task')
     }
     return formatResponse({
       codice: 'S11',

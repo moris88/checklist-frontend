@@ -12,6 +12,11 @@ const Deadline = ({ children }: DeadlineProps) => {
     const dateToCheckMoment = moment(children as string).startOf('day')
     return dateToCheckMoment.isBefore(today)
   }, [children])
+
+  if (!children) {
+    return <span>{`--NONE--`}</span>
+  }
+
   return (
     <span
       className={twMerge(

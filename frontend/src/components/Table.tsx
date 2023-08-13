@@ -1,4 +1,4 @@
-import { Table } from 'flowbite-react'
+import { Table as TableFlowbite } from 'flowbite-react'
 import { Member, Module, Project, Task } from '../types/global'
 import { useNavigate } from 'react-router-dom'
 import { Deadline, Priority, State, Status } from './badge'
@@ -9,26 +9,26 @@ interface Columns {
   label: string
 }
 
-interface MyTableProps {
+interface MyTableFlowbiteProps {
   columns: Columns[]
   rows: Member[] | Project[] | Task[]
   module: Module
 }
 
-const MyTable = ({ columns, rows, module }: MyTableProps) => {
+const Table = ({ columns, rows, module }: MyTableFlowbiteProps) => {
   const navigate = useNavigate()
   return (
-    <Table hoverable className="w-full">
-      <Table.Head>
+    <TableFlowbite hoverable className="w-full">
+      <TableFlowbite.Head>
         {columns.map((column) => (
-          <Table.HeadCell key={`table-head-${column.api}`}>
+          <TableFlowbite.HeadCell key={`TableFlowbite-head-${column.api}`}>
             {column.label}
-          </Table.HeadCell>
+          </TableFlowbite.HeadCell>
         ))}
-      </Table.Head>
-      <Table.Body className="divide-y">
+      </TableFlowbite.Head>
+      <TableFlowbite.Body className="divide-y">
         {rows.map((row, index) => (
-          <Table.Row
+          <TableFlowbite.Row
             key={row.id}
             className="bg-white dark:border-gray-700 dark:bg-gray-800 cursor-pointer"
             onClick={() => navigate(`/${module}/${row.id}`)}
@@ -36,44 +36,44 @@ const MyTable = ({ columns, rows, module }: MyTableProps) => {
             {columns.map((column) => {
               if (module === 'project' && column.api === 'id') {
                 return (
-                  <Table.Cell key={`table-body-${column.api}`}>
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
                     #P{index + 1}
-                  </Table.Cell>
+                  </TableFlowbite.Cell>
                 )
               }
               if (module === 'task' && column.api === 'id') {
                 return (
-                  <Table.Cell key={`table-body-${column.api}`}>
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
                     #T{index + 1}
-                  </Table.Cell>
+                  </TableFlowbite.Cell>
                 )
               }
               if (module === 'member' && column.api === 'id') {
                 return (
-                  <Table.Cell key={`table-body-${column.api}`}>
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
                     #M{index + 1}
-                  </Table.Cell>
+                  </TableFlowbite.Cell>
                 )
               }
               if (module === 'project' && column.api === 'state') {
                 return (
-                  <Table.Cell key={`table-body-${column.api}`}>
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
                     <State>{row[column.api] as string}</State>
-                  </Table.Cell>
+                  </TableFlowbite.Cell>
                 )
               }
               if (module === 'task' && column.api === 'status') {
                 return (
-                  <Table.Cell key={`table-body-${column.api}`}>
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
                     <Status>{row[column.api] as string}</Status>
-                  </Table.Cell>
+                  </TableFlowbite.Cell>
                 )
               }
               if (module === 'task' && column.api === 'priority') {
                 return (
-                  <Table.Cell key={`table-body-${column.api}`}>
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
                     <Priority>{row[column.api] as string}</Priority>
-                  </Table.Cell>
+                  </TableFlowbite.Cell>
                 )
               }
               if (
@@ -81,41 +81,47 @@ const MyTable = ({ columns, rows, module }: MyTableProps) => {
                 (column.api === 'createdAt' || column.api === 'updatedAt')
               ) {
                 return (
-                  <Table.Cell key={`table-body-${column.api}`}>
-                    {moment(row[column.api]).format('DD-MM-YYYY HH:MM')}
-                  </Table.Cell>
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
+                    {moment(row[column.api] as string).format(
+                      'DD-MM-YYYY HH:MM'
+                    )}
+                  </TableFlowbite.Cell>
                 )
               }
               if (module === 'task' && column.api === 'deadline') {
                 return (
-                  <Table.Cell key={`table-body-${column.api}`}>
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
                     <Deadline>{row[column.api] as string}</Deadline>
-                  </Table.Cell>
+                  </TableFlowbite.Cell>
                 )
               }
               if (module === 'project' && column.api === 'members') {
-                const users = row[column.api] as Member[]
+                const users = row[column.api] as { id: string; name: string }[]
                 if (users === null)
                   return (
-                    <Table.Cell key={`table-body-${column.api}`}>-</Table.Cell>
+                    <TableFlowbite.Cell
+                      key={`TableFlowbite-body-${column.api}`}
+                    >
+                      -
+                    </TableFlowbite.Cell>
                   )
                 return (
-                  <Table.Cell key={`table-body-${column.api}`}>
-                    {users.map((user) => user.full_name).join(', ')}
-                  </Table.Cell>
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
+                    {users.map((user) => user.name).join(', ')}
+                  </TableFlowbite.Cell>
                 )
               }
               return (
-                <Table.Cell key={`table-body-${column.api}`}>
+                <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
                   {row[column.api] as string}
-                </Table.Cell>
+                </TableFlowbite.Cell>
               )
             })}
-          </Table.Row>
+          </TableFlowbite.Row>
         ))}
-      </Table.Body>
-    </Table>
+      </TableFlowbite.Body>
+    </TableFlowbite>
   )
 }
 
-export default MyTable
+export default Table

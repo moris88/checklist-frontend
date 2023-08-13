@@ -13,12 +13,14 @@ import { useFetch } from '../../hooks'
 import { useNavigate } from 'react-router-dom'
 import React from 'react'
 import { ArrowLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
+import moment from 'moment'
 
 interface FormTaskProps {
   defaultValues?: Omit<Task, 'createdAt' | 'updatedAt' | 'id'>
+  id?: string
 }
 
-const FormTask = ({ defaultValues }: FormTaskProps) => {
+const FormTask = ({ defaultValues, id }: FormTaskProps) => {
   const navigate = useNavigate()
   const {
     response: responseMembers,
@@ -50,44 +52,58 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
   })
   const projects = responseProjects?.projects ?? []
   const members = responseMembers?.members ?? []
-  const [values, setValues] = React.useState<
-    Omit<Task, 'createdAt' | 'updatedAt' | 'id'>
-  >(
-    defaultValues ?? {
-      title: '',
-      description: null,
-      assignee: null,
-      projectID: null,
-      deadline: new Date().toISOString().split('T')[0],
-      priority: 'LOW',
-      type: 'others',
-      status: 'BACKLOG',
-    }
-  )
-  const isEdit = defaultValues !== undefined
+
   const {
     control,
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<Omit<Task, 'createdAt' | 'updatedAt' | 'id'>>({
-    values: values,
+    defaultValues: {
+      title: '',
+      description: null,
+      assignee: null,
+      project: null,
+      deadline: moment().format('YYYY-MM-DD'),
+      priority: 'LOW',
+      type: 'others',
+      status: 'BACKLOG',
+    },
   })
 
   React.useEffect(() => {
     if (defaultValues) {
-      setValues(defaultValues)
+      reset(defaultValues)
     }
-  }, [defaultValues])
+  }, [defaultValues, reset])
 
   const onSubmit = handleSubmit((data) => {
-    setRequest({
-      url: '/task',
-      method: 'POST',
-      body: {
-        task: data,
-      },
-    })
+    console.log(data)
+    if (id) {
+      setRequest({
+        url: `/task/${id}`,
+        method: 'PUT',
+        body: {
+          task: {
+            ...data,
+            project: JSON.parse(data.project),
+          },
+        },
+      })
+      return
+    } else {
+      setRequest({
+        url: '/task',
+        method: 'POST',
+        body: {
+          task: {
+            ...data,
+            project: JSON.parse(data.project),
+          },
+        },
+      })
+    }
   })
 
   React.useEffect(() => {
@@ -119,31 +135,38 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
   return (
     <form className="flex flex-col gap-2 p-4" onSubmit={onSubmit}>
       {errors.title?.message && (
-        <Label className="font-bold text-red-500">
-          {errors.title?.message}
+        <Label className="font-bold rounded-lg bg-red-400 p-2 text-red-800">
+          {errors.title?.message as string}
         </Label>
       )}
-      {errors.description?.message && (
-        <Label className="font-bold text-red-500">
-          {errors.description?.message}
+      {errors.project?.message && (
+        <Label className="font-bold rounded-lg bg-red-400 p-2 text-red-800">
+          {errors.project?.message as string}
         </Label>
       )}
       <Label className="font-bold">Name Task</Label>
       <TextInput
         className="font-medium"
-        {...register('title', { required: 'Mandatory Title Task' })}
+        {...register('title', {
+          required: { value: true, message: 'Mandatory Title Task' },
+        })}
       />
       <Label className="font-bold">Description Task</Label>
       <Textarea className="font-medium" rows={4} {...register('description')} />
       <Label className="font-bold">Selected a Project</Label>
       <Select
-        {...register('projectID', { required: 'Mandatory Project' })}
+        {...register('project', {
+          required: { value: true, message: 'Mandatory Project' },
+        })}
         onChange={handleChangeProject}
-        disabled={isEdit}
+        disabled={id ? true : false}
       >
         <option value={''}>{'--NONE--'}</option>
         {projects.map((project) => (
-          <option key={`option-project-${project.id}`} value={project.id}>
+          <option
+            key={`option-project-${project.id}`}
+            value={`{"id": "${project.id}", "name": "${project.name}"}`}
+          >
             {project.name}
           </option>
         ))}
@@ -156,12 +179,13 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
         render={({ field: { value, onChange } }) => {
           return (
             <Multiselect
-              options={members.map((user) => user.full_name)}
+              options={members.map((user) => ({
+                id: user.id,
+                name: user.full_name,
+              }))}
               disabled={members.length === 0}
               defaultValues={
-                (value as Member[])
-                  ?.filter((el) => el !== undefined)
-                  .map((user) => user.full_name) ?? []
+                value ? (value as { id: string; name: string }[]) : []
               }
               placeholder="Selected assigned"
               onChange={onChange}

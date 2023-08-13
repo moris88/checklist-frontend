@@ -5,6 +5,9 @@ interface StatusProps {
 }
 
 const Status = ({ children }: StatusProps) => {
+  if (!children) {
+    return <span>{`--NONE--`}</span>
+  }
   return (
     <span
       className={twMerge(

@@ -90,10 +90,19 @@ export function getProjects(req: Request, res: Response) {
 
 export function getProject(req: Request, res: Response) {
   try {
+    const { id } = req.params
+    if (!id) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       const projects = readFile('projects') as Project[]
-      const myProjects = projects.filter((p) => p.owner.id === myUser.id)
+      const myProjects = projects.filter(
+        (p) => p.owner.id === myUser.id && p.id === id
+      )
       return formatResponse({
         codice: 'S07',
         res,
@@ -173,7 +182,7 @@ export function updateProject(req: Request, res: Response) {
       }
     }
     const projects = readFile('projects') as Project[]
-    const projectsSearch = projects.filter((p: Project) => p.id === id)
+    const projectsSearch = projects.filter((p) => p.id === id)
     if (projectsSearch.length === 0) {
       return formatResponse({
         codice: 'W06',
@@ -185,11 +194,8 @@ export function updateProject(req: Request, res: Response) {
       ...project,
       updatedAt: new Date().toISOString(),
     }
-    const newProjects = [
-      ...projects.filter((p: Project) => p.id !== id),
-      newProject,
-    ]
-    if (!writeFile(newProjects, 'members')) {
+    const newProjects = [...projects.filter((p) => p.id !== id), newProject]
+    if (!writeFile(newProjects, 'projects')) {
       throw new Error('Error updating project')
     }
     return formatResponse({

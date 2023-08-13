@@ -44,13 +44,13 @@ const Record = ({ module }: RecordProps) => {
 
   if (id) {
     if (module === 'project') {
-      return <FormProject defaultValues={projects[0]} />
+      return <FormProject defaultValues={projects[0]} id={id} />
     }
     if (module === 'member') {
-      return <FormMember defaultValues={members[0]} />
+      return <FormMember defaultValues={members[0]} id={id} />
     }
     if (module === 'task') {
-      return <FormTask defaultValues={tasks[0]} />
+      return <FormTask defaultValues={tasks[0]} id={id} />
     }
   } else {
     if (module === 'project') {

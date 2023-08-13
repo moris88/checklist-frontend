@@ -6,6 +6,9 @@ interface PriorityProps {
 }
 
 const Priority = ({ children }: PriorityProps) => {
+  if (!children) {
+    return <span>{`--NONE--`}</span>
+  }
   return (
     <span
       className={twMerge(

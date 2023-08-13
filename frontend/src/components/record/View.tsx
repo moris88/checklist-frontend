@@ -43,11 +43,13 @@ const View = ({ module }: ViewProps) => {
     skip: skipTask,
   })
 
+  console.log('responseProjects', responseProjects)
+
   React.useEffect(() => {
     if (responseTasks?.tasks?.length && responseTasks.tasks.length > 0) {
       setFetchProject({
         method: 'GET',
-        url: `/project/${responseTasks?.tasks[0].projectID}`,
+        url: `/project/${responseTasks?.tasks[0].project?.id}`,
         body: null,
       })
     }
@@ -117,8 +119,10 @@ const View = ({ module }: ViewProps) => {
               {tasks[0].description}
             </li>
             <li>
-              <span className="font-bold">Assigne: </span>
-              {tasks[0].assignee?.join(', ')}
+              <span className="font-bold">Assignee: </span>
+              {tasks[0].assignee && tasks[0].assignee?.length > 0
+                ? tasks[0].assignee?.join(', ')
+                : '--NONE--'}
             </li>
             <li>
               <span className="font-bold">Type: </span>
