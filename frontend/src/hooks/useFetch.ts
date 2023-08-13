@@ -1,32 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import { SERVER_URL } from '../utils/metadata'
+import { useAtom } from 'jotai'
+import { accessState } from '../atoms'
 
 interface useFetchProps {
   endpoint?: string
   skip?: boolean
+  skipToken?: boolean
 }
 
-const useFetch = <T>({ endpoint, skip }: useFetchProps) => {
+const useFetch = <T>({ endpoint, skip, skipToken }: useFetchProps) => {
   const [response, setResponse] = React.useState<T | null>(null)
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<any>(null)
-
-  const token = React.useMemo(() => {
-    const data = localStorage.getItem('access_token')
-    if (data) {
-      const parsed = JSON.parse(data)
-      return parsed.token
-    }
-    return null
-  }, [])
-
-  console.log('useFetch.skip', skip)
-  console.log('useFetch.endpoint', endpoint)
-  console.log('useFetch.token', token)
-  console.log('useFetch.response', response)
-  console.log('useFetch.loading', loading)
-  console.log('useFetch.error', error)
+  const [access] = useAtom(accessState)
 
   const myFetch = React.useCallback(
     ({
@@ -46,13 +34,13 @@ const useFetch = <T>({ endpoint, skip }: useFetchProps) => {
           method: method,
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${access?.token}`,
           },
           body: body ? JSON.stringify(body) : undefined,
         })
           .then((result) => result.json())
           .then((result) => {
-            console.log('fetchGeneric', result)
+            console.log('result', result)
             if (
               result &&
               result.statusText &&
@@ -64,20 +52,23 @@ const useFetch = <T>({ endpoint, skip }: useFetchProps) => {
             }
           })
           .catch((e) => {
-            console.log('Error', e)
             setError(e)
           })
           .finally(() => {
             setLoading(false)
           })
       }
-      if (!token) {
+      if (skipToken) {
+        fetchGeneric()
+        return
+      }
+      if (!access?.token) {
         setLoading(false)
         return
       }
       fetchGeneric()
     },
-    [token]
+    [access?.token, skipToken]
   )
 
   React.useEffect(() => {
@@ -85,12 +76,11 @@ const useFetch = <T>({ endpoint, skip }: useFetchProps) => {
       await fetch(`${SERVER_URL}${endpoint}`, {
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${access?.token}`,
         },
       })
         .then((result) => result.json())
         .then((result) => {
-          console.log('fetchGet', result)
           if (result && result.statusText && result.statusText === 'SUCCESS') {
             setResponse(result)
           } else {
@@ -98,16 +88,11 @@ const useFetch = <T>({ endpoint, skip }: useFetchProps) => {
           }
         })
         .catch((e) => {
-          console.log('Error', e)
           setError(e)
         })
         .finally(() => {
           setLoading(false)
         })
-    }
-    if (!token) {
-      setLoading(false)
-      return
     }
     if (skip) {
       setLoading(false)
@@ -117,8 +102,12 @@ const useFetch = <T>({ endpoint, skip }: useFetchProps) => {
       setLoading(false)
       return
     }
+    if (!access?.token) {
+      setLoading(false)
+      return
+    }
     fetchGet()
-  }, [endpoint, skip, token])
+  }, [endpoint, skip, access?.token])
 
   return {
     setRequest: myFetch,

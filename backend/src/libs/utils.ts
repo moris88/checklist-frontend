@@ -81,3 +81,20 @@ export const generateLongId = (): string => {
 export const trimToken = (token: string): string => {
   return token.replace('Bearer', '').trim()
 }
+
+export const checkObjects = (
+  objects: { id: string; name: string }[]
+): boolean => {
+  for (const obj of objects) {
+    // Verifica che le chiavi "id" e "name" siano presenti e non siano vuote
+    if (
+      !Object.prototype.hasOwnProperty.call(obj, 'id') ||
+      !Object.prototype.hasOwnProperty.call(obj, 'name') ||
+      !obj.id ||
+      !obj.name
+    ) {
+      return false
+    }
+  }
+  return true // Tutti gli oggetti hanno le chiavi "id" e "name" popolate
+}

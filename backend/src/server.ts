@@ -65,7 +65,7 @@ app.get('/api/v1/tasks', getTasks)
 // GET /task - get task
 app.get('/api/v1/task/:id', getTask)
 // POST /task - create a new task
-app.post('/api/v1/task/create', createTask)
+app.post('/api/v1/task', createTask)
 // PUT /task - update a task
 app.put('/api/v1/task/:id', updateTask)
 // DELETE /task - delete a task

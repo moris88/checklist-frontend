@@ -12,78 +12,86 @@ import Multiselect from '../Multiselect'
 import React from 'react'
 import { useFetch } from '../../hooks'
 import { useNavigate } from 'react-router-dom'
+import { ArrowLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 
 interface FormProjectProps {
   defaultValues?: Omit<Project, 'createdAt' | 'updatedAt' | 'id'>
+  id?: string
 }
 
-const FormProject = ({ defaultValues }: FormProjectProps) => {
+const FormProject = ({ defaultValues, id }: FormProjectProps) => {
   const navigate = useNavigate()
   const {
     response: responseMembers,
     loading: loadingMember,
     error: errorMember,
-    setRequest,
   } = useFetch<{
     members: Member[]
-    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   }>({
     endpoint: '/members',
   })
+  const {
+    response: responseProjects,
+    loading: loadingProjects,
+    error: errorProjects,
+    setRequest,
+  } = useFetch<{
+    members: Member[]
+  }>({
+    skip: true,
+  })
   const members = responseMembers?.members ?? []
-  const [values, setValues] = React.useState<
-    Omit<Project, 'createdAt' | 'updatedAt' | 'id'>
-  >(
-    defaultValues ?? {
+
+  const {
+    control,
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<Omit<Project, 'createdAt' | 'updatedAt' | 'id'>>({
+    defaultValues: {
       name: '',
       description: null,
       members: null,
       service: null,
       subService: null,
       state: 'OPENED',
-    }
-  )
-
-  const {
-    control,
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<Omit<Project, 'createdAt' | 'updatedAt' | 'id'>>({
-    values: values,
+    },
   })
 
   React.useEffect(() => {
     if (defaultValues) {
-      setValues(defaultValues)
+      reset(defaultValues)
     }
-  }, [defaultValues])
-
-  const onSubmit = handleSubmit((data) => {
-    console.log(data)
-    setRequest({
-      url: '/project',
-      method: 'POST',
-      body: {
-        project: data,
-      },
-    })
-  })
+  }, [defaultValues, reset])
 
   React.useEffect(() => {
-    if (responseMembers) {
-      console.log('responseMembers', responseMembers)
-      if (
-        responseMembers &&
-        responseMembers.statusText &&
-        responseMembers.statusText === 'SUCCESS'
-      ) {
-        navigate('/projects')
-      }
+    if (responseProjects) {
+      navigate('/projects')
     }
-  }, [navigate, responseMembers])
+  }, [navigate, responseProjects])
 
-  if (loadingMember) {
+  const onSubmit = handleSubmit((data) => {
+    if (id) {
+      setRequest({
+        url: `/project/${id}`,
+        method: 'PUT',
+        body: {
+          project: data,
+        },
+      })
+    } else {
+      setRequest({
+        url: '/project',
+        method: 'POST',
+        body: {
+          project: data,
+        },
+      })
+    }
+  })
+
+  if (loadingMember || loadingProjects) {
     return (
       <div className="flex justify-center items-center h-screen">
         <Spinner />
@@ -91,22 +99,28 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
     )
   }
 
-  if (errorMember) {
+  if (errorMember || errorProjects) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center h-screen">
         <p>ERROR</p>
+        {errorMember && <pre>{JSON.stringify(errorMember, null, 5)}</pre>}
+        {errorProjects && <pre>{JSON.stringify(errorProjects, null, 5)}</pre>}
       </div>
     )
   }
   return (
     <form className="flex flex-col gap-2 p-4" onSubmit={onSubmit}>
       {errors.name?.message && (
-        <Label className="font-bold text-red-500">{errors.name?.message}</Label>
+        <Label className="font-bold rounded-lg bg-red-400 p-2 text-red-800">
+          {errors.name?.message as string}
+        </Label>
       )}
       <Label className="font-bold">Name Project</Label>
       <TextInput
         className="font-medium"
-        {...register('name', { required: 'Mandatory Name Project' })}
+        {...register('name', {
+          required: { value: true, message: 'Mandatory Project' },
+        })}
       />
       <Label className="font-bold">Description Project</Label>
       <Textarea className="font-medium" rows={4} {...register('description')} />
@@ -116,15 +130,13 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
         name={'members'}
         defaultValue={defaultValues?.members ?? []}
         render={({ field: { value, onChange } }) => {
+          console.log('Controller.render.value', value)
           return (
             <Multiselect
-              options={members.map((m) => m.full_name)}
-              defaultValues={
-                value
-                  ?.filter((el) => el !== undefined)
-                  .map((user) => user.full_name) ?? []
-              }
+              options={members.map((m) => ({ id: m.id, name: m.full_name }))}
+              defaultValues={value ?? []}
               placeholder="Selected a member"
+              maxItems={10}
               onChange={onChange}
             />
           )
@@ -161,8 +173,15 @@ const FormProject = ({ defaultValues }: FormProjectProps) => {
         <option value={'ACTIVE'}>{'ACTIVE'}</option>
         <option value={'CLOSED'}>{'CLOSED'}</option>
       </Select>
-      <div className="flex justify-center w-full">
-        <Button type="submit">SAVE</Button>
+      <div className="flex justify-center w-full gap-3">
+        <Button onClick={() => navigate(-1)}>
+          <ArrowLeftIcon className="w-5 h-5 mr-2" />
+          Done
+        </Button>
+        <Button color="success" type="submit">
+          <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
+          Save
+        </Button>
       </div>
     </form>
   )

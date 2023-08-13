@@ -1,4 +1,10 @@
-import { formatResponse, generateLongId, readFile, writeFile } from '../../libs'
+import {
+  checkObjects,
+  formatResponse,
+  generateLongId,
+  readFile,
+  writeFile,
+} from '../../libs'
 import { Request, Response } from 'express'
 import { Project } from '../../types/global'
 import { getUserByToken } from '../../libs/token'
@@ -11,6 +17,14 @@ export function createProject(req: Request, res: Response) {
         codice: 'E04',
         res,
       })
+    }
+    if (project.members && project.members.length > 0) {
+      if (!checkObjects(project.members)) {
+        return formatResponse({
+          codice: 'E04',
+          res,
+        })
+      }
     }
     const projects = readFile('projects') as Project[]
     const myUser = getUserByToken(req.headers?.authorization ?? '')
@@ -76,10 +90,19 @@ export function getProjects(req: Request, res: Response) {
 
 export function getProject(req: Request, res: Response) {
   try {
+    const { id } = req.params
+    if (!id) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       const projects = readFile('projects') as Project[]
-      const myProjects = projects.filter((p) => p.owner.id === myUser.id)
+      const myProjects = projects.filter(
+        (p) => p.owner.id === myUser.id && p.id === id
+      )
       return formatResponse({
         codice: 'S07',
         res,
@@ -122,7 +145,7 @@ export function deleteProject(req: Request, res: Response) {
       throw new Error('Error deleting project')
     }
     return formatResponse({
-      codice: 'S17',
+      codice: 'S12',
       res,
     })
   } catch (error) {
@@ -137,15 +160,29 @@ export function deleteProject(req: Request, res: Response) {
 export function updateProject(req: Request, res: Response) {
   try {
     const { id } = req.params
-    if (!id || Object.keys(req.body).length === 0) {
+    if (Object.keys(req.body).length === 0) {
       return formatResponse({
         codice: 'E04',
         res,
       })
     }
     const { project } = req.body as { project: Project }
+    if (!id || !project || Object.keys(project).length === 0) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
+    if (project.members && project.members.length > 0) {
+      if (!checkObjects(project.members)) {
+        return formatResponse({
+          codice: 'E04',
+          res,
+        })
+      }
+    }
     const projects = readFile('projects') as Project[]
-    const projectsSearch = projects.filter((p: Project) => p.id === id)
+    const projectsSearch = projects.filter((p) => p.id === id)
     if (projectsSearch.length === 0) {
       return formatResponse({
         codice: 'W06',
@@ -157,11 +194,8 @@ export function updateProject(req: Request, res: Response) {
       ...project,
       updatedAt: new Date().toISOString(),
     }
-    const newProjects = [
-      ...projects.filter((p: Project) => p.id !== id),
-      newProject,
-    ]
-    if (!writeFile(newProjects, 'members')) {
+    const newProjects = [...projects.filter((p) => p.id !== id), newProject]
+    if (!writeFile(newProjects, 'projects')) {
       throw new Error('Error updating project')
     }
     return formatResponse({

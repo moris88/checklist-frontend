@@ -12,12 +12,15 @@ import Multiselect from '../Multiselect'
 import { useFetch } from '../../hooks'
 import { useNavigate } from 'react-router-dom'
 import React from 'react'
+import { ArrowLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
+import moment from 'moment'
 
 interface FormTaskProps {
   defaultValues?: Omit<Task, 'createdAt' | 'updatedAt' | 'id'>
+  id?: string
 }
 
-const FormTask = ({ defaultValues }: FormTaskProps) => {
+const FormTask = ({ defaultValues, id }: FormTaskProps) => {
   const navigate = useNavigate()
   const {
     response: responseMembers,
@@ -25,7 +28,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     error: errorMember,
   } = useFetch<{
     members: Member[]
-    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   }>({
     endpoint: '/members',
   })
@@ -35,7 +37,6 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     error: errorProjects,
   } = useFetch<{
     projects: Project[]
-    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   }>({
     endpoint: '/projects',
   })
@@ -46,63 +47,68 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
     setRequest,
   } = useFetch<{
     tasks: Task[]
-    statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   }>({
     skip: true,
   })
   const projects = responseProjects?.projects ?? []
   const members = responseMembers?.members ?? []
-  const [values, setValues] = React.useState<
-    Omit<Task, 'createdAt' | 'updatedAt' | 'id'>
-  >(
-    defaultValues ?? {
-      title: '',
-      description: null,
-      assignee: null,
-      projectID: null,
-      deadline: new Date().toISOString().split('T')[0],
-      priority: 'LOW',
-      type: 'others',
-      status: 'BACKLOG',
-    }
-  )
-  const isEdit = defaultValues !== undefined
+
   const {
     control,
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<Omit<Task, 'createdAt' | 'updatedAt' | 'id'>>({
-    values: values,
+    defaultValues: {
+      title: '',
+      description: null,
+      assignee: null,
+      project: null,
+      deadline: moment().format('YYYY-MM-DD'),
+      priority: 'LOW',
+      type: 'others',
+      status: 'BACKLOG',
+    },
   })
 
   React.useEffect(() => {
     if (defaultValues) {
-      setValues(defaultValues)
+      reset(defaultValues)
     }
-  }, [defaultValues])
+  }, [defaultValues, reset])
 
   const onSubmit = handleSubmit((data) => {
     console.log(data)
-    setRequest({
-      url: '/task',
-      method: 'POST',
-      body: {
-        task: data,
-      },
-    })
+    if (id) {
+      setRequest({
+        url: `/task/${id}`,
+        method: 'PUT',
+        body: {
+          task: {
+            ...data,
+            project: JSON.parse(data.project),
+          },
+        },
+      })
+      return
+    } else {
+      setRequest({
+        url: '/task',
+        method: 'POST',
+        body: {
+          task: {
+            ...data,
+            project: JSON.parse(data.project),
+          },
+        },
+      })
+    }
   })
 
   React.useEffect(() => {
     if (responseTasks) {
-      console.log('responseTasks', responseTasks)
-      if (
-        responseTasks &&
-        responseTasks.statusText &&
-        responseTasks.statusText === 'SUCCESS'
-      ) {
-        navigate('/tasks')
-      }
+      navigate('/tasks')
     }
   }, [navigate, responseTasks])
 
@@ -116,8 +122,11 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
 
   if (errorMember || errorProjects || errorTasks) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center h-screen">
         <p>ERROR</p>
+        {errorMember && <pre>{JSON.stringify(errorMember, null, 5)}</pre>}
+        {errorProjects && <pre>{JSON.stringify(errorProjects, null, 5)}</pre>}
+        {errorTasks && <pre>{JSON.stringify(errorTasks, null, 5)}</pre>}
       </div>
     )
   }
@@ -129,31 +138,38 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
   return (
     <form className="flex flex-col gap-2 p-4" onSubmit={onSubmit}>
       {errors.title?.message && (
-        <Label className="font-bold text-red-500">
-          {errors.title?.message}
+        <Label className="font-bold rounded-lg bg-red-400 p-2 text-red-800">
+          {errors.title?.message as string}
         </Label>
       )}
-      {errors.description?.message && (
-        <Label className="font-bold text-red-500">
-          {errors.description?.message}
+      {errors.project?.message && (
+        <Label className="font-bold rounded-lg bg-red-400 p-2 text-red-800">
+          {errors.project?.message as string}
         </Label>
       )}
       <Label className="font-bold">Name Task</Label>
       <TextInput
         className="font-medium"
-        {...register('title', { required: 'Mandatory Title Task' })}
+        {...register('title', {
+          required: { value: true, message: 'Mandatory Title Task' },
+        })}
       />
       <Label className="font-bold">Description Task</Label>
       <Textarea className="font-medium" rows={4} {...register('description')} />
       <Label className="font-bold">Selected a Project</Label>
       <Select
-        {...register('projectID', { required: 'Mandatory Project' })}
+        {...register('project', {
+          required: { value: true, message: 'Mandatory Project' },
+        })}
         onChange={handleChangeProject}
-        disabled={isEdit}
+        disabled={id ? true : false}
       >
         <option value={''}>{'--NONE--'}</option>
         {projects.map((project) => (
-          <option key={`option-project-${project.id}`} value={project.id}>
+          <option
+            key={`option-project-${project.id}`}
+            value={`{"id": "${project.id}", "name": "${project.name}"}`}
+          >
             {project.name}
           </option>
         ))}
@@ -166,12 +182,13 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
         render={({ field: { value, onChange } }) => {
           return (
             <Multiselect
-              options={members.map((user) => user.full_name)}
+              options={members.map((user) => ({
+                id: user.id,
+                name: user.full_name,
+              }))}
               disabled={members.length === 0}
               defaultValues={
-                value
-                  ?.filter((el) => el !== undefined)
-                  .map((user) => user.full_name) ?? []
+                value ? (value as { id: string; name: string }[]) : []
               }
               placeholder="Selected assigned"
               onChange={onChange}
@@ -216,8 +233,15 @@ const FormTask = ({ defaultValues }: FormTaskProps) => {
         <option value={'call internal'}>{'call internal'}</option>
         <option value={'others'}>{'others'}</option>
       </Select>
-      <div className="flex justify-center w-full">
-        <Button type="submit">SAVE</Button>
+      <div className="flex justify-center w-full gap-3">
+        <Button onClick={() => navigate(-1)}>
+          <ArrowLeftIcon className="w-5 h-5 mr-2" />
+          Done
+        </Button>
+        <Button color="success" type="submit">
+          <ArrowDownTrayIcon className="w-5 h-5 mr-2" />
+          Save
+        </Button>
       </div>
     </form>
   )

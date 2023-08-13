@@ -1,9 +1,14 @@
-// import React from 'react'
+import { Footer as FooterFlowbite } from 'flowbite-react'
 
-// interface FooterProps {}
+const Footer = () => {
+  return (
+    <FooterFlowbite container className="sticky bottom-0">
+      <FooterFlowbite.Copyright by="Maurizio Tolomeo™" href="#" year={2023} />
+      <FooterFlowbite.LinkGroup>
+        <FooterFlowbite.Link href="/contact">Contact</FooterFlowbite.Link>
+      </FooterFlowbite.LinkGroup>
+    </FooterFlowbite>
+  )
+}
 
-// const Footer = (props: FooterProps) => {
-//   return <>Footer</>
-// }
-
-// export default Footer
+export default Footer

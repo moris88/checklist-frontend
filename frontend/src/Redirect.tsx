@@ -1,16 +1,25 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import List from './components/List'
-import Record from './components/Record'
 import { Spinner } from 'flowbite-react'
-import { Wrapper, Home, Login, Logout, Register } from './components'
-import Profile from './components/Profile'
-import View from './components/View'
+import {
+  Wrapper,
+  Home,
+  Login,
+  Logout,
+  Register,
+  View,
+  Record,
+  List,
+  Profile,
+  Delete,
+} from './components'
+import NotFoundPage from './components/NotFoundPage'
+import Contact from './components/Contact'
 
 const router = createBrowserRouter([
   {
     path: '/projects',
     Component: () => (
-      <Wrapper title="Projects">
+      <Wrapper title="List Projects">
         <List module="project" />
       </Wrapper>
     ),
@@ -18,7 +27,7 @@ const router = createBrowserRouter([
   {
     path: '/project/:id',
     Component: () => (
-      <Wrapper title="Projects">
+      <Wrapper title="Project View">
         <View module="project" />
       </Wrapper>
     ),
@@ -40,10 +49,26 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/project/delete/:id',
+    Component: () => (
+      <Wrapper title="Project Delete">
+        <Delete module="project" />
+      </Wrapper>
+    ),
+  },
+  {
     path: '/tasks',
     Component: () => (
-      <Wrapper title="Tasks">
+      <Wrapper title="List Tasks">
         <List module="task" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/task/:id',
+    Component: () => (
+      <Wrapper title="Task View">
+        <View module="task" />
       </Wrapper>
     ),
   },
@@ -64,10 +89,26 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/task/delete/:id',
+    Component: () => (
+      <Wrapper title="Task Delete">
+        <Delete module="task" />
+      </Wrapper>
+    ),
+  },
+  {
     path: '/members',
     Component: () => (
-      <Wrapper title="Members">
+      <Wrapper title="List Members">
         <List module="member" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/member/:id',
+    Component: () => (
+      <Wrapper title="Member View">
+        <View module="member" />
       </Wrapper>
     ),
   },
@@ -84,6 +125,14 @@ const router = createBrowserRouter([
     Component: () => (
       <Wrapper title="Member Edit">
         <Record module="member" />
+      </Wrapper>
+    ),
+  },
+  {
+    path: '/member/delete/:id',
+    Component: () => (
+      <Wrapper title="Member Delete">
+        <Delete module="member" />
       </Wrapper>
     ),
   },
@@ -112,8 +161,20 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/contact',
+    Component: () => <Contact />,
+  },
+  {
     path: '/register',
     Component: () => <Register />,
+  },
+  {
+    path: '*',
+    Component: () => (
+      <Wrapper title="Not Found">
+        <NotFoundPage />
+      </Wrapper>
+    ),
   },
 ])
 

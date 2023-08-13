@@ -7,7 +7,7 @@ export type RoleMember =
   | 'SENIOR SOLUTION'
   | 'JUNIOR DEVELOPER'
   | 'SENIOR DEVELOPER'
-  | 'JUNIOR STAGE DEVELOPER'
+  | 'JUNIOR STAGE'
   | 'NONE'
 export type State = 'OPENED' | 'IN PROGRESS' | 'CLOSED' | 'DELETED'
 export type StatusToken = 'ACTIVE' | 'INACTIVE'
@@ -51,7 +51,7 @@ export type SubService =
 export interface Task {
   [key: string]:
     | string
-    | Member[]
+    | { id: string; name: string }[]
     | null
     | { id: string }
     | Priority
@@ -67,8 +67,8 @@ export interface Task {
   updatedAt: string
   priority: Priority | null
   deadline: string | null
-  projectID: number | null
-  assignee: Member[] | null
+  project: { id: string; name: string }
+  assignee: { id: string; name: string }[] | null
   type: Type | null
 }
 
@@ -86,19 +86,19 @@ export interface Member {
 export interface Project {
   [key: string]:
     | string
-    | Member[]
     | Service
     | SubService
     | State
     | null
     | { id: string }
+    | { id: string; name: string }[]
   id: string
   owner: { id: string }
   name: string
   description: string | null
   createdAt: string
   updatedAt: string
-  members: Member[] | null
+  members: { id: string; name: string }[] | null
   service: Service | null
   subService: SubService | null
   state: State

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export type Module = 'member' | 'project' | 'task'
 export type Status =
   | 'BACKLOG'
   | 'OPEN'
@@ -8,7 +10,7 @@ export type Status =
   | 'CLOSED'
   | 'REOPENED'
   | 'PENDING'
-
+export type State = 'OPENED' | 'ACTIVE' | 'CLOSED'
 export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
 export type Type =
   | 'system integration'
@@ -34,54 +36,67 @@ export type SubService =
   | 'Zendesk Sell'
   | 'Zendesk Guide'
   | 'others'
+export type Role =
+  | 'TECHNICAL LEADER'
+  | 'SENIOR PROJECT MANAGER'
+  | 'JUNIOR PROJECT MANAGER'
+  | 'JUNIOR SOLUTION'
+  | 'SENIOR SOLUTION'
+  | 'JUNIOR DEVELOPER'
+  | 'SENIOR DEVELOPER'
+  | 'JUNIOR STAGE DEVELOPER'
+  | 'NONE'
 
 export interface Task {
-  id: number
+  [key: string]: any
+  id: string
   title: string
   description: string | null
-  status: Status
+  status: Status | null
   createdAt: string
   updatedAt: string
   priority: Priority | null
   deadline: string | null
-  projectID: number | null
-  assignee: User[] | null
+  project: { id: string; name: string } | null
+  assignee: { id: string; name: string }[] | null
   type: Type | null
 }
 
 export interface Member {
-  id: number
-  first_name: string
+  [key: string]: any
+  id: string
+  first_name: string | null
   last_name: string
   full_name: string
   email: string
-  role:
-    | 'TECHNICAL LEADER'
-    | 'SENIOR PROJECT MANAGER'
-    | 'JUNIOR PROJECT MANAGER'
-    | 'JUNIOR SOLUTION'
-    | 'SENIOR SOLUTION'
-    | 'JUNIOR DEVELOPER'
-    | 'SENIOR DEVELOPER'
-    | 'JUNIOR STAGE DEVELOPER'
-    | 'NONE'
+  role: Role | null
 }
 
 export interface Project {
-  id: number
+  [key: string]: any
+  id: string
   name: string
   description: string | null
   createdAt: string
   updatedAt: string
-  members: User[] | null
+  members: { id: string; name: string }[] | null
   service: Service | null
   subService: SubService | null
-  state: 'OPENED' | 'ACTIVE' | 'CLOSED'
+  state: State | null
+}
+
+export interface User {
+  id: string
+  username: string
+  role: 'ADMIN' | 'USER'
+  createdAt: string
+  updatedAt: string
+  password: string | null
 }
 
 export interface AccessToken {
   token: string | null
-  owner: { id: string; name: string } | null
+  owner: { id: string | null; name: string | null } | null
   expiresAt: number | null
   createdAt: number | null
 }
