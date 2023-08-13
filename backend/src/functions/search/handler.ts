@@ -1,7 +1,7 @@
-import { Request, Response } from 'express'
 import { formatResponse } from '../../libs'
+import { Request, Response } from 'express'
 
-export function generalPathMatch(req: Request, res: Response) {
+export function search(req: Request, res: Response) {
   try {
     return formatResponse({
       codice: 'E01',

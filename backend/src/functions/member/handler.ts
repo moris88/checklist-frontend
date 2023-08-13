@@ -10,8 +10,15 @@ import { Member } from '../../types/global'
 
 export function createMember(req: Request, res: Response) {
   try {
+    if (Object.keys(req.body).length === 0) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
     const { member } = req.body as { member: Member }
     if (
+      !member ||
       Object.keys(member).length === 0 ||
       !member.email ||
       !member.last_name
@@ -163,6 +170,12 @@ export async function updateMember(req: Request, res: Response) {
       })
     }
     const { member } = req.body as { member: Member }
+    if (!member || Object.keys(member).length === 0) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
     const members = readFile('members') as Member[]
     const membersSearch = members.filter((m: Member) => m.id === id)
     if (membersSearch.length === 0) {

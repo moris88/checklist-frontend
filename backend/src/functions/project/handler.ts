@@ -1,4 +1,10 @@
-import { formatResponse, generateLongId, readFile, writeFile } from '../../libs'
+import {
+  checkObjects,
+  formatResponse,
+  generateLongId,
+  readFile,
+  writeFile,
+} from '../../libs'
 import { Request, Response } from 'express'
 import { Project } from '../../types/global'
 import { getUserByToken } from '../../libs/token'
@@ -11,6 +17,14 @@ export function createProject(req: Request, res: Response) {
         codice: 'E04',
         res,
       })
+    }
+    if (project.members && project.members.length > 0) {
+      if (!checkObjects(project.members)) {
+        return formatResponse({
+          codice: 'E04',
+          res,
+        })
+      }
     }
     const projects = readFile('projects') as Project[]
     const myUser = getUserByToken(req.headers?.authorization ?? '')
@@ -137,13 +151,27 @@ export function deleteProject(req: Request, res: Response) {
 export function updateProject(req: Request, res: Response) {
   try {
     const { id } = req.params
-    if (!id || Object.keys(req.body).length === 0) {
+    if (Object.keys(req.body).length === 0) {
       return formatResponse({
         codice: 'E04',
         res,
       })
     }
     const { project } = req.body as { project: Project }
+    if (!id || !project || Object.keys(project).length === 0) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
+    if (project.members && project.members.length > 0) {
+      if (!checkObjects(project.members)) {
+        return formatResponse({
+          codice: 'E04',
+          res,
+        })
+      }
+    }
     const projects = readFile('projects') as Project[]
     const projectsSearch = projects.filter((p: Project) => p.id === id)
     if (projectsSearch.length === 0) {

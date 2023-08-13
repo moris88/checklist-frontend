@@ -1,4 +1,5 @@
 import {
+  checkObjects,
   formatResponse,
   generateLongId,
   getUserByToken,
@@ -10,12 +11,37 @@ import { Task } from '../../types/global'
 
 export async function createTask(req: Request, res: Response) {
   try {
-    const { task } = req.body as { task: Task }
-    if (Object.keys(task).length === 0 || !task.title) {
+    if (Object.keys(req.body).length === 0) {
       return formatResponse({
         codice: 'E04',
         res,
       })
+    }
+    const { task } = req.body as { task: Task }
+    if (
+      !task ||
+      Object.keys(task).length === 0 ||
+      !task.title ||
+      !task.project
+    ) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
+    if (!task.project?.id && !task.project?.name) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
+    if (task.assignee && task.assignee.length > 0) {
+      if (!checkObjects(task.assignee)) {
+        return formatResponse({
+          codice: 'E04',
+          res,
+        })
+      }
     }
     const tasks = readFile('tasks') as Task[]
     const myUser = getUserByToken(req.headers?.authorization ?? '')
@@ -140,13 +166,33 @@ export async function deleteTask(req: Request, res: Response) {
 export async function updateTask(req: Request, res: Response) {
   try {
     const { id } = req.params
-    if (!id || Object.keys(req.body).length === 0) {
+    if (Object.keys(req.body).length === 0) {
       return formatResponse({
         codice: 'E04',
         res,
       })
     }
     const { task } = req.body as { task: Task }
+    if (!id || !task || Object.keys(task).length === 0) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
+    if (!task.project || !task.project?.id || !task.project?.name) {
+      return formatResponse({
+        codice: 'E04',
+        res,
+      })
+    }
+    if (task.assignee && task.assignee.length > 0) {
+      if (!checkObjects(task.assignee)) {
+        return formatResponse({
+          codice: 'E04',
+          res,
+        })
+      }
+    }
     const tasks = readFile('tasks') as Task[]
     const tasksSearch = tasks.filter((t: Task) => t.id === id)
     if (tasksSearch.length === 0) {
