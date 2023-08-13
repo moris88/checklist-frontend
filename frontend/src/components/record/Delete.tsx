@@ -77,6 +77,7 @@ const Delete = ({ module }: DeleteProps) => {
         onAccept={handleDelete}
         onClose={() => navigate(-1)}
         onDecline={() => navigate(-1)}
+        colorAccept="failure"
       />
     </>
   )

@@ -7,7 +7,7 @@ export type RoleMember =
   | 'SENIOR SOLUTION'
   | 'JUNIOR DEVELOPER'
   | 'SENIOR DEVELOPER'
-  | 'JUNIOR STAGE DEVELOPER'
+  | 'JUNIOR STAGE'
   | 'NONE'
 export type State = 'OPENED' | 'IN PROGRESS' | 'CLOSED' | 'DELETED'
 export type StatusToken = 'ACTIVE' | 'INACTIVE'

@@ -2,6 +2,8 @@ import { Button, Modal as ModalFlowbite } from 'flowbite-react'
 
 interface MyModalProps {
   show: boolean
+  colorAccept?: string
+  colorDecline?: string
   onClose?: () => void
   onAccept?: () => void
   onDecline?: () => void
@@ -16,7 +18,10 @@ const Modal = ({
   onClose,
   onAccept,
   onDecline,
+  colorAccept,
+  colorDecline,
 }: MyModalProps) => {
+  console.log('Modal', colorAccept, colorDecline)
   return (
     <ModalFlowbite
       show={show}
@@ -34,6 +39,7 @@ const Modal = ({
       </ModalFlowbite.Body>
       <ModalFlowbite.Footer>
         <Button
+          color={colorAccept ?? 'success'}
           onClick={() => {
             if (onAccept) onAccept()
           }}
@@ -41,7 +47,7 @@ const Modal = ({
           OK
         </Button>
         <Button
-          color="gray"
+          color={colorDecline ?? 'gray'}
           onClick={() => {
             if (onDecline) onDecline()
           }}

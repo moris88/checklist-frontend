@@ -138,9 +138,7 @@ const FormMember = ({ defaultValues, id }: FormMemberProps) => {
         <option value={'SENIOR SOLUTION'}>{'SENIOR SOLUTION'}</option>
         <option value={'JUNIOR DEVELOPER'}>{'JUNIOR DEVELOPER'}</option>
         <option value={'SENIOR DEVELOPER'}>{'SENIOR DEVELOPER'}</option>
-        <option value={'JUNIOR STAGE DEVELOPER'}>
-          {'JUNIOR STAGE DEVELOPER'}
-        </option>
+        <option value={'JUNIOR STAGE'}>{'JUNIOR STAGE'}</option>
       </Select>
       <div className="flex justify-center w-full gap-3">
         <Button onClick={() => navigate(-1)}>
