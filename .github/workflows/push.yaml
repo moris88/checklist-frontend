@@ -13,20 +13,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18
-      # - name: Cache Node.js modules
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ./app/node_modules
-      #       # /home/runner/.cache/Cypress
-      #     key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-      #     restore-keys: |
-      #       ${{ runner.OS }}-node-
       - name: Install dependencies
         run: npm install
         working-directory: ./frontend
       - name: Run Lint
         working-directory: ./frontend
-        run: npm lint
+        run: npm run lint
   backend:
     name: Code Quality Backend
     runs-on: ubuntu-latest
@@ -37,20 +29,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18
-      # - name: Cache Node.js modules
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: ./app/node_modules
-      #       # /home/runner/.cache/Cypress
-      #     key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-      #     restore-keys: |
-      #       ${{ runner.OS }}-node-
       - name: Install dependencies
         run: npm install
         working-directory: ./backend
       - name: Run Lint
         working-directory: ./backend
-        run: npm lint
+        run: npm run lint
   backend-build:
     name: Test Build Backend
     runs-on: ubuntu-latest
@@ -62,20 +46,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18
-      - name: Cache Node.js modules
-        uses: actions/cache@v3
-        with:
-          path: ./app/node_modules
-            # /home/runner/.cache/Cypress
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-node-
       - name: Install dependencies
         run: npm install
         working-directory: ./backend
       - name: Build Test
         working-directory: ./backend
-        run: npm build
+        run: npm run build
   frontend-build:
     name: Test Build Frontend
     runs-on: ubuntu-latest
@@ -87,17 +63,9 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18
-      - name: Cache Node.js modules
-        uses: actions/cache@v3
-        with:
-          path: ./app/node_modules
-            # /home/runner/.cache/Cypress
-          key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.OS }}-node-
       - name: Install dependencies
         run: npm install
         working-directory: ./frontend
       - name: Build Test
         working-directory: ./frontend
-        run: npm build
+        run: npm run build
