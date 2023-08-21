@@ -4,12 +4,12 @@
   "private": true,
   "scripts": {
     "open": "wait-on http://localhost:3000",
-    "lint:frontend": "cd frontend && yarn lint --fix",
-    "lint:backend": "cd backend && yarn lint --fix",
-    "lint": "concurrently --kill-others-on-fail --names \"express,react\" \"yarn lint:backend\" \"yarn lint:frontend\"",
-    "react": "cd frontend && yarn dev",
-    "express": "cd backend && yarn dev",
-    "dev": "concurrently --kill-others-on-fail --names \"express,react,open\" \"yarn express\" \"yarn react\" \"yarn open\""
+    "lint:frontend": "cd frontend && npm run lint -- --fix",
+    "lint:backend": "cd backend && npm run lint -- --fix",
+    "lint": "concurrently --kill-others-on-fail --names \"express,react\" \"npm run lint:backend\" \"npm run lint:frontend\"",
+    "react": "cd frontend && npm run dev",
+    "express": "cd backend && npm run dev",
+    "dev": "concurrently --kill-others-on-fail --names \"express,react,open\" \"npm run express\" \"npm run react\" \"npm run open\""
   },
   "devDependencies": {
     "cz-conventional-changelog": "^3.3.0"
