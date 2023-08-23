@@ -122,10 +122,19 @@ export async function getTasks(req: Request, res: Response) {
 
 export async function getTask(req: Request, res: Response) {
   try {
+    const { id } = req.params
+    if (!id) {
+      return formatResponseError({
+        message: 'Bad request',
+        res,
+      })
+    }
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       const tasks = readFile('tasks') as Task[]
-      const myTasks = tasks.filter((t) => t.owner.id === myUser.id)
+      const myTasks = tasks.filter(
+        (t) => t.owner.id === myUser.id && t.id === id
+      )
       return formatResponse({
         message: 'GET',
         res,

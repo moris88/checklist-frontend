@@ -1,17 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type Role = 'ADMIN' | 'USER' | 'GUEST' | 'INACTIVE'
-export type RoleMember =
-  | 'TECHNICAL LEADER'
-  | 'SENIOR PROJECT MANAGER'
-  | 'JUNIOR PROJECT MANAGER'
-  | 'JUNIOR SOLUTION'
-  | 'SENIOR SOLUTION'
-  | 'JUNIOR DEVELOPER'
-  | 'SENIOR DEVELOPER'
-  | 'JUNIOR STAGE'
-  | 'SENIOR STAGE'
-  | 'OTHER'
-  | 'NONE'
 export type State = 'OPENED' | 'IN PROGRESS' | 'CLOSED' | 'DELETED'
 export type StatusToken = 'ACTIVE' | 'INACTIVE'
 export type Status =
@@ -24,32 +12,7 @@ export type Status =
   | 'CLOSED'
   | 'REOPENED'
   | 'PENDING'
-
 export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
-export type Type =
-  | 'system integration'
-  | 'widget'
-  | 'webservice'
-  | 'serverless'
-  | 'cf-deluge'
-  | 'configuration'
-  | 'bug-fix'
-  | 'call external'
-  | 'call internal'
-  | 'others'
-export type Service = 'Zoho' | 'Freshworks' | 'Hubspot' | 'Zendesk' | 'others'
-export type SubService =
-  | 'Zoho CRM'
-  | 'Zoho Creator'
-  | 'Zoho Desk'
-  | 'Zoho Analitycs'
-  | 'Freshdesk'
-  | 'Freshservice'
-  | 'FreshCaller'
-  | 'Zendesk Support'
-  | 'Zendesk Sell'
-  | 'Zendesk Guide'
-  | 'others'
 
 export interface Task {
   [key: string]: any
@@ -64,7 +27,7 @@ export interface Task {
   deadline: string | null
   project: { id: string; name: string }
   assignee: { id: string; name: string }[] | null
-  type: Type | null
+  type: string | null
 }
 
 export interface Member {
@@ -75,7 +38,7 @@ export interface Member {
   last_name: string
   full_name: string
   email: string //mandatory
-  role: RoleMember
+  role: string
 }
 
 export interface Project {
@@ -87,8 +50,8 @@ export interface Project {
   createdAt: string
   updatedAt: string
   members: { id: string; name: string }[] //mandatory
-  service: Service | null
-  subService: SubService | null
+  service: string | null
+  subService: string | null
   state: State //mandatory
 }
 
