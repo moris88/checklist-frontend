@@ -1,16 +1,16 @@
 import { Request, Response } from 'express'
-import { formatResponse } from '../../libs'
+import { formatResponseError } from '../../libs'
 
 export function generalPathMatch(req: Request, res: Response) {
   try {
-    return formatResponse({
-      codice: 'E01',
+    return formatResponseError({
+      message: 'Not implemented',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }

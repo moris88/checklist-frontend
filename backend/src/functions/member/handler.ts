@@ -1,4 +1,6 @@
 import {
+  formatResponseError,
+  formatResponseWarning,
   formatResponse,
   generateLongId,
   readFile,
@@ -11,8 +13,8 @@ import { Member } from '../../types/global'
 export function createMember(req: Request, res: Response) {
   try {
     if (Object.keys(req.body).length === 0) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
@@ -23,16 +25,16 @@ export function createMember(req: Request, res: Response) {
       !member.email ||
       !member.last_name
     ) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     const { email } = member
     const members = readFile('members') as Member[]
     if (members.filter((m: Member) => m.email === email).length > 0) {
-      return formatResponse({
-        codice: 'W04',
+      return formatResponseWarning({
+        message: 'Resource already exists',
         res,
       })
     }
@@ -46,20 +48,20 @@ export function createMember(req: Request, res: Response) {
       members.push(newMember)
       if (writeFile(members, 'members')) {
         return formatResponse({
-          codice: 'S08',
+          message: 'CREATED',
           res,
           members: [newMember],
         })
       }
     }
-    return formatResponse({
-      codice: 'E04',
+    return formatResponseError({
+      message: 'Bad request',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -72,20 +74,20 @@ export function getMembers(req: Request, res: Response) {
     if (myUser) {
       const myUsers = members.filter((u: Member) => u.owner.id === myUser.id)
       return formatResponse({
-        codice: 'S09',
+        message: 'GET',
         res,
         members: myUsers,
       })
     }
     return formatResponse({
-      codice: 'S09',
+      message: 'GET',
       res,
       members: [],
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -95,8 +97,8 @@ export function getMember(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
@@ -107,20 +109,20 @@ export function getMember(req: Request, res: Response) {
         (u: Member) => u.owner.id === myUser.id && u.id === id
       )
       return formatResponse({
-        codice: 'S09',
+        message: 'GET',
         res,
         members: myUsers,
       })
     }
     return formatResponse({
-      codice: 'S09',
+      message: 'GET',
       res,
       members: [],
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -130,16 +132,16 @@ export async function deleteMember(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     const members = readFile('members') as Member[]
     const membersSearch = members.filter((m: Member) => m.id === id)
     if (membersSearch.length === 0) {
-      return formatResponse({
-        codice: 'W05',
+      return formatResponseWarning({
+        message: 'Resource not found',
         res,
       })
     }
@@ -148,13 +150,13 @@ export async function deleteMember(req: Request, res: Response) {
       throw new Error('Error deleting member')
     }
     return formatResponse({
-      codice: 'S10',
+      message: 'DELETED',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -164,23 +166,23 @@ export async function updateMember(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id || Object.keys(req.body).length === 0) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     const { member } = req.body as { member: Member }
     if (!member || Object.keys(member).length === 0) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     const members = readFile('members') as Member[]
     const membersSearch = members.filter((m: Member) => m.id === id)
     if (membersSearch.length === 0) {
-      return formatResponse({
-        codice: 'W05',
+      return formatResponseWarning({
+        message: 'Resource not found',
         res,
       })
     }
@@ -193,14 +195,14 @@ export async function updateMember(req: Request, res: Response) {
       throw new Error('Error updating user')
     }
     return formatResponse({
-      codice: 'S11',
+      message: 'UPDATED',
       res,
       members: [newMember],
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }

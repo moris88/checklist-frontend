@@ -1,4 +1,4 @@
-import { Project, Task, Member, User, Token } from '../types/global'
+import { Project, Task, Member, User, Token, Module } from '../types/global'
 import fs from 'fs'
 import dotenv from 'dotenv'
 
@@ -97,4 +97,37 @@ export const checkObjects = (
     }
   }
   return true // Tutti gli oggetti hanno le chiavi "id" e "name" popolate
+}
+
+export const includes = (
+  module: Module,
+  type: 'StatusTask' | 'PriorityTask' | 'StateProject',
+  value?: string
+): boolean => {
+  if (!value || value === '') {
+    return true
+  }
+  const arrayStatusTask = [
+    'BACKLOG',
+    'OPEN',
+    'IN PROGRESS',
+    'DONE',
+    'DELETED',
+    'ARCHIVED',
+    'CLOSED',
+    'REOPENED',
+    'PENDING',
+  ]
+  if (module === 'tasks' && type === 'StatusTask') {
+    return arrayStatusTask.includes(value)
+  }
+  const arrayPriorityTask = ['LOW', 'MEDIUM', 'HIGH', 'URGENT']
+  if (module === 'tasks' && type === 'PriorityTask') {
+    return arrayPriorityTask.includes(value)
+  }
+  const arrayStateProject = ['OPENED', 'IN PROGRESS', 'CLOSED', 'DELETED']
+  if (module === 'projects' && type === 'StateProject') {
+    return arrayStateProject.includes(value)
+  }
+  return false
 }

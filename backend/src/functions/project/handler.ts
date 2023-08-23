@@ -1,9 +1,12 @@
 import {
   checkObjects,
+  formatResponseError,
+  formatResponseWarning,
   formatResponse,
   generateLongId,
   readFile,
   writeFile,
+  includes,
 } from '../../libs'
 import { Request, Response } from 'express'
 import { Project } from '../../types/global'
@@ -13,15 +16,15 @@ export function createProject(req: Request, res: Response) {
   try {
     const { project } = req.body as { project: Project }
     if (!project || Object.keys(project).length === 0 || !project.name) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     if (project.members && project.members.length > 0) {
       if (!checkObjects(project.members)) {
-        return formatResponse({
-          codice: 'E04',
+        return formatResponseError({
+          message: 'Bad request',
           res,
         })
       }
@@ -29,9 +32,15 @@ export function createProject(req: Request, res: Response) {
     const projects = readFile('projects') as Project[]
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
-      console.log('project', project)
+      if (!includes('projects', 'StateProject', project.state)) {
+        return formatResponseError({
+          message: 'Forbidden',
+          res,
+        })
+      }
       const newProject = {
         ...project,
+        state: project.state ?? 'OPENED',
         owner: { id: myUser.id },
         id: generateLongId(),
         createdAt: new Date().toISOString(),
@@ -41,20 +50,20 @@ export function createProject(req: Request, res: Response) {
       console.log('projects', projects)
       if (writeFile(projects, 'projects')) {
         return formatResponse({
-          codice: 'S06',
+          message: 'CREATED',
           res,
           projects: [newProject],
         })
       }
     }
-    return formatResponse({
-      codice: 'E04',
+    return formatResponseError({
+      message: 'Bad request',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -67,22 +76,22 @@ export function getProjects(req: Request, res: Response) {
       const projects = readFile('projects') as Project[]
       const myProjects = projects.filter((p) => p.owner.id === myUser.id)
       return formatResponse({
-        codice: 'S07',
+        message: 'GET',
         res,
         projects: myProjects,
       })
     }
     return res.status(200).json(
       formatResponse({
-        codice: 'S07',
+        message: 'GET',
         res,
         projects: [],
       })
     )
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -92,8 +101,8 @@ export function getProject(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
@@ -104,20 +113,20 @@ export function getProject(req: Request, res: Response) {
         (p) => p.owner.id === myUser.id && p.id === id
       )
       return formatResponse({
-        codice: 'S07',
+        message: 'GET',
         res,
         projects: myProjects,
       })
     }
     return formatResponse({
-      codice: 'S07',
+      message: 'GET',
       res,
       projects: [],
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -127,16 +136,16 @@ export function deleteProject(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     const projects = readFile('projects') as Project[]
     const projectsSearch = projects.filter((p: Project) => p.id === id)
     if (projectsSearch.length === 0) {
-      return formatResponse({
-        codice: 'W06',
+      return formatResponseWarning({
+        message: 'Resource not found',
         res,
       })
     }
@@ -145,13 +154,13 @@ export function deleteProject(req: Request, res: Response) {
       throw new Error('Error deleting project')
     }
     return formatResponse({
-      codice: 'S12',
+      message: 'DELETED',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -161,22 +170,22 @@ export function updateProject(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (Object.keys(req.body).length === 0) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     const { project } = req.body as { project: Project }
     if (!id || !project || Object.keys(project).length === 0) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     if (project.members && project.members.length > 0) {
       if (!checkObjects(project.members)) {
-        return formatResponse({
-          codice: 'E04',
+        return formatResponseError({
+          message: 'Bad request',
           res,
         })
       }
@@ -184,8 +193,14 @@ export function updateProject(req: Request, res: Response) {
     const projects = readFile('projects') as Project[]
     const projectsSearch = projects.filter((p) => p.id === id)
     if (projectsSearch.length === 0) {
-      return formatResponse({
-        codice: 'W06',
+      return formatResponseWarning({
+        message: 'Resource not found',
+        res,
+      })
+    }
+    if (!includes('projects', 'StateProject', project.state)) {
+      return formatResponseError({
+        message: 'Forbidden',
         res,
       })
     }
@@ -199,14 +214,14 @@ export function updateProject(req: Request, res: Response) {
       throw new Error('Error updating project')
     }
     return formatResponse({
-      codice: 'S18',
+      message: 'UPDATED',
       res,
       projects: [newProject],
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
