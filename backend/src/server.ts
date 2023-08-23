@@ -27,6 +27,7 @@ import {
   generalPathMatch,
   getMember,
   getTask,
+  search,
 } from './functions'
 import { refreshToken } from './functions/auth/handler'
 
@@ -98,6 +99,9 @@ app.get('/api/v1/profiles/:id', getProfile)
 app.put('/api/v1/profiles/:id', updateProfile)
 // DELETE /profile
 app.delete('/api/v1/profiles/:id', deleteProfile)
+// PATHS Search:
+// GET /search
+app.get('/api/v1/search', search)
 
 // (all other methods) /* - 404
 app.all('*', generalPathMatch)
