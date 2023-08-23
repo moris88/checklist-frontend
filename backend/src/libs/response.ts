@@ -1,13 +1,4 @@
-import {
-  Codice,
-  CodiceErrore,
-  CodiceWarning,
-  Member,
-  Project,
-  ResponseServer,
-  Task,
-  User,
-} from '../types/global'
+import { Member, Project, ResponseServer, Task, User } from '../types/global'
 import { Response } from 'express'
 
 /*
@@ -24,8 +15,87 @@ import { Response } from 'express'
   500: INTERNAL SERVER ERROR
   501: NOT IMPLEMENTED
 */
+export const formatResponseError = ({
+  message,
+  res,
+}: {
+  res: Response
+  message?:
+    | 'Not implemented'
+    | 'Internal server error'
+    | 'Unauthorized'
+    | 'Bad request'
+    | 'Forbidden'
+}) => {
+  let status: 500 | 501 | 400 | 401 | 403 | 404 | 409 = 500
+  const error = message ?? 'Internal server error'
+  switch (message) {
+    case 'Not implemented': {
+      status = 501
+      break
+    }
+    case 'Internal server error': {
+      status = 500
+      break
+    }
+    case 'Unauthorized': {
+      status = 401
+      break
+    }
+    case 'Bad request': {
+      status = 400
+      break
+    }
+    case 'Forbidden': {
+      status = 403
+      break
+    }
+    default: {
+      status = 500
+      break
+    }
+  }
+  const responseServer: ResponseServer = {
+    statusText: 'ERROR',
+    status,
+    error,
+  }
+  res.status(status).json(responseServer)
+}
+
+export const formatResponseWarning = ({
+  message,
+  res,
+}: {
+  res: Response
+  message?: 'Resource already exists' | 'Resource not found'
+}) => {
+  let status: 500 | 501 | 400 | 401 | 403 | 404 | 409 = 500
+  const warning = message ?? 'Internal server error'
+  switch (message) {
+    case 'Resource already exists': {
+      status = 409
+      break
+    }
+    case 'Resource not found': {
+      status = 404
+      break
+    }
+    default: {
+      status = 500
+      break
+    }
+  }
+  const responseServer: ResponseServer = {
+    statusText: 'WARNING',
+    status,
+    warning,
+  }
+  res.status(status).json(responseServer)
+}
+
 export const formatResponse = ({
-  codice,
+  message,
   res,
   owner,
   token,
@@ -34,7 +104,7 @@ export const formatResponse = ({
   tasks,
   members,
 }: {
-  codice: Codice | CodiceWarning | CodiceErrore
+  message: 'CREATED' | 'OK' | 'GET' | 'UPDATED' | 'DELETED'
   res: Response
   owner?: { id: string; name: string }
   token?: string
@@ -47,235 +117,90 @@ export const formatResponse = ({
     statusText: 'SUCCESS',
     status: 200,
   }
-  switch (codice) {
-    // ERROR
-    case 'E01': {
-      console.log('E01', 'Not implemented')
-      responseServer.statusText = 'ERROR'
-      responseServer.status = 501
-      responseServer.error = 'Not implemented'
-      break
-    }
-    case 'E02': {
-      console.log('E02', 'Internal server error')
-      responseServer.statusText = 'ERROR'
-      responseServer.status = 500
-      responseServer.error = 'Internal server error'
-      break
-    }
-    case 'E03': {
-      console.log('E03', 'Unauthorized')
-      responseServer.statusText = 'ERROR'
-      responseServer.status = 401
-      responseServer.error = 'Unauthorized'
-      break
-    }
-    case 'E04': {
-      console.log('E04', 'Bad request')
-      responseServer.statusText = 'ERROR'
-      responseServer.status = 400
-      responseServer.error = 'Bad request'
-      break
-    }
-    case 'E05': {
-      console.log('E05', 'Forbidden')
-      responseServer.statusText = 'ERROR'
-      responseServer.status = 403
-      responseServer.error = 'Forbidden'
-      break
-    }
-    // WARNING
-    case 'W01': {
-      console.log('W01', 'User already exists')
-      responseServer.statusText = 'WARNING'
-      responseServer.status = 409
-      responseServer.message = 'User already exists'
-      break
-    }
-    case 'W02': {
-      console.log('W02', 'User not found')
-      responseServer.statusText = 'WARNING'
-      responseServer.status = 404
-      responseServer.message = 'User not found'
-      break
-    }
-    case 'W03': {
-      console.log('W03', 'Profile not found')
-      responseServer.statusText = 'WARNING'
-      responseServer.status = 404
-      responseServer.message = 'Profile not found'
-      break
-    }
-    case 'W04': {
-      console.log('W04', 'Email already exists')
-      responseServer.statusText = 'WARNING'
-      responseServer.status = 409
-      responseServer.message = 'Email already exists'
-      break
-    }
-    case 'W05': {
-      console.log('W05', 'Member not found')
-      responseServer.statusText = 'WARNING'
-      responseServer.status = 404
-      responseServer.message = 'Member not found'
-      break
-    }
-    case 'W06': {
-      console.log('W06', 'Project not found')
-      responseServer.statusText = 'WARNING'
-      responseServer.status = 404
-      responseServer.message = 'Project not found'
-      break
-    }
-    case 'W07': {
-      console.log('W07', 'Task not found')
-      responseServer.statusText = 'WARNING'
-      responseServer.status = 404
-      responseServer.message = 'Task not found'
-      break
-    }
-    // SUCCESS
-    case 'S01': {
-      console.log('S01', 'User created')
+  switch (message) {
+    case 'CREATED': {
+      console.log(
+        'RESPONSE:',
+        'Resource created',
+        profiles,
+        members,
+        projects,
+        tasks
+      )
       responseServer.statusText = 'SUCCESS'
       responseServer.status = 201
-      responseServer.message = 'User created'
+      responseServer.message = 'Resource created'
+      responseServer.profiles = profiles
+      responseServer.members = members
+      responseServer.projects = projects
+      responseServer.tasks = tasks
+      responseServer.count =
+        profiles?.length ||
+        members?.length ||
+        projects?.length ||
+        tasks?.length ||
+        0
       break
     }
-    case 'S02': {
-      console.log('S02', 'User login', owner, token)
+    case 'OK': {
+      console.log('RESPONSE:', 'OK', owner, token)
       responseServer.statusText = 'SUCCESS'
       responseServer.status = 202
       responseServer.owner = owner
       responseServer.token = token
       break
     }
-    case 'S03': {
-      console.log('S03', 'User refresh', token)
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 202
-      responseServer.token = token
-      break
-    }
-    case 'S04': {
-      console.log('S04', 'User logout')
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 202
-      responseServer.message = 'User logout'
-      break
-    }
-    case 'S05': {
-      console.log('S05', 'Get users', profiles)
+    case 'GET': {
+      console.log(
+        'RESPONSE:',
+        'Get Resource',
+        profiles,
+        members,
+        projects,
+        tasks
+      )
       responseServer.statusText = 'SUCCESS'
       responseServer.status = 200
       responseServer.profiles = profiles
-      responseServer.count = profiles?.length || 0
-      break
-    }
-    case 'S06': {
-      console.log('S06', 'Project created', projects)
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 201
-      responseServer.message = 'Project created'
+      responseServer.members = members
       responseServer.projects = projects
-      responseServer.count = projects?.length || 0
+      responseServer.tasks = tasks
+      responseServer.count =
+        profiles?.length ||
+        members?.length ||
+        projects?.length ||
+        tasks?.length ||
+        0
       break
     }
-    case 'S07': {
-      console.log('S07', 'Get projects', projects)
+    case 'UPDATED': {
+      console.log(
+        'RESPONSE:',
+        'Resource updated',
+        profiles,
+        members,
+        projects,
+        tasks
+      )
       responseServer.statusText = 'SUCCESS'
       responseServer.status = 200
+      responseServer.message = 'Resource updated'
+      responseServer.profiles = profiles
+      responseServer.members = members
       responseServer.projects = projects
-      responseServer.count = projects?.length || 0
+      responseServer.tasks = tasks
+      responseServer.count =
+        profiles?.length ||
+        members?.length ||
+        projects?.length ||
+        tasks?.length ||
+        0
       break
     }
-    case 'S08': {
-      console.log('S08', 'Member created', members)
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 201
-      responseServer.message = 'Member created'
-      responseServer.members = members
-      responseServer.count = members?.length || 0
-      break
-    }
-    case 'S09': {
-      console.log('S09', 'Get members', members)
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 200
-      responseServer.members = members
-      responseServer.count = members?.length || 0
-      break
-    }
-    case 'S10': {
-      console.log('S10', 'Member deleted')
+    case 'DELETED': {
+      console.log('S07', 'Delete Resourse')
       responseServer.statusText = 'SUCCESS'
       responseServer.status = 204
-      responseServer.message = 'Member deleted'
-      break
-    }
-    case 'S11': {
-      console.log('S11', 'Member updated')
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 200
-      responseServer.message = 'Member updated'
-      responseServer.members = members
-      responseServer.count = members?.length || 0
-      break
-    }
-    case 'S12': {
-      console.log('S12', 'Project deleted')
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 204
-      responseServer.message = 'Project deleted'
-      break
-    }
-    case 'S13': {
-      console.log('S13', 'Project updated')
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 200
-      responseServer.message = 'Project updated'
-      responseServer.projects = projects
-      responseServer.count = projects?.length || 0
-      break
-    }
-    case 'S14': {
-      console.log('S14', 'User updated')
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 200
-      responseServer.message = 'User updated'
-      break
-    }
-    case 'S15': {
-      console.log('S15', 'Task created', tasks)
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 201
-      responseServer.message = 'Project created'
-      responseServer.tasks = tasks
-      responseServer.count = tasks?.length || 0
-      break
-    }
-    case 'S16': {
-      console.log('S016', 'Get tasks', tasks)
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 200
-      responseServer.tasks = tasks
-      responseServer.count = tasks?.length || 0
-      break
-    }
-    case 'S17': {
-      console.log('S17', 'Task deleted')
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 204
-      responseServer.message = 'Task deleted'
-      break
-    }
-    case 'S18': {
-      console.log('S18', 'Task updated')
-      responseServer.statusText = 'SUCCESS'
-      responseServer.status = 200
-      responseServer.message = 'Task updated'
-      responseServer.tasks = tasks
-      responseServer.count = tasks?.length || 0
       break
     }
   }

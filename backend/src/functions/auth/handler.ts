@@ -6,6 +6,8 @@ import {
   registrationUser,
   removeToken,
   regenerateToken,
+  formatResponseError,
+  formatResponseWarning,
   formatResponse,
   generateLongId,
   readFileSystem,
@@ -30,18 +32,18 @@ export function register(req: Request, res: Response) {
       })
     ) {
       return formatResponse({
-        codice: 'S01',
+        message: 'CREATED',
         res,
       })
     }
-    return formatResponse({
-      codice: 'W01',
+    return formatResponseWarning({
+      message: 'Resource already exists',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -51,7 +53,9 @@ export function login(req: Request, res: Response) {
   try {
     const { username, password } = req.body
     const users = getUsersToken()
-    const user = users.find((user) => user.username === username)
+    const user = users.find(
+      (user) => user.username === username && user.role !== 'INACTIVE'
+    )
     if (user) {
       const access = checkPassword(password, user.hash, user.salt)
       if (access) {
@@ -60,26 +64,26 @@ export function login(req: Request, res: Response) {
         const { token } = generateTokenUser(user.id)
         if (token) {
           return formatResponse({
-            codice: 'S02',
+            message: 'OK',
             res,
             owner: { id: user.id, name: user.username },
             token,
           })
         } else throw new Error('Token not generated')
       }
-      return formatResponse({
-        codice: 'E03',
+      return formatResponseError({
+        message: 'Unauthorized',
         res,
       })
     }
-    return formatResponse({
-      codice: 'W02',
+    return formatResponseWarning({
+      message: 'Resource not found',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -93,24 +97,24 @@ export function refreshToken(req: Request, res: Response) {
       const { token: newToken } = regenerateToken(bearerToken)
       if (newToken) {
         return formatResponse({
-          codice: 'S03',
+          message: 'OK',
           res,
           token: newToken,
         })
       }
-      return formatResponse({
-        codice: 'E03',
+      return formatResponseError({
+        message: 'Unauthorized',
         res,
       })
     }
-    return formatResponse({
-      codice: 'E04',
+    return formatResponseError({
+      message: 'Bad request',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -121,18 +125,18 @@ export function logout(req: Request, res: Response) {
     const { username } = req.body
     if (removeToken(username, 'ACTIVE') && removeToken(username, 'INACTIVE')) {
       return formatResponse({
-        codice: 'S04',
+        message: 'OK',
         res,
       })
     }
-    return formatResponse({
-      codice: 'E04',
+    return formatResponseError({
+      message: 'Bad request',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -148,14 +152,14 @@ export function getProfiles(req: Request, res: Response) {
       updatedAt: u.updatedAt,
     })) as User[]
     formatResponse({
-      codice: 'S05',
+      message: 'GET',
       res,
       profiles,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -177,24 +181,24 @@ export function getProfile(req: Request, res: Response) {
         })) as User[]
       if (myProfiles) {
         return formatResponse({
-          codice: 'S05',
+          message: 'GET',
           res,
           profiles: myProfiles,
         })
       }
-      return formatResponse({
-        codice: 'W03',
+      return formatResponseWarning({
+        message: 'Resource not found',
         res,
       })
     }
-    return formatResponse({
-      codice: 'E04',
+    return formatResponseError({
+      message: 'Bad request',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -204,22 +208,22 @@ export function deleteProfile(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     const users = readFileSystem('users') as User[]
     const usersSearch = users.filter((u: User) => u.id === id)
     if (usersSearch.length === 0) {
-      return formatResponse({
-        codice: 'W05',
+      return formatResponseWarning({
+        message: 'Resource not found',
         res,
       })
     }
     if (usersSearch[0].role !== 'ADMIN') {
-      return formatResponse({
-        codice: 'E03',
+      return formatResponseError({
+        message: 'Unauthorized',
         res,
       })
     }
@@ -228,13 +232,13 @@ export function deleteProfile(req: Request, res: Response) {
       throw new Error('Error deleting user')
     }
     return formatResponse({
-      codice: 'S10',
+      message: 'DELETED',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -244,8 +248,8 @@ export function updateProfile(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id || Object.keys(req.body).length === 0) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
@@ -253,8 +257,8 @@ export function updateProfile(req: Request, res: Response) {
     const users = readFileSystem('users') as User[]
     const usersSearch = users.filter((u: User) => u.id === id)
     if (usersSearch.length === 0) {
-      return formatResponse({
-        codice: 'W02',
+      return formatResponseWarning({
+        message: 'Resource not found',
         res,
       })
     }
@@ -269,14 +273,14 @@ export function updateProfile(req: Request, res: Response) {
       throw new Error('Error updating user')
     }
     return formatResponse({
-      codice: 'S14',
+      message: 'UPDATED',
       res,
       profiles: [newUser],
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }

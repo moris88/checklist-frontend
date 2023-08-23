@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
 import { checkToken } from '../../libs/token'
-import { formatResponse } from '../../libs'
+import { formatResponseError } from '../../libs'
 
 export function authorizationMiddleware(
   req: Request,
@@ -22,8 +22,8 @@ export function authorizationMiddleware(
         return
       }
     }
-    return formatResponse({
-      codice: 'E03',
+    return formatResponseError({
+      message: 'Unauthorized',
       res,
     })
   }

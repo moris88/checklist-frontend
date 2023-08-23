@@ -2,7 +2,7 @@
 import React from 'react'
 import { SERVER_URL } from '../utils/metadata'
 import { useAtom } from 'jotai'
-import { accessState } from '../atoms'
+import { accessState, clearAccessState } from '../atoms'
 
 interface useFetchProps {
   endpoint?: string
@@ -14,7 +14,7 @@ const useFetch = <T>({ endpoint, skip, skipToken }: useFetchProps) => {
   const [response, setResponse] = React.useState<T | null>(null)
   const [loading, setLoading] = React.useState<boolean>(true)
   const [error, setError] = React.useState<any>(null)
-  const [access] = useAtom(accessState)
+  const [access, setAccess] = useAtom(accessState)
 
   const myFetch = React.useCallback(
     ({
@@ -47,6 +47,20 @@ const useFetch = <T>({ endpoint, skip, skipToken }: useFetchProps) => {
               result.statusText === 'SUCCESS'
             ) {
               setResponse(result)
+            } else if (
+              result &&
+              result.statusText &&
+              result.statusText === 'ERROR' &&
+              result.status === 401
+            ) {
+              setAccess({
+                token: null,
+                owner: null,
+                expiresAt: null,
+                createdAt: null,
+              })
+              clearAccessState()
+              setError(result)
             } else {
               setError(result)
             }
@@ -83,6 +97,20 @@ const useFetch = <T>({ endpoint, skip, skipToken }: useFetchProps) => {
         .then((result) => {
           if (result && result.statusText && result.statusText === 'SUCCESS') {
             setResponse(result)
+          } else if (
+            result &&
+            result.statusText &&
+            result.statusText === 'ERROR' &&
+            result.status === 401
+          ) {
+            setAccess({
+              token: null,
+              owner: null,
+              expiresAt: null,
+              createdAt: null,
+            })
+            clearAccessState()
+            setError(result)
           } else {
             setError(result)
           }

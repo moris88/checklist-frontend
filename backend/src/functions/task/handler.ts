@@ -1,10 +1,13 @@
 import {
   checkObjects,
+  formatResponseError,
+  formatResponseWarning,
   formatResponse,
   generateLongId,
   getUserByToken,
   readFile,
   writeFile,
+  includes,
 } from '../../libs'
 import { Request, Response } from 'express'
 import { Task } from '../../types/global'
@@ -12,8 +15,8 @@ import { Task } from '../../types/global'
 export async function createTask(req: Request, res: Response) {
   try {
     if (Object.keys(req.body).length === 0) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
@@ -24,21 +27,21 @@ export async function createTask(req: Request, res: Response) {
       !task.title ||
       !task.project
     ) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     if (!task.project?.id && !task.project?.name) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     if (task.assignee && task.assignee.length > 0) {
       if (!checkObjects(task.assignee)) {
-        return formatResponse({
-          codice: 'E04',
+        return formatResponseError({
+          message: 'Bad request',
           res,
         })
       }
@@ -46,8 +49,22 @@ export async function createTask(req: Request, res: Response) {
     const tasks = readFile('tasks') as Task[]
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
+      if (!includes('tasks', 'PriorityTask', task.priority)) {
+        return formatResponseError({
+          message: 'Forbidden',
+          res,
+        })
+      }
+      if (!includes('tasks', 'StatusTask', task.status)) {
+        return formatResponseError({
+          message: 'Forbidden',
+          res,
+        })
+      }
       const newTasks: Task = {
         ...task,
+        priority: task.priority ?? 'LOW',
+        status: task.status ?? 'BACKLOG',
         owner: { id: myUser.id },
         id: generateLongId(),
         createdAt: new Date().toISOString(),
@@ -56,20 +73,20 @@ export async function createTask(req: Request, res: Response) {
       tasks.push(newTasks)
       if (writeFile(tasks, 'tasks')) {
         return formatResponse({
-          codice: 'S15',
+          message: 'CREATED',
           res,
           tasks: [newTasks],
         })
       }
     }
-    return formatResponse({
-      codice: 'E04',
+    return formatResponseError({
+      message: 'Bad request',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -82,22 +99,22 @@ export async function getTasks(req: Request, res: Response) {
       const tasks = readFile('tasks') as Task[]
       const myTasks = tasks.filter((t) => t.owner.id === myUser.id)
       return formatResponse({
-        codice: 'S16',
+        message: 'GET',
         res,
         tasks: myTasks,
       })
     }
     return res.status(200).json(
       formatResponse({
-        codice: 'S16',
+        message: 'GET',
         res,
         tasks: [],
       })
     )
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -105,25 +122,34 @@ export async function getTasks(req: Request, res: Response) {
 
 export async function getTask(req: Request, res: Response) {
   try {
+    const { id } = req.params
+    if (!id) {
+      return formatResponseError({
+        message: 'Bad request',
+        res,
+      })
+    }
     const myUser = getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       const tasks = readFile('tasks') as Task[]
-      const myTasks = tasks.filter((t) => t.owner.id === myUser.id)
+      const myTasks = tasks.filter(
+        (t) => t.owner.id === myUser.id && t.id === id
+      )
       return formatResponse({
-        codice: 'S16',
+        message: 'GET',
         res,
         tasks: myTasks,
       })
     }
     return formatResponse({
-      codice: 'S16',
+      message: 'GET',
       res,
       projects: [],
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -133,31 +159,31 @@ export async function deleteTask(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     const tasks = readFile('tasks') as Task[]
     const tasksSearch = tasks.filter((t: Task) => t.id === id)
     if (tasksSearch.length === 0) {
-      return formatResponse({
-        codice: 'W07',
+      return formatResponseWarning({
+        message: 'Resource not found',
         res,
       })
     }
-    const newTasks = tasksSearch.filter((t: Task) => t.id !== id)
+    const newTasks = tasks.filter((t: Task) => t.id !== id)
     if (!writeFile(newTasks, 'tasks')) {
       throw new Error('Error deleting task')
     }
     return formatResponse({
-      codice: 'S17',
+      message: 'DELETED',
       res,
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }
@@ -167,28 +193,28 @@ export async function updateTask(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (Object.keys(req.body).length === 0) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     const { task } = req.body as { task: Task }
     if (!id || !task || Object.keys(task).length === 0) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     if (!task.project || !task.project?.id || !task.project?.name) {
-      return formatResponse({
-        codice: 'E04',
+      return formatResponseError({
+        message: 'Bad request',
         res,
       })
     }
     if (task.assignee && task.assignee.length > 0) {
       if (!checkObjects(task.assignee)) {
-        return formatResponse({
-          codice: 'E04',
+        return formatResponseError({
+          message: 'Bad request',
           res,
         })
       }
@@ -196,8 +222,20 @@ export async function updateTask(req: Request, res: Response) {
     const tasks = readFile('tasks') as Task[]
     const tasksSearch = tasks.filter((t: Task) => t.id === id)
     if (tasksSearch.length === 0) {
-      return formatResponse({
-        codice: 'W07',
+      return formatResponseWarning({
+        message: 'Resource not found',
+        res,
+      })
+    }
+    if (!includes('tasks', 'PriorityTask', task.priority)) {
+      return formatResponseError({
+        message: 'Forbidden',
+        res,
+      })
+    }
+    if (!includes('tasks', 'StatusTask', task.status)) {
+      return formatResponseError({
+        message: 'Forbidden',
         res,
       })
     }
@@ -211,14 +249,14 @@ export async function updateTask(req: Request, res: Response) {
       throw new Error('Error updating task')
     }
     return formatResponse({
-      codice: 'S11',
+      message: 'UPDATED',
       res,
       tasks: [newTask],
     })
   } catch (error) {
     console.log('ERROR!', error)
-    return formatResponse({
-      codice: 'E02',
+    return formatResponseError({
+      message: 'Internal server error',
       res,
     })
   }

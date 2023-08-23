@@ -20,11 +20,14 @@ const Table = ({ columns, rows, module }: MyTableFlowbiteProps) => {
   return (
     <TableFlowbite hoverable className="w-full">
       <TableFlowbite.Head>
-        {columns.map((column) => (
-          <TableFlowbite.HeadCell key={`TableFlowbite-head-${column.api}`}>
-            {column.label}
-          </TableFlowbite.HeadCell>
-        ))}
+        {columns.map((column) => {
+          if (column.api === 'description') return <></>
+          return (
+            <TableFlowbite.HeadCell key={`TableFlowbite-head-${column.api}`}>
+              {column.label}
+            </TableFlowbite.HeadCell>
+          )
+        })}
       </TableFlowbite.Head>
       <TableFlowbite.Body className="divide-y">
         {rows.map((row, index) => (
@@ -34,6 +37,7 @@ const Table = ({ columns, rows, module }: MyTableFlowbiteProps) => {
             onClick={() => navigate(`/${module}/${row.id}`)}
           >
             {columns.map((column) => {
+              if (column.api === 'description') return <></>
               if (module === 'project' && column.api === 'id') {
                 return (
                   <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
@@ -108,6 +112,30 @@ const Table = ({ columns, rows, module }: MyTableFlowbiteProps) => {
                 return (
                   <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
                     {users.map((user) => user.name).join(', ')}
+                  </TableFlowbite.Cell>
+                )
+              }
+              if (module === 'task' && column.api === 'assignee') {
+                const users = row[column.api] as { id: string; name: string }[]
+                if (users === null)
+                  return (
+                    <TableFlowbite.Cell
+                      key={`TableFlowbite-body-${column.api}`}
+                    >
+                      -
+                    </TableFlowbite.Cell>
+                  )
+                return (
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
+                    {users.map((user) => user.name).join(', ')}
+                  </TableFlowbite.Cell>
+                )
+              }
+              if (module === 'task' && column.api === 'project') {
+                const project = row[column.api] as { id: string; name: string }
+                return (
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
+                    {project.name}
                   </TableFlowbite.Cell>
                 )
               }

@@ -44,7 +44,9 @@ export type Role =
   | 'SENIOR SOLUTION'
   | 'JUNIOR DEVELOPER'
   | 'SENIOR DEVELOPER'
-  | 'JUNIOR STAGE DEVELOPER'
+  | 'JUNIOR STAGE'
+  | 'SENIOR STAGE'
+  | 'OTHER'
   | 'NONE'
 
 export interface Task {

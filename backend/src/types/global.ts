@@ -1,14 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Role = 'ADMIN' | 'USER' | 'GUEST' | 'INACTIVE'
-export type RoleMember =
-  | 'TECHNICAL LEADER'
-  | 'SENIOR PROJECT MANAGER'
-  | 'JUNIOR PROJECT MANAGER'
-  | 'JUNIOR SOLUTION'
-  | 'SENIOR SOLUTION'
-  | 'JUNIOR DEVELOPER'
-  | 'SENIOR DEVELOPER'
-  | 'JUNIOR STAGE'
-  | 'NONE'
 export type State = 'OPENED' | 'IN PROGRESS' | 'CLOSED' | 'DELETED'
 export type StatusToken = 'ACTIVE' | 'INACTIVE'
 export type Status =
@@ -21,91 +12,51 @@ export type Status =
   | 'CLOSED'
   | 'REOPENED'
   | 'PENDING'
-
 export type Priority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
-export type Type =
-  | 'system integration'
-  | 'widget'
-  | 'webservice'
-  | 'serverless'
-  | 'cf-deluge'
-  | 'configuration'
-  | 'bug-fix'
-  | 'call external'
-  | 'call internal'
-  | 'others'
-export type Service = 'Zoho' | 'Freshworks' | 'Hubspot' | 'Zendesk' | 'others'
-export type SubService =
-  | 'Zoho CRM'
-  | 'Zoho Creator'
-  | 'Zoho Desk'
-  | 'Zoho Analitycs'
-  | 'Freshdesk'
-  | 'Freshservice'
-  | 'FreshCaller'
-  | 'Zendesk Support'
-  | 'Zendesk Sell'
-  | 'Zendesk Guide'
-  | 'others'
 
 export interface Task {
-  [key: string]:
-    | string
-    | { id: string; name: string }[]
-    | null
-    | { id: string }
-    | Priority
-    | Type
-    | Status
-    | number
-  id: string
-  owner: { id: string }
-  title: string
+  [key: string]: any
+  id: string //mandatory
+  owner: { id: string } //mandatory
+  title: string //mandatory
   description: string | null
-  status: Status
+  status: Status //mandatory
   createdAt: string
   updatedAt: string
-  priority: Priority | null
+  priority: Priority //mandatory
   deadline: string | null
   project: { id: string; name: string }
   assignee: { id: string; name: string }[] | null
-  type: Type | null
+  type: string | null
 }
 
 export interface Member {
-  [key: string]: string | RoleMember | null | { id: string }
-  id: string
-  owner: { id: string }
+  [key: string]: any
+  id: string //mandatory
+  owner: { id: string } //mandatory
   first_name: string
   last_name: string
   full_name: string
-  email: string
-  role: RoleMember
+  email: string //mandatory
+  role: string
 }
 
 export interface Project {
-  [key: string]:
-    | string
-    | Service
-    | SubService
-    | State
-    | null
-    | { id: string }
-    | { id: string; name: string }[]
-  id: string
-  owner: { id: string }
-  name: string
+  [key: string]: any
+  id: string //mandatory
+  owner: { id: string } //mandatory
+  name: string //mandatory
   description: string | null
   createdAt: string
   updatedAt: string
-  members: { id: string; name: string }[] | null
-  service: Service | null
-  subService: SubService | null
-  state: State
+  members: { id: string; name: string }[] //mandatory
+  service: string | null
+  subService: string | null
+  state: State //mandatory
 }
 
 export interface User {
-  [key: string]: string | Role
+  [key: string]: any
   id: string
   username: string
   hash: string
@@ -116,7 +67,7 @@ export interface User {
 }
 
 export interface Token {
-  [key: string]: string | StatusToken
+  [key: string]: any
   token: string
   expiresAt: string
   statusToken: StatusToken
@@ -124,39 +75,12 @@ export interface Token {
   createdAt: string
 }
 
-export type Codice =
-  | 'S01'
-  | 'S02'
-  | 'S03'
-  | 'S04'
-  | 'S05'
-  | 'S06'
-  | 'S07'
-  | 'S08'
-  | 'S09'
-  | 'S10'
-  | 'S11'
-  | 'S12'
-  | 'S13'
-  | 'S14'
-  | 'S15'
-  | 'S16'
-  | 'S17'
-  | 'S18'
-export type CodiceWarning =
-  | 'W01'
-  | 'W02'
-  | 'W03'
-  | 'W04'
-  | 'W05'
-  | 'W06'
-  | 'W07'
-export type CodiceErrore = 'E01' | 'E02' | 'E03' | 'E04' | 'E05'
 export interface ResponseServer {
   projects?: Project[]
   tasks?: Task[]
   members?: Member[]
   error?: string
+  warning?: string
   message?: string
   statusText: 'SUCCESS' | 'ERROR' | 'WARNING'
   status: 200 | 202 | 201 | 204 | 400 | 401 | 403 | 404 | 409 | 500 | 501
@@ -165,4 +89,20 @@ export interface ResponseServer {
   profiles?: User[]
   owner?: { id: string; name: string }
   token?: string
+}
+
+export type Module = 'projects' | 'tasks' | 'members'
+export interface Search {
+  module: Module
+  field: string
+  search: string
+  where:
+    | 'equal'
+    | 'contain'
+    | 'start'
+    | 'end'
+    | 'greater'
+    | 'less'
+    | 'greaterEqual'
+    | 'lessEqual'
 }
