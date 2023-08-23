@@ -32,8 +32,8 @@ const Login = () => {
         createdAt: new Date().getTime(),
       }
       setAccess(access)
-      setAccessState(access)
       setTimeout(() => {
+        setAccessState(access)
         navigate('/')
       }, 5000)
     }

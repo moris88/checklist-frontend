@@ -149,7 +149,7 @@ export function deleteProject(req: Request, res: Response) {
         res,
       })
     }
-    const newProjects = projectsSearch.filter((p: Project) => p.id !== id)
+    const newProjects = projects.filter((p: Project) => p.id !== id)
     if (!writeFile(newProjects, 'projects')) {
       throw new Error('Error deleting project')
     }

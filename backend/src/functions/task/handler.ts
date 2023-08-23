@@ -163,7 +163,7 @@ export async function deleteTask(req: Request, res: Response) {
         res,
       })
     }
-    const newTasks = tasksSearch.filter((t: Task) => t.id !== id)
+    const newTasks = tasks.filter((t: Task) => t.id !== id)
     if (!writeFile(newTasks, 'tasks')) {
       throw new Error('Error deleting task')
     }
