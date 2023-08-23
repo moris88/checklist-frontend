@@ -93,7 +93,7 @@ const List = ({ module }: ListProps) => {
       <section className="mt-5">
         {module === 'member' && (
           <div className="px-4 " style={{ maxWidth: '100vw' }}>
-            <div className="overflow-y-scroll overflow-x-scroll">
+            <div className="overflow-auto">
               <Table
                 columns={[
                   { label: 'N.', api: 'id' },
@@ -109,18 +109,18 @@ const List = ({ module }: ListProps) => {
         )}
         {module === 'project' && (
           <div className="px-4 " style={{ maxWidth: '100vw' }}>
-            <div className="overflow-y-scroll overflow-x-scroll">
+            <div className="overflow-auto">
               <Table
                 columns={[
                   { label: 'N.', api: 'id' },
                   { label: 'Name', api: 'name' },
                   { label: 'Description', api: 'description' },
-                  { label: 'Created At', api: 'createdAt' },
-                  { label: 'Updated At', api: 'updatedAt' },
                   { label: 'Members', api: 'members' },
                   { label: 'Service', api: 'service' },
                   { label: 'Sub Service', api: 'subService' },
                   { label: 'State', api: 'state' },
+                  { label: 'Created At', api: 'createdAt' },
+                  { label: 'Updated At', api: 'updatedAt' },
                 ]}
                 rows={projects ?? []}
                 module={'project'}
@@ -130,20 +130,20 @@ const List = ({ module }: ListProps) => {
         )}
         {module === 'task' && (
           <div className="px-4 " style={{ maxWidth: '100vw' }}>
-            <div className="overflow-y-scroll overflow-x-scroll">
+            <div className="overflow-auto">
               <Table
                 columns={[
                   { label: 'N.', api: 'id' },
                   { label: 'Title', api: 'title' },
                   { label: 'Description', api: 'description' },
-                  { label: 'Created At', api: 'createdAt' },
-                  { label: 'Updated At', api: 'updatedAt' },
-                  { label: 'Deadline', api: 'deadline' },
                   { label: 'Assignee', api: 'assignee' },
                   { label: 'Project', api: 'projectID' },
                   { label: 'Type', api: 'type' },
                   { label: 'Priority', api: 'priority' },
                   { label: 'Status', api: 'status' },
+                  { label: 'Deadline', api: 'deadline' },
+                  { label: 'Created At', api: 'createdAt' },
+                  { label: 'Updated At', api: 'updatedAt' },
                 ]}
                 rows={tasks ?? []}
                 module={'task'}

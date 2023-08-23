@@ -79,7 +79,6 @@ const FormTask = ({ defaultValues, id }: FormTaskProps) => {
   }, [defaultValues, reset])
 
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
     if (id) {
       setRequest({
         url: `/task/${id}`,
@@ -131,9 +130,9 @@ const FormTask = ({ defaultValues, id }: FormTaskProps) => {
     )
   }
 
-  const handleChangeProject = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log(e.target.value)
-  }
+  // const handleChangeProject = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  //   console.log(e.target.value)
+  // }
 
   return (
     <form className="flex flex-col gap-2 p-4" onSubmit={onSubmit}>
@@ -161,7 +160,6 @@ const FormTask = ({ defaultValues, id }: FormTaskProps) => {
         {...register('project', {
           required: { value: true, message: 'Mandatory Project' },
         })}
-        onChange={handleChangeProject}
         disabled={id ? true : false}
       >
         <option value={''}>{'--NONE--'}</option>
@@ -191,7 +189,10 @@ const FormTask = ({ defaultValues, id }: FormTaskProps) => {
                 value ? (value as { id: string; name: string }[]) : []
               }
               placeholder="Selected assigned"
-              onChange={onChange}
+              onChange={(e) => {
+                console.log(e)
+                onChange(e)
+              }}
             />
           )
         }}

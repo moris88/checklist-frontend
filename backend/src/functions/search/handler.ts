@@ -63,13 +63,79 @@ export function search(req: Request, res: Response) {
         }
         let searchProjects: Project[] = []
         if (where === 'equal') {
-          searchProjects = myProjects.filter((p) => p[field] === search)
+          if (field.includes('members.name')) {
+            searchProjects = myProjects.filter(
+              (p) =>
+                p.members.filter(
+                  (el: { name: string; id: string }) => el.name === search
+                ).length > 0
+            )
+          } else if (field.includes('members.id')) {
+            searchProjects = myProjects.filter(
+              (p) =>
+                p.members.filter(
+                  (el: { name: string; id: string }) => el.id === search
+                ).length > 0
+            )
+          } else {
+            searchProjects = myProjects.filter((p) => p[field] === search)
+          }
         } else if (where === 'contain') {
-          searchProjects = myProjects.filter((p) => p[field].includes(search))
+          if (field.includes('members.name')) {
+            searchProjects = myProjects.filter(
+              (p) =>
+                p.members.filter((el: { name: string; id: string }) =>
+                  el.name.includes(search)
+                ).length > 0
+            )
+          } else if (field.includes('members.id')) {
+            searchProjects = myProjects.filter(
+              (p) =>
+                p.members.filter((el: { name: string; id: string }) =>
+                  el.id.includes(search)
+                ).length > 0
+            )
+          } else {
+            searchProjects = myProjects.filter((p) => p[field].includes(search))
+          }
         } else if (where === 'start') {
-          searchProjects = myProjects.filter((p) => p[field].startsWith(search))
+          if (field.includes('members.name')) {
+            searchProjects = myProjects.filter(
+              (p) =>
+                p.members.filter((el: { name: string; id: string }) =>
+                  el.name.startsWith(search)
+                ).length > 0
+            )
+          } else if (field.includes('members.id')) {
+            searchProjects = myProjects.filter(
+              (p) =>
+                p.members.filter((el: { name: string; id: string }) =>
+                  el.id.startsWith(search)
+                ).length > 0
+            )
+          } else {
+            searchProjects = myProjects.filter((p) =>
+              p[field].startsWith(search)
+            )
+          }
         } else if (where === 'end') {
-          searchProjects = myProjects.filter((p) => p[field].endsWith(search))
+          if (field.includes('members.name')) {
+            searchProjects = myProjects.filter(
+              (p) =>
+                p.members.filter((el: { name: string; id: string }) =>
+                  el.name.endsWith(search)
+                ).length > 0
+            )
+          } else if (field.includes('members.id')) {
+            searchProjects = myProjects.filter(
+              (p) =>
+                p.members.filter((el: { name: string; id: string }) =>
+                  el.id.endsWith(search)
+                ).length > 0
+            )
+          } else {
+            searchProjects = myProjects.filter((p) => p[field].endsWith(search))
+          }
         } else if (where === 'greater') {
           searchProjects = myProjects.filter((t) => t[field] > search)
         } else if (where === 'less') {

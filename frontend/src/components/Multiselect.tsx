@@ -64,7 +64,7 @@ const Multiselect = ({
 
   const handleRemoveElement = (e: { id: string; name: string }): void => {
     setItems((prev) => prev.filter((el) => el.id !== e.id))
-    if (onChange) onChange(items)
+    if (onChange) onChange(items.filter((el) => el.id !== e.id))
   }
 
   const handleDeleteAll = (): void => {
@@ -79,8 +79,10 @@ const Multiselect = ({
       setShowMaxItems(true)
       return
     }
+    console.log('e', e)
     setItems((prev) => [...prev, e])
-    if (onChange) onChange(items)
+    console.log('items', items)
+    if (onChange) onChange([...items, e])
   }
 
   return (

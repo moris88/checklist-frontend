@@ -205,10 +205,6 @@ const View = ({ module }: ViewProps) => {
         <div className="p-4 w-full">
           <ul className="w-full flex flex-col gap-5 p-10 rounded-lg bg-slate-600">
             <li>
-              <span className="font-bold">Full Name: </span>
-              {members[0].full_name}
-            </li>
-            <li>
               <span className="font-bold">First Name: </span>
               {members[0].first_name}
             </li>
