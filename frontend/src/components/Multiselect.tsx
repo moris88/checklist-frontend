@@ -25,6 +25,7 @@ const Multiselect = ({
   messageMaxItems,
   onChange,
 }: MultiselectProps): JSX.Element => {
+  console.log('defaultValues', defaultValues)
   const [items, setItems] = useState<{ id: string; name: string }[]>(
     defaultValues ?? []
   )

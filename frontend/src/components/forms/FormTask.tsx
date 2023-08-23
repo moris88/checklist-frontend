@@ -74,7 +74,11 @@ const FormTask = ({ defaultValues, id }: FormTaskProps) => {
 
   React.useEffect(() => {
     if (defaultValues) {
-      reset(defaultValues)
+      console.log('defaultValues', defaultValues)
+      reset({
+        ...defaultValues,
+        project: `{"id": "${defaultValues.project.id}", "name": "${defaultValues.project.name}"}`,
+      })
     }
   }, [defaultValues, reset])
 

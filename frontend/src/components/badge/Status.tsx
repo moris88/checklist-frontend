@@ -1,17 +1,18 @@
 import { twMerge } from 'tailwind-merge'
 
 interface StatusProps {
+  size?: 'small'
   children: React.ReactNode | null
 }
 
-const Status = ({ children }: StatusProps) => {
+const Status = ({ size, children }: StatusProps) => {
   if (!children) {
     return <span>{`--NONE--`}</span>
   }
   return (
     <span
       className={twMerge(
-        'p-2 border rounded-lg font-bold',
+        `${size === 'small' ? 'px-2' : 'p-2'} border rounded-lg font-bold`,
         children === 'BACKLOG'
           ? 'bg-gray-500  text-black'
           : children === 'OPEN'

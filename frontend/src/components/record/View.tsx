@@ -11,6 +11,7 @@ import {
   TrashIcon,
 } from '@heroicons/react/24/outline'
 import { Deadline, Priority, State, Status } from '../badge'
+import Table from '../Table'
 
 interface ViewProps {
   module: Module
@@ -42,8 +43,6 @@ const View = ({ module }: ViewProps) => {
     endpoint: `/task/${id}`,
     skip: skipTask,
   })
-
-  console.log('responseProjects', responseProjects)
 
   React.useEffect(() => {
     if (responseTasks?.tasks?.length && responseTasks.tasks.length > 0) {
@@ -109,123 +108,265 @@ const View = ({ module }: ViewProps) => {
       </div>
       {module === 'task' && tasks.length > 0 && (
         <div className="p-4 w-full">
-          <ul className="w-full flex flex-col gap-5 p-10 rounded-lg bg-slate-600">
-            <li>
-              <span className="font-bold">Title: </span>
-              {tasks[0].title}
-            </li>
-            <li>
-              <span className="font-bold">Description: </span>
-              {tasks[0].description}
-            </li>
-            <li>
-              <span className="font-bold">Assignee: </span>
-              {tasks[0].assignee && tasks[0].assignee?.length > 0
-                ? tasks[0].assignee?.join(', ')
-                : '--NONE--'}
-            </li>
-            <li>
-              <span className="font-bold">Type: </span>
-              {tasks[0].type}
-            </li>
-            <li>
-              <span className="font-bold">DeadLine: </span>
-              <Deadline>
-                {moment(tasks[0].deadline).format('DD/MM/YYYY')}
-              </Deadline>
-            </li>
-            <li>
-              <span className="font-bold">Priority: </span>
-              <Priority>{tasks[0].priority}</Priority>
-            </li>
-            <li>
-              <span className="font-bold">Status: </span>
-              <Status>{tasks[0].status}</Status>
-            </li>
-            <li>
-              <span className="font-bold">Project: </span>
-              <span className="hover:border hover:rounded-lg hover:p-2 px-2 hover:bg-gray-400">
-                <Link to={`/project/${projects?.[0]?.id ?? ''}`}>
-                  {projects?.[0]?.name ?? ''}
-                </Link>
-              </span>
-            </li>
-            <li>
-              <span className="font-bold">Created At: </span>
-              {moment(tasks[0].createdAt).format('DD/MM/YYYY HH:mm:ss')}
-            </li>
-            <li>
-              <span className="font-bold">Updated At: </span>
-              {moment(tasks[0].updatedAt).format('DD/MM/YYYY HH:mm:ss')}
-            </li>
-          </ul>
+          <table className="w-full rounded-lg bg-slate-600">
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Title: </span>
+              </td>
+              <td>{tasks[0].title}</td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Description: </span>
+              </td>
+              <td>{tasks[0].description}</td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Type: </span>
+              </td>
+              <td>{tasks[0].type}</td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">DeadLine: </span>
+              </td>
+              <td>
+                <Deadline size="small">
+                  {moment(tasks[0].deadline).format('DD/MM/YYYY')}
+                </Deadline>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Priority: </span>
+              </td>
+              <td>
+                <Priority size="small">{tasks[0].priority}</Priority>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Status: </span>
+              </td>
+              <td>
+                <Status size="small">{tasks[0].status}</Status>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Project: </span>
+              </td>
+              <td>
+                <span className="hover:font-bold hover:underline drop-shadow-lg">
+                  <Link to={`/project/${projects?.[0]?.id ?? ''}`}>
+                    {projects?.[0]?.name ?? ''}
+                  </Link>
+                </span>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Created At: </span>
+              </td>
+              <td>
+                {moment(tasks[0].createdAt).format('DD/MM/YYYY HH:mm:ss')}
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Updated At: </span>
+              </td>
+              <td>
+                {moment(tasks[0].updatedAt).format('DD/MM/YYYY HH:mm:ss')}
+              </td>
+            </tr>
+          </table>
           {/* <pre>{JSON.stringify(tasks[0], null, 5)}</pre> */}
           {/* <pre>{JSON.stringify(projects[0], null, 5)}</pre> */}
+          <div className="w-full flex flex-col gap-5 p-10 rounded-lg bg-slate-600 mt-3">
+            <div className="px-4 " style={{ maxWidth: '100vw' }}>
+              <div className="overflow-auto">
+                <Table
+                  columns={[
+                    { label: 'N.', api: 'id' },
+                    { label: 'Full Name', api: 'full_name' },
+                    { label: 'Email', api: 'email' },
+                    { label: 'Role', api: 'role' },
+                  ]}
+                  rows={[]}
+                  module={'member'}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
       {module === 'project' && projects.length !== 0 && (
         <div className="p-4 w-full">
-          <ul className="w-full flex flex-col gap-5 p-10 rounded-lg bg-slate-600">
-            <li>
-              <span className="font-bold">Name: </span>
-              {projects[0].name}
-            </li>
-            <li>
-              <span className="font-bold">Description: </span>
-              {projects[0].description}
-            </li>
-            <li>
-              <span className="font-bold">Service: </span>
-              {projects[0].service}
-            </li>
-            <li>
-              <span className="font-bold">Sub Service: </span>
-              {projects[0].subService}
-            </li>
-            <li>
-              <span className="font-bold">State: </span>
-              <State>{projects[0].state}</State>
-            </li>
-            <li>
-              <span className="font-bold">Created At: </span>
-              {moment(projects[0].createdAt).format('DD/MM/YYYY HH:mm:ss')}
-            </li>
-            <li>
-              <span className="font-bold">Updated At: </span>
-              {moment(projects[0].updatedAt).format('DD/MM/YYYY HH:mm:ss')}
-            </li>
-          </ul>
+          <table className="w-full rounded-lg bg-slate-600">
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Name: </span>
+              </td>
+              <td>{projects[0].name}</td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Description: </span>
+              </td>
+              <td>{projects[0].description}</td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Service: </span>
+              </td>
+              <td>{projects[0].service}</td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Sub Service: </span>
+              </td>
+              <td>{projects[0].subService}</td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">State: </span>
+              </td>
+              <td>
+                <State size="small">{projects[0].state}</State>
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Created At: </span>
+              </td>
+              <td>
+                {moment(projects[0].createdAt).format('DD/MM/YYYY HH:mm:ss')}
+              </td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Updated At: </span>
+              </td>
+              <td>
+                {moment(projects[0].updatedAt).format('DD/MM/YYYY HH:mm:ss')}
+              </td>
+            </tr>
+          </table>
           <div className="w-full flex flex-col gap-5 p-10 rounded-lg bg-slate-600 mt-3">
-            <span>TODO! MEMBERS</span>
+            <div className="px-4 " style={{ maxWidth: '100vw' }}>
+              <div className="overflow-auto">
+                <Table
+                  columns={[
+                    { label: 'N.', api: 'id' },
+                    { label: 'Full Name', api: 'full_name' },
+                    { label: 'Email', api: 'email' },
+                    { label: 'Role', api: 'role' },
+                  ]}
+                  rows={[]}
+                  module={'member'}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="w-full flex flex-col gap-5 p-10 rounded-lg bg-slate-600 mt-3">
+            <div className="px-4 " style={{ maxWidth: '100vw' }}>
+              <div className="overflow-auto">
+                <Table
+                  columns={[
+                    { label: 'N.', api: 'id' },
+                    { label: 'Title', api: 'title' },
+                    { label: 'Description', api: 'description' },
+                    { label: 'Assignee', api: 'assignee' },
+                    { label: 'Project', api: 'project' },
+                    { label: 'Type', api: 'type' },
+                    { label: 'Priority', api: 'priority' },
+                    { label: 'Status', api: 'status' },
+                    { label: 'Deadline', api: 'deadline' },
+                    { label: 'Created At', api: 'createdAt' },
+                    { label: 'Updated At', api: 'updatedAt' },
+                  ]}
+                  rows={[]}
+                  module={'task'}
+                />
+              </div>
+            </div>
           </div>
           {/* <pre>{JSON.stringify(projects[0], null, 5)}</pre> */}
         </div>
       )}
       {module === 'member' && members.length !== 0 && (
         <div className="p-4 w-full">
-          <ul className="w-full flex flex-col gap-5 p-10 rounded-lg bg-slate-600">
-            <li>
-              <span className="font-bold">First Name: </span>
-              {members[0].first_name}
-            </li>
-            <li>
-              <span className="font-bold">Last Name: </span>
-              {members[0].last_name}
-            </li>
-            <li>
-              <span className="font-bold">Email: </span>
-              {members[0].email}
-            </li>
-            <li>
-              <span className="font-bold">Role: </span>
-              {members[0].role}
-            </li>
-          </ul>
+          <table className="w-full rounded-lg bg-slate-600">
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">First Name: </span>
+              </td>
+              <td>{members[0].first_name}</td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Last Name: </span>
+              </td>
+              <td>{members[0].last_name}</td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Email: </span>
+              </td>
+              <td>{members[0].email}</td>
+            </tr>
+            <tr>
+              <td align="right">
+                <span className="font-bold mr-4">Role: </span>
+              </td>
+              <td>{members[0].role}</td>
+            </tr>
+          </table>
           <div className="w-full flex flex-col gap-5 p-10 rounded-lg bg-slate-600 mt-3">
-            <span>TODO! LIST PROJECTS</span>
+            <div className="px-4 " style={{ maxWidth: '100vw' }}>
+              <div className="overflow-auto">
+                <Table
+                  columns={[
+                    { label: 'N.', api: 'id' },
+                    { label: 'Name', api: 'name' },
+                    { label: 'Description', api: 'description' },
+                    { label: 'Members', api: 'members' },
+                    { label: 'Service', api: 'service' },
+                    { label: 'Sub Service', api: 'subService' },
+                    { label: 'State', api: 'state' },
+                    { label: 'Created At', api: 'createdAt' },
+                    { label: 'Updated At', api: 'updatedAt' },
+                  ]}
+                  rows={[]}
+                  module={'project'}
+                />
+              </div>
+            </div>
           </div>
           <div className="w-full flex flex-col gap-5 p-10 rounded-lg bg-slate-600 mt-3">
-            <span>TODO! LIST TASKS</span>
+            <div className="px-4 " style={{ maxWidth: '100vw' }}>
+              <div className="overflow-auto">
+                <Table
+                  columns={[
+                    { label: 'N.', api: 'id' },
+                    { label: 'Title', api: 'title' },
+                    { label: 'Description', api: 'description' },
+                    { label: 'Assignee', api: 'assignee' },
+                    { label: 'Project', api: 'project' },
+                    { label: 'Type', api: 'type' },
+                    { label: 'Priority', api: 'priority' },
+                    { label: 'Status', api: 'status' },
+                    { label: 'Deadline', api: 'deadline' },
+                    { label: 'Created At', api: 'createdAt' },
+                    { label: 'Updated At', api: 'updatedAt' },
+                  ]}
+                  rows={[]}
+                  module={'task'}
+                />
+              </div>
+            </div>
           </div>
           {/* <pre>{JSON.stringify(members[0], null, 5)}</pre> */}
         </div>

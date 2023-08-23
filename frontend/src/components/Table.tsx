@@ -131,6 +131,14 @@ const Table = ({ columns, rows, module }: MyTableFlowbiteProps) => {
                   </TableFlowbite.Cell>
                 )
               }
+              if (module === 'task' && column.api === 'project') {
+                const project = row[column.api] as { id: string; name: string }
+                return (
+                  <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
+                    {project.name}
+                  </TableFlowbite.Cell>
+                )
+              }
               return (
                 <TableFlowbite.Cell key={`TableFlowbite-body-${column.api}`}>
                   {row[column.api] as string}

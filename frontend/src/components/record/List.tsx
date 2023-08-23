@@ -137,7 +137,7 @@ const List = ({ module }: ListProps) => {
                   { label: 'Title', api: 'title' },
                   { label: 'Description', api: 'description' },
                   { label: 'Assignee', api: 'assignee' },
-                  { label: 'Project', api: 'projectID' },
+                  { label: 'Project', api: 'project' },
                   { label: 'Type', api: 'type' },
                   { label: 'Priority', api: 'priority' },
                   { label: 'Status', api: 'status' },
