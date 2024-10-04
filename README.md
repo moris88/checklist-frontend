@@ -1,6 +1,4 @@
-# Checklist-Work
-
-work in progress!!!
+# Checklist-Frontend
 
 ## Description
 
@@ -19,4 +17,3 @@ This is a checklist app that allows users to create a checklist and add items to
 - [Tailwind CSS](https://tailwindcss.com/) - CSS Framework
 - [Flowbite](https://flowbite.com/react/) - CSS Framework
 - [Jotai](https://jotai.org/) - State container for JavaScript apps
-- [Express](https://expressjs.com/) - Node.js web application framework
