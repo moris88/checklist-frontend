@@ -1,9 +1,9 @@
 import * as crypto from 'crypto'
-import { StatusToken, Token, User } from '../types/global'
-import { readFileSystem, trimToken, writeFileSystem } from './utils'
+import { StatusToken, Token, User, Lookup } from '@/types'
+import { trimToken, readDatabase, writeDatabase } from './utils'
 
-export function getUsersToken(): User[] {
-  return readFileSystem('users') as User[]
+export async function getUsersToken(): Promise<User[]> {
+  return await readDatabase<User>('users')
 }
 
 export function checkPassword(
@@ -37,20 +37,22 @@ export function generateToken(): string {
   return buffer.toString('hex').slice(0, length)
 }
 
-export function registrationUser(user: User): boolean {
-  const users = readFileSystem('users') as User[]
+export async function registrationUser(user: User): Promise<boolean> {
+  const users = await readDatabase<User>('users')
   if (user) {
     if (users.find((u) => u.username === user.username)) {
       return false
     }
     users.push(user)
-    return writeFileSystem(users, 'users')
+    return await writeDatabase(users, 'users')
   }
   return false
 }
 
-export function generateTokenUser(userId: string): { token: string | null } {
-  const tokens = readFileSystem('tokens') as Token[]
+export async function generateTokenUser(
+  userId: string
+): Promise<{ token: string | null }> {
+  const tokens = await readDatabase<Token>('tokens')
   const expiresAt = new Date()
   expiresAt.setHours(expiresAt.getHours() + 1)
   const token: Token = {
@@ -61,15 +63,18 @@ export function generateTokenUser(userId: string): { token: string | null } {
     createdAt: new Date().toISOString(),
   }
   tokens.push(token)
-  if (writeFileSystem(tokens, 'tokens')) {
+  if (await writeDatabase(tokens, 'tokens')) {
     return { token: token.token }
   }
   return { token: null }
 }
 
-export function checkToken(token: string, skip: boolean): boolean {
+export async function checkToken(
+  token: string,
+  skip: boolean
+): Promise<boolean> {
   if (token === '') return false
-  const tokens = readFileSystem('tokens') as Token[]
+  const tokens = await readDatabase<Token>('tokens')
   if (!skip) {
     const today = new Date().getTime()
     const myTokens = tokens.filter(
@@ -78,7 +83,7 @@ export function checkToken(token: string, skip: boolean): boolean {
     const expiredTokens = tokens
       .filter((t) => new Date(t.expiresAt).getTime() <= today)
       .map((t) => ({ ...t, statusToken: 'INACTIVE' })) as Token[]
-    writeFileSystem([...myTokens, ...expiredTokens], 'tokens')
+    writeDatabase([...myTokens, ...expiredTokens], 'tokens')
     const myToken = trimToken(token)
     const tokenIndex = myTokens.findIndex((t) => t.token === myToken)
     return tokenIndex !== -1
@@ -88,25 +93,27 @@ export function checkToken(token: string, skip: boolean): boolean {
   return tokenIndex !== -1
 }
 
-export function getUserByToken(token: string): { id: string } | null {
-  const tokens = readFileSystem('tokens')
+export async function getUserByToken(token: string): Promise<Lookup | null> {
+  const tokens = await readDatabase<Token>('tokens')
   const tokenIndex = tokens.findIndex(
     (t) => t.token === trimToken(token) && t.statusToken === 'ACTIVE'
   )
   if (tokenIndex !== -1) {
     const { userID } = tokens[tokenIndex]
-    const users = readFileSystem('users')
+    const users = await readDatabase<User>('users')
     const userIndex = users.findIndex((u) => u.id === userID)
     if (userIndex !== -1) {
       const user = users[userIndex]
-      return { id: user.id }
+      return { id: user.id, name: user.name }
     }
   }
   return null
 }
 
-export function regenerateToken(token: string): { token: string | null } {
-  const tokens = readFileSystem('tokens') as Token[]
+export async function regenerateToken(
+  token: string
+): Promise<{ token: string | null }> {
+  const tokens = await readDatabase<Token>('tokens')
   const tokensSearch = tokens.filter(
     (t) => t.token === trimToken(token) && t.statusToken === 'INACTIVE'
   )
@@ -116,11 +123,11 @@ export function regenerateToken(token: string): { token: string | null } {
     const newTokens = tokens.filter(
       (t) => t.statusToken === 'INACTIVE' && t.userID === userID
     )
-    const { token: newToken } = generateTokenUser(userID)
+    const { token: newToken } = await generateTokenUser(userID)
     if (!newToken) return { token: null }
     newTokens.push({ ...token, statusToken: 'ACTIVE', token: newToken })
-    writeFileSystem(newTokens, 'tokens')
-    const users = readFileSystem('users') as User[]
+    await writeDatabase(newTokens, 'tokens')
+    const users = await readDatabase<User>('users')
     const user = users.find((u) => u.id === userID)
     removeToken(user?.username ?? '', 'INACTIVE')
     return { token: newToken }
@@ -128,14 +135,17 @@ export function regenerateToken(token: string): { token: string | null } {
   return { token: null }
 }
 
-export function removeToken(username: string, status: StatusToken): boolean {
-  const tokens = readFileSystem('tokens') as Token[]
-  const users = readFileSystem('users') as User[]
+export async function removeToken(
+  username: string,
+  status: StatusToken
+): Promise<boolean> {
+  const tokens = await readDatabase<Token>('tokens')
+  const users = await readDatabase<User>('users')
   const idUser = users.find((u) => u.username === username)?.id ?? null
   if (!idUser) return false
   const newTokens1 = tokens.filter(
     (t) => t.userID === idUser && t.statusToken !== status
   )
   const newTokens2 = tokens.filter((t) => t.userID !== idUser)
-  return writeFileSystem([...newTokens1, ...newTokens2], 'tokens')
+  return writeDatabase([...newTokens1, ...newTokens2], 'tokens')
 }

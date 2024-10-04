@@ -1,4 +1,4 @@
-import { Member, Project, ResponseServer, Task, User } from '../types/global'
+import { Member, Project, ResponseServer, Task, User } from '@/types'
 import { Response } from 'express'
 
 /*

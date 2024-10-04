@@ -3,12 +3,12 @@ import {
   formatResponseError,
   formatResponseWarning,
   getUserByToken,
-  readFile,
-} from '../../libs'
+  readDatabase,
+} from '@/libs'
 import { Request, Response } from 'express'
-import { Member, Project, Search, Task } from '../../types/global'
+import { Member, Project, Search, Task } from '@/types'
 
-export function search(req: Request, res: Response) {
+export async function search(req: Request, res: Response) {
   try {
     const { body } = req
     console.log('body', body)
@@ -19,7 +19,7 @@ export function search(req: Request, res: Response) {
       })
     }
     const { module, field, where, search } = body as Search
-    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    const myUser = await getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       if (!module || !field || !where || !search) {
         return formatResponseError({
@@ -53,7 +53,7 @@ export function search(req: Request, res: Response) {
         }
       }
       if (module === 'projects') {
-        const projects = readFile('projects') as Project[]
+        const projects = await readDatabase<Project>('projects')
         const myProjects = projects.filter((p) => p.owner.id === myUser.id)
         if (myProjects.length === 0) {
           return formatResponseWarning({
@@ -162,7 +162,7 @@ export function search(req: Request, res: Response) {
           projects: searchProjects,
         })
       } else if (module === 'members') {
-        const members = readFile('members') as Member[]
+        const members = await readDatabase<Member>('members')
         const myMembers = members.filter((m) => m.owner.id === myUser.id)
         if (myMembers.length === 0) {
           return formatResponseWarning({
@@ -205,7 +205,7 @@ export function search(req: Request, res: Response) {
           members: searchMembers,
         })
       } else if (module === 'tasks') {
-        const tasks = readFile('tasks') as Task[]
+        const tasks = await readDatabase<Task>('tasks')
         const myTasks = tasks.filter((t) => t.owner.id === myUser.id)
         if (myTasks.length === 0) {
           return formatResponseWarning({

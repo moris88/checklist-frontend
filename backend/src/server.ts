@@ -19,6 +19,7 @@ import {
   register,
   login,
   logout,
+  refreshToken,
   getProfiles,
   getProfile,
   updateProfile,
@@ -28,8 +29,7 @@ import {
   getMember,
   getTask,
   search,
-} from './functions'
-import { refreshToken } from './functions/auth/handler'
+} from './controllers'
 
 const app = express() // create a new express application instance
 dotenv.config() // load .env file

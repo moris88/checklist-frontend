@@ -10,18 +10,18 @@ import {
   formatResponseWarning,
   formatResponse,
   generateLongId,
-  readFileSystem,
-  writeFileSystem,
-} from '../../libs'
+  readDatabase,
+  writeDatabase,
+} from '@/libs'
 import { Request, Response } from 'express'
-import { User } from '../../types/global'
+import { User } from '@/types'
 
-export function register(req: Request, res: Response) {
+export async function register(req: Request, res: Response) {
   try {
     const { username, password } = req.body
     const { hash, salt } = generatePassword(password)
     if (
-      registrationUser({
+      await registrationUser({
         id: generateLongId(),
         username,
         hash,
@@ -49,10 +49,10 @@ export function register(req: Request, res: Response) {
   }
 }
 
-export function login(req: Request, res: Response) {
+export async function login(req: Request, res: Response) {
   try {
     const { username, password } = req.body
-    const users = getUsersToken()
+    const users = await getUsersToken()
     const user = users.find(
       (user) => user.username === username && user.role !== 'INACTIVE'
     )
@@ -61,7 +61,7 @@ export function login(req: Request, res: Response) {
       if (access) {
         removeToken(username, 'ACTIVE')
         removeToken(username, 'INACTIVE')
-        const { token } = generateTokenUser(user.id)
+        const { token } = await generateTokenUser(user.id)
         if (token) {
           return formatResponse({
             message: 'OK',
@@ -89,12 +89,12 @@ export function login(req: Request, res: Response) {
   }
 }
 
-export function refreshToken(req: Request, res: Response) {
+export async function refreshToken(req: Request, res: Response) {
   try {
     const { userId } = req.body
     const bearerToken = req.headers?.authorization ?? ''
     if (bearerToken && userId) {
-      const { token: newToken } = regenerateToken(bearerToken)
+      const { token: newToken } = await regenerateToken(bearerToken)
       if (newToken) {
         return formatResponse({
           message: 'OK',
@@ -120,10 +120,13 @@ export function refreshToken(req: Request, res: Response) {
   }
 }
 
-export function logout(req: Request, res: Response) {
+export async function logout(req: Request, res: Response) {
   try {
     const { username } = req.body
-    if (removeToken(username, 'ACTIVE') && removeToken(username, 'INACTIVE')) {
+    if (
+      (await removeToken(username, 'ACTIVE')) &&
+      (await removeToken(username, 'INACTIVE'))
+    ) {
       return formatResponse({
         message: 'OK',
         res,
@@ -142,9 +145,9 @@ export function logout(req: Request, res: Response) {
   }
 }
 
-export function getProfiles(req: Request, res: Response) {
+export async function getProfiles(req: Request, res: Response) {
   try {
-    const profiles = getUsersToken().map((u) => ({
+    const profiles = (await getUsersToken()).map((u) => ({
       id: u.id,
       username: u.username,
       role: u.role,
@@ -165,11 +168,11 @@ export function getProfiles(req: Request, res: Response) {
   }
 }
 
-export function getProfile(req: Request, res: Response) {
+export async function getProfile(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (id) {
-      const profiles = getUsersToken()
+      const profiles = await getUsersToken()
       const myProfiles = profiles
         .filter((u) => u.id === id)
         .map((u) => ({
@@ -204,7 +207,7 @@ export function getProfile(req: Request, res: Response) {
   }
 }
 
-export function deleteProfile(req: Request, res: Response) {
+export async function deleteProfile(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
@@ -213,7 +216,7 @@ export function deleteProfile(req: Request, res: Response) {
         res,
       })
     }
-    const users = readFileSystem('users') as User[]
+    const users = await readDatabase<User>('users')
     const usersSearch = users.filter((u: User) => u.id === id)
     if (usersSearch.length === 0) {
       return formatResponseWarning({
@@ -228,7 +231,7 @@ export function deleteProfile(req: Request, res: Response) {
       })
     }
     const newUsers = users.filter((u: User) => u.id !== id)
-    if (!writeFileSystem(newUsers, 'users')) {
+    if (!(await writeDatabase(newUsers, 'users'))) {
       throw new Error('Error deleting user')
     }
     return formatResponse({
@@ -244,7 +247,7 @@ export function deleteProfile(req: Request, res: Response) {
   }
 }
 
-export function updateProfile(req: Request, res: Response) {
+export async function updateProfile(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id || Object.keys(req.body).length === 0) {
@@ -254,7 +257,7 @@ export function updateProfile(req: Request, res: Response) {
       })
     }
     const { user } = req.body as { user: User }
-    const users = readFileSystem('users') as User[]
+    const users = await readDatabase<User>('users')
     const usersSearch = users.filter((u: User) => u.id === id)
     if (usersSearch.length === 0) {
       return formatResponseWarning({
@@ -269,7 +272,7 @@ export function updateProfile(req: Request, res: Response) {
     }
     const newUser = { ...usersSearch[0], ...myUser }
     const newUsers = [...users.filter((u: User) => u.id !== id), newUser]
-    if (!writeFileSystem(newUsers, 'users')) {
+    if (!(await writeDatabase(newUsers, 'users'))) {
       throw new Error('Error updating user')
     }
     return formatResponse({

@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import { checkToken } from '../../libs/token'
-import { formatResponseError } from '../../libs'
+import { checkToken, formatResponseError } from '@/libs'
 
-export function authorizationMiddleware(
+export async function authorizationMiddleware(
   req: Request,
   res: Response,
   next: NextFunction
@@ -17,7 +16,7 @@ export function authorizationMiddleware(
     const skip = ['/api/v1/refresh'].includes(req.path)
     const bearerToken = req.headers?.authorization ?? ''
     if (bearerToken) {
-      if (checkToken(bearerToken, skip)) {
+      if (await checkToken(bearerToken, skip)) {
         next()
         return
       }

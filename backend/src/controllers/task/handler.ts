@@ -5,12 +5,12 @@ import {
   formatResponse,
   generateLongId,
   getUserByToken,
-  readFile,
-  writeFile,
+  readDatabase,
+  writeDatabase,
   includes,
-} from '../../libs'
+} from '@/libs'
 import { Request, Response } from 'express'
-import { Task } from '../../types/global'
+import { Task } from '@/types'
 
 export async function createTask(req: Request, res: Response) {
   try {
@@ -46,8 +46,8 @@ export async function createTask(req: Request, res: Response) {
         })
       }
     }
-    const tasks = readFile('tasks') as Task[]
-    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    const tasks = await readDatabase<Task>('tasks')
+    const myUser = await getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       if (!includes('tasks', 'PriorityTask', task.priority)) {
         return formatResponseError({
@@ -65,13 +65,13 @@ export async function createTask(req: Request, res: Response) {
         ...task,
         priority: task.priority ?? 'LOW',
         status: task.status ?? 'BACKLOG',
-        owner: { id: myUser.id },
+        owner: { id: myUser.id, name: myUser.name },
         id: generateLongId(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
       tasks.push(newTasks)
-      if (writeFile(tasks, 'tasks')) {
+      if (await writeDatabase(tasks, 'tasks')) {
         return formatResponse({
           message: 'CREATED',
           res,
@@ -94,9 +94,9 @@ export async function createTask(req: Request, res: Response) {
 
 export async function getTasks(req: Request, res: Response) {
   try {
-    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    const myUser = await getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
-      const tasks = readFile('tasks') as Task[]
+      const tasks = await readDatabase<Task>('tasks')
       const myTasks = tasks.filter((t) => t.owner.id === myUser.id)
       return formatResponse({
         message: 'GET',
@@ -129,9 +129,9 @@ export async function getTask(req: Request, res: Response) {
         res,
       })
     }
-    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    const myUser = await getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
-      const tasks = readFile('tasks') as Task[]
+      const tasks = await readDatabase<Task>('tasks')
       const myTasks = tasks.filter(
         (t) => t.owner.id === myUser.id && t.id === id
       )
@@ -164,7 +164,7 @@ export async function deleteTask(req: Request, res: Response) {
         res,
       })
     }
-    const tasks = readFile('tasks') as Task[]
+    const tasks = await readDatabase<Task>('tasks')
     const tasksSearch = tasks.filter((t: Task) => t.id === id)
     if (tasksSearch.length === 0) {
       return formatResponseWarning({
@@ -173,7 +173,7 @@ export async function deleteTask(req: Request, res: Response) {
       })
     }
     const newTasks = tasks.filter((t: Task) => t.id !== id)
-    if (!writeFile(newTasks, 'tasks')) {
+    if (!(await writeDatabase(newTasks, 'tasks'))) {
       throw new Error('Error deleting task')
     }
     return formatResponse({
@@ -219,7 +219,7 @@ export async function updateTask(req: Request, res: Response) {
         })
       }
     }
-    const tasks = readFile('tasks') as Task[]
+    const tasks = await readDatabase<Task>('tasks')
     const tasksSearch = tasks.filter((t: Task) => t.id === id)
     if (tasksSearch.length === 0) {
       return formatResponseWarning({
@@ -245,7 +245,7 @@ export async function updateTask(req: Request, res: Response) {
       updatedAt: new Date().toISOString(),
     }
     const newTasks = [...tasks.filter((t: Task) => t.id !== id), newTask]
-    if (!writeFile(newTasks, 'tasks')) {
+    if (!(await writeDatabase(newTasks, 'tasks'))) {
       throw new Error('Error updating task')
     }
     return formatResponse({

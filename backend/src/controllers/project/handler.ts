@@ -4,15 +4,15 @@ import {
   formatResponseWarning,
   formatResponse,
   generateLongId,
-  readFile,
-  writeFile,
+  readDatabase,
+  writeDatabase,
   includes,
-} from '../../libs'
+  getUserByToken,
+} from '@/libs'
 import { Request, Response } from 'express'
-import { Project } from '../../types/global'
-import { getUserByToken } from '../../libs/token'
+import { Project } from '@/types'
 
-export function createProject(req: Request, res: Response) {
+export async function createProject(req: Request, res: Response) {
   try {
     const { project } = req.body as { project: Project }
     if (!project || Object.keys(project).length === 0 || !project.name) {
@@ -29,8 +29,8 @@ export function createProject(req: Request, res: Response) {
         })
       }
     }
-    const projects = readFile('projects') as Project[]
-    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    const projects = await readDatabase<Project>('projects')
+    const myUser = await getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       if (!includes('projects', 'StateProject', project.state)) {
         return formatResponseError({
@@ -41,14 +41,14 @@ export function createProject(req: Request, res: Response) {
       const newProject = {
         ...project,
         state: project.state ?? 'OPENED',
-        owner: { id: myUser.id },
+        owner: { id: myUser.id, name: myUser.name },
         id: generateLongId(),
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
       projects.push(newProject)
       console.log('projects', projects)
-      if (writeFile(projects, 'projects')) {
+      if (await writeDatabase(projects, 'projects')) {
         return formatResponse({
           message: 'CREATED',
           res,
@@ -69,11 +69,11 @@ export function createProject(req: Request, res: Response) {
   }
 }
 
-export function getProjects(req: Request, res: Response) {
+export async function getProjects(req: Request, res: Response) {
   try {
-    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    const myUser = await getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
-      const projects = readFile('projects') as Project[]
+      const projects = await readDatabase<Project>('projects')
       const myProjects = projects.filter((p) => p.owner.id === myUser.id)
       return formatResponse({
         message: 'GET',
@@ -97,7 +97,7 @@ export function getProjects(req: Request, res: Response) {
   }
 }
 
-export function getProject(req: Request, res: Response) {
+export async function getProject(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
@@ -106,9 +106,9 @@ export function getProject(req: Request, res: Response) {
         res,
       })
     }
-    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    const myUser = await getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
-      const projects = readFile('projects') as Project[]
+      const projects = await readDatabase<Project>('projects')
       const myProjects = projects.filter(
         (p) => p.owner.id === myUser.id && p.id === id
       )
@@ -132,7 +132,7 @@ export function getProject(req: Request, res: Response) {
   }
 }
 
-export function deleteProject(req: Request, res: Response) {
+export async function deleteProject(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
@@ -141,7 +141,7 @@ export function deleteProject(req: Request, res: Response) {
         res,
       })
     }
-    const projects = readFile('projects') as Project[]
+    const projects = await readDatabase<Project>('projects')
     const projectsSearch = projects.filter((p: Project) => p.id === id)
     if (projectsSearch.length === 0) {
       return formatResponseWarning({
@@ -150,7 +150,7 @@ export function deleteProject(req: Request, res: Response) {
       })
     }
     const newProjects = projects.filter((p: Project) => p.id !== id)
-    if (!writeFile(newProjects, 'projects')) {
+    if (!(await writeDatabase(newProjects, 'projects'))) {
       throw new Error('Error deleting project')
     }
     return formatResponse({
@@ -166,7 +166,7 @@ export function deleteProject(req: Request, res: Response) {
   }
 }
 
-export function updateProject(req: Request, res: Response) {
+export async function updateProject(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (Object.keys(req.body).length === 0) {
@@ -190,7 +190,7 @@ export function updateProject(req: Request, res: Response) {
         })
       }
     }
-    const projects = readFile('projects') as Project[]
+    const projects = await readDatabase<Project>('projects')
     const projectsSearch = projects.filter((p) => p.id === id)
     if (projectsSearch.length === 0) {
       return formatResponseWarning({
@@ -210,7 +210,7 @@ export function updateProject(req: Request, res: Response) {
       updatedAt: new Date().toISOString(),
     }
     const newProjects = [...projects.filter((p) => p.id !== id), newProject]
-    if (!writeFile(newProjects, 'projects')) {
+    if (!(await writeDatabase(newProjects, 'projects'))) {
       throw new Error('Error updating project')
     }
     return formatResponse({

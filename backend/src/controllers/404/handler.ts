@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { formatResponseError } from '../../libs'
+import { formatResponseError } from '@/libs'
 
 export function generalPathMatch(req: Request, res: Response) {
   try {

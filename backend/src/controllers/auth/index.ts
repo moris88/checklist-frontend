@@ -6,4 +6,5 @@ export {
   getProfile,
   updateProfile,
   deleteProfile,
+  refreshToken,
 } from './handler'

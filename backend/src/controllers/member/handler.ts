@@ -3,14 +3,14 @@ import {
   formatResponseWarning,
   formatResponse,
   generateLongId,
-  readFile,
-  writeFile,
+  readDatabase,
+  writeDatabase,
   getUserByToken,
-} from '../../libs'
+} from '@/libs'
 import { Request, Response } from 'express'
-import { Member } from '../../types/global'
+import { Member } from '@/types'
 
-export function createMember(req: Request, res: Response) {
+export async function createMember(req: Request, res: Response) {
   try {
     if (Object.keys(req.body).length === 0) {
       return formatResponseError({
@@ -31,22 +31,22 @@ export function createMember(req: Request, res: Response) {
       })
     }
     const { email } = member
-    const members = readFile('members') as Member[]
+    const members = await readDatabase<Member>('members')
     if (members.filter((m: Member) => m.email === email).length > 0) {
       return formatResponseWarning({
         message: 'Resource already exists',
         res,
       })
     }
-    const myMember = getUserByToken(req.headers?.authorization ?? '')
+    const myMember = await getUserByToken(req.headers?.authorization ?? '')
     if (myMember) {
       const newMember = {
         ...member,
         id: generateLongId(),
-        owner: { id: myMember.id },
+        owner: { id: myMember.id, name: myMember.name },
       }
       members.push(newMember)
-      if (writeFile(members, 'members')) {
+      if (await writeDatabase(members, 'members')) {
         return formatResponse({
           message: 'CREATED',
           res,
@@ -67,10 +67,10 @@ export function createMember(req: Request, res: Response) {
   }
 }
 
-export function getMembers(req: Request, res: Response) {
+export async function getMembers(req: Request, res: Response) {
   try {
-    const members = readFile('members') as Member[]
-    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    const members = await readDatabase<Member>('members')
+    const myUser = await getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       const myUsers = members.filter((u: Member) => u.owner.id === myUser.id)
       return formatResponse({
@@ -93,7 +93,7 @@ export function getMembers(req: Request, res: Response) {
   }
 }
 
-export function getMember(req: Request, res: Response) {
+export async function getMember(req: Request, res: Response) {
   try {
     const { id } = req.params
     if (!id) {
@@ -102,8 +102,8 @@ export function getMember(req: Request, res: Response) {
         res,
       })
     }
-    const members = readFile('members') as Member[]
-    const myUser = getUserByToken(req.headers?.authorization ?? '')
+    const members = await readDatabase<Member>('members')
+    const myUser = await getUserByToken(req.headers?.authorization ?? '')
     if (myUser) {
       const myUsers = members.filter(
         (u: Member) => u.owner.id === myUser.id && u.id === id
@@ -137,7 +137,7 @@ export async function deleteMember(req: Request, res: Response) {
         res,
       })
     }
-    const members = readFile('members') as Member[]
+    const members = await readDatabase<Member>('members')
     const membersSearch = members.filter((m: Member) => m.id === id)
     if (membersSearch.length === 0) {
       return formatResponseWarning({
@@ -146,7 +146,7 @@ export async function deleteMember(req: Request, res: Response) {
       })
     }
     const newMembers = members.filter((m: Member) => m.id !== id)
-    if (!writeFile(newMembers, 'members')) {
+    if (!(await writeDatabase(newMembers, 'members'))) {
       throw new Error('Error deleting member')
     }
     return formatResponse({
@@ -178,7 +178,7 @@ export async function updateMember(req: Request, res: Response) {
         res,
       })
     }
-    const members = readFile('members') as Member[]
+    const members = await readDatabase<Member>('members')
     const membersSearch = members.filter((m: Member) => m.id === id)
     if (membersSearch.length === 0) {
       return formatResponseWarning({
@@ -191,7 +191,7 @@ export async function updateMember(req: Request, res: Response) {
       ...members.filter((m: Member) => m.id !== id),
       newMember,
     ]
-    if (!writeFile(newMembers, 'members')) {
+    if (!(await writeDatabase(newMembers, 'members'))) {
       throw new Error('Error updating user')
     }
     return formatResponse({
