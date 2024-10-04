@@ -17,8 +17,8 @@ const State = ({ size, children }: StateProps) => {
         children === 'OPENED'
           ? 'bg-blue-500  text-black'
           : children === 'ACTIVE'
-          ? 'bg-green-500 text-black'
-          : 'bg-red-500 text-black'
+            ? 'bg-green-500 text-black'
+            : 'bg-red-500 text-black'
       )}
     >
       {children}
