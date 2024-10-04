@@ -1,1 +1,0 @@
-export { authorizationMiddleware } from './handler'
