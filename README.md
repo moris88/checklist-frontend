@@ -11,7 +11,7 @@ This is a checklist app that allows users to create a checklist and add items to
 - Run `npm run dev` in the terminal
 - Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-### Front End 
+## Links
 
 - [React](https://reactjs.org/) - JavaScript library for building user interfaces
 - [Tailwind CSS](https://tailwindcss.com/) - CSS Framework
