@@ -1,26 +1,50 @@
 {
-  "name": "checklist-work",
-  "version": "0.0.1",
+  "name": "checklist-work-frontend",
   "private": true,
+  "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "open": "wait-on http://localhost:3000",
-    "lint:frontend": "cd frontend && npm run lint -- --fix",
-    "lint:backend": "cd backend && npm run lint -- --fix",
-    "lint": "concurrently --kill-others-on-fail --names \"express,react\" \"npm run lint:backend\" \"npm run lint:frontend\"",
-    "react": "cd frontend && npm run dev",
-    "express": "cd backend && npm run dev",
-    "dev": "concurrently --kill-others-on-fail --names \"express,react,open\" \"npm run express\" \"npm run react\" \"npm run open\""
-  },
-  "devDependencies": {
-    "cz-conventional-changelog": "^3.3.0"
-  },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
+    "dev": "vite --port=3000 --host",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --max-warnings=5",
+    "lint:fix": "npm run lint -- --fix",
+    "prettier": "prettier src --check",
+    "prettier:fix": "npm run prettier -- --write"
   },
   "dependencies": {
-    "concurrently": "^8.2.0",
-    "wait-on": "^7.0.1"
-  }
+    "@heroicons/react": "^2.0.18",
+    "classnames": "^2.3.2",
+    "flowbite": "^1.8.1",
+    "flowbite-react": "^0.5.0",
+    "jotai": "^2.4.0",
+    "moment": "^2.29.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.45.4",
+    "react-router-dom": "^6.15.0",
+    "recharts": "^2.7.3",
+    "tailwind-merge": "^1.14.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.11.1",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-react": "^4.0.4",
+    "autoprefixer": "^10.4.15",
+    "eslint": "^9.11.1",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.1",
+    "globals": "^15.10.0",
+    "path": "^0.12.7",
+    "postcss": "^8.4.28",
+    "prettier": "^3.3.3",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.1.6",
+    "typescript-eslint": "^8.8.0",
+    "vite": "^4.4.9",
+    "vite-plugin-checker": "^0.6.2"
+  },
+  "packageManager": "pnpm@9.10.0+sha512.73a29afa36a0d092ece5271de5177ecbf8318d454ecd701343131b8ebc0c1a91c487da46ab77c8e596d6acf1461e3594ced4becedf8921b074fbd8653ed7051c"
 }

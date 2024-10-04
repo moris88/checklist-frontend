@@ -21,6 +21,7 @@ export async function request<T>({
     try {
       result.json()
     } catch (e) {
+      console.error(e)
       return null
     }
   })

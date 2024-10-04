@@ -17,10 +17,10 @@ const Priority = ({ size, children }: PriorityProps) => {
         children === 'LOW'
           ? 'bg-green-500  text-black'
           : children === 'MEDIUM'
-          ? 'bg-yellow-500 text-black'
-          : children === 'HIGH'
-          ? 'bg-orange-500 text-black'
-          : 'bg-red-500 text-black'
+            ? 'bg-yellow-500 text-black'
+            : children === 'HIGH'
+              ? 'bg-orange-500 text-black'
+              : 'bg-red-500 text-black'
       )}
     >
       {children}

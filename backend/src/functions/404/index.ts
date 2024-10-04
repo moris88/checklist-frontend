@@ -1,1 +1,0 @@
-export { generalPathMatch } from './handler'

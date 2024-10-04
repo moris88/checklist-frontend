@@ -1,9 +1,19 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
+import react from '@vitejs/plugin-react';
 import checker from "vite-plugin-checker";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
+  build: {
+    minify: true,
+    outDir: 'dist',
+  },
   server: {
     watch: {
       usePolling: true,
@@ -13,4 +23,4 @@ export default defineConfig({
     port: 3000, // you can replace this port with any port
   },
   plugins: [react(), checker({ typescript: true })],
-});
+})
