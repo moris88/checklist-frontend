@@ -1,5 +1,5 @@
 import { Controller, useForm } from 'react-hook-form'
-import { Project, Task, Member } from '../../types/global'
+import { Project, Task, Member } from '@/types'
 import {
   Button,
   Label,
@@ -8,8 +8,8 @@ import {
   TextInput,
   Textarea,
 } from 'flowbite-react'
-import Multiselect from '../Multiselect'
-import { useFetch } from '../../hooks'
+import { Multiselect } from '@/components'
+import { useFetch } from '@/hooks'
 import { useNavigate } from 'react-router-dom'
 import React from 'react'
 import { ArrowLeftIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'

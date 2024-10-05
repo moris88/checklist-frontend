@@ -1,9 +1,9 @@
-import Table from '../Table'
+import { Table } from '@/components'
 import { Button, Spinner } from 'flowbite-react'
-import { useFetch } from '../../hooks'
+import { useFetch } from '@/hooks'
 import { useNavigate } from 'react-router-dom'
-import { Member, Module, Project, Task } from '../../types/global'
-import { getSkipByModule } from '../../utils'
+import { Member, Module, Project, Task } from '@/types'
+import { getSkipByModule } from '@/utils'
 
 interface ListProps {
   module: Module

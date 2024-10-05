@@ -1,5 +1,5 @@
 import { Table as TableFlowbite } from 'flowbite-react'
-import { Member, Module, Project, Task } from '../types/global'
+import { Member, Module, Project, Task } from '@/types'
 import { useNavigate } from 'react-router-dom'
 import { Deadline, Priority, State, Status } from './badge'
 import moment from 'moment'

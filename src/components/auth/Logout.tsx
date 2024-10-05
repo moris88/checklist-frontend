@@ -1,9 +1,9 @@
 import React from 'react'
 import { Spinner } from 'flowbite-react'
 import { useNavigate } from 'react-router-dom'
-import { accessState, clearAccessState, defaultState } from '../../atoms'
+import { accessState, clearAccessState, defaultState } from '@/atoms'
 import { useAtom } from 'jotai'
-import { useFetch } from '../../hooks'
+import { useFetch } from '@/hooks'
 
 const Logout = () => {
   const navigate = useNavigate()

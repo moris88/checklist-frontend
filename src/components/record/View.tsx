@@ -1,8 +1,8 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { Member, Module, Project, Task } from '../../types/global'
-import { useFetch } from '../../hooks'
+import { Member, Module, Project, Task } from '@/types'
+import { useFetch } from '@/hooks'
 import { Button, Spinner } from 'flowbite-react'
-import { getSkip } from '../../utils'
+import { getSkip } from '@/utils'
 import moment from 'moment'
 import React from 'react'
 import {
@@ -10,8 +10,7 @@ import {
   PencilIcon,
   TrashIcon,
 } from '@heroicons/react/24/outline'
-import { Deadline, Priority, State, Status } from '../badge'
-import Table from '../Table'
+import { Deadline, Priority, State, Status, Table } from '@/components'
 
 interface ViewProps {
   module: Module

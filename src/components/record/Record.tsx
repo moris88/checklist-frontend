@@ -1,9 +1,9 @@
-import { Project, Task, Member, Module } from '../../types/global'
+import { Project, Task, Member, Module } from '@/types'
 import { useParams } from 'react-router-dom'
-import { useFetch } from '../../hooks'
-import { getSkip } from '../../utils'
+import { useFetch } from '@/hooks'
+import { getSkip } from '@/utils'
 import { Spinner } from 'flowbite-react'
-import { FormMember, FormProject, FormTask } from '../forms'
+import { FormMember, FormProject, FormTask } from '@/components'
 
 interface RecordProps {
   module: Module

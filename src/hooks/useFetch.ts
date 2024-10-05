@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
-import { SERVER_URL } from '../utils/metadata'
+import { SERVER_URL } from '@/utils'
 import { useAtom } from 'jotai'
-import { accessState, clearAccessState } from '../atoms'
+import { accessState, clearAccessState } from '@/atoms'
 
 interface useFetchProps {
   endpoint?: string

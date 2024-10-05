@@ -6,11 +6,11 @@ import {
   clearAccessState,
   defaultState,
   setAccessState,
-} from '../atoms'
+} from '@/atoms'
 import moment from 'moment'
-import { SERVER_URL } from '../utils/metadata'
-import { AccessToken } from '../types/global'
-import { Footer, Header } from '.'
+import { SERVER_URL } from '@/utils'
+import { AccessToken } from '@/types'
+import { Footer, Header } from '@/components'
 
 interface WrapperProps {
   title: string

@@ -1,8 +1,8 @@
 import { Button, Dropdown, Navbar } from 'flowbite-react'
 import { useAtomValue } from 'jotai'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { accessState } from '../atoms'
-import { capitalizeFirstLetter } from '../utils'
+import { accessState } from '@/atoms'
+import { capitalizeFirstLetter } from '@/utils'
 import {
   UserIcon,
   ArrowLeftOnRectangleIcon,

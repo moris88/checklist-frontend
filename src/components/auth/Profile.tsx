@@ -1,10 +1,10 @@
 import { Spinner } from 'flowbite-react'
-import { useFetch } from '../../hooks'
+import { useFetch } from '@/hooks'
 import React from 'react'
 import { useAtomValue } from 'jotai'
-import { accessState } from '../../atoms'
-import FormProfile from '../forms/FormProfile'
-import { User } from '../../types/global'
+import { accessState } from '@/atoms'
+import { FormProfile } from '@/components'
+import { User } from '@/types'
 import moment from 'moment'
 
 const Profile = () => {

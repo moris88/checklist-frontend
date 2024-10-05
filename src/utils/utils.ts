@@ -1,4 +1,4 @@
-import { AccessToken, Module } from '../types/global'
+import { AccessToken, Module } from '@/types'
 
 export function checkLogin() {
   const accessTokenString: string | null = localStorage.getItem('access_token')

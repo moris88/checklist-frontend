@@ -1,9 +1,9 @@
-import { Module } from '../../types/global'
+import { Module } from '@/types'
 import { useNavigate, useParams } from 'react-router-dom'
-import Modal from '../Modal'
+import { Modal } from '@/components'
 import { Spinner } from 'flowbite-react'
 import React from 'react'
-import { request } from '../../utils/request'
+import { request } from '@/utils'
 
 interface DeleteProps {
   module: Module

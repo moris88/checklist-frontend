@@ -1,5 +1,5 @@
 import { atom } from 'jotai'
-import { AccessToken } from './types/global'
+import { AccessToken } from '@/types'
 
 function getAccessStateDefault() {
   const defaultAccessStateString: string | null =

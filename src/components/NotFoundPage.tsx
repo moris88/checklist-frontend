@@ -1,6 +1,6 @@
 import { useAtomValue } from 'jotai'
 import React from 'react'
-import { accessState } from '../atoms'
+import { accessState } from '@/atoms'
 import { useNavigate } from 'react-router-dom'
 import { Button } from 'flowbite-react'
 

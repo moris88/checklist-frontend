@@ -1,9 +1,9 @@
-import { RegisterAccess } from '../../types/global'
+import { RegisterAccess } from '@/types'
 import { useForm } from 'react-hook-form'
 import { Button, Label, Spinner, TextInput } from 'flowbite-react'
 import { useNavigate } from 'react-router-dom'
 import React from 'react'
-import { useFetch } from '../../hooks'
+import { useFetch } from '@/hooks'
 
 const Register = () => {
   const navigate = useNavigate()
